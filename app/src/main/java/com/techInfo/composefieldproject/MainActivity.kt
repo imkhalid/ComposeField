@@ -31,12 +31,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.findNavController
-import com.imkhalid.composefieldproject.composeField.ComposeFieldModule
-import com.imkhalid.composefieldproject.composeField.ComposeSections
-import com.imkhalid.composefieldproject.composeField.fieldTypes.ComposeFieldType
-import com.imkhalid.composefieldproject.composeField.fieldTypes.ComposeKeyboardType
-import com.imkhalid.composefieldproject.model.DefaultValues
 import com.imkhalid.composefieldproject.ui.MainViewModel
 import com.imkhalid.composefield.composeField.model.ComposeSectionModule
 import com.imkhalid.composefieldproject.ui.theme.ComposeFieldProjectTheme
@@ -106,7 +100,7 @@ fun Greeting(
             .setParentNav(navHostController)
             .setLasPageCallback { }
             .Build(sections = state.section?.data?.risk_sections?.map {
-                com.imkhalid.composefield.composeField.model.ComposeSectionModule().parseSectionToComposeSec(it)
+                ComposeSectionModule().parseSectionToComposeSec(it)
             }?: emptyList()
             )
 }

@@ -18,7 +18,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.imkhalid.composefield.composeField.model.ComposeSectionModule
-import com.imkhalid.composefieldproject.composeField.ComposeFieldModule
+import com.imkhalid.composefield.composeField.model.ComposeFieldModule
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -114,7 +114,7 @@ class ComposeSections(){
     }
 
     @Composable
-    fun Build(sections: List<ComposeSectionModule>)= apply{
+    fun Build(sections: List<ComposeSectionModule>):ComposeSections {
         if (isLocked.not()) {
             navController = rememberNavController()
             sections.forEach {
@@ -148,6 +148,7 @@ class ComposeSections(){
                     parentNavController.popBackStack()
             }
         }
+        return this
     }
 
     private fun navigateToNext() {

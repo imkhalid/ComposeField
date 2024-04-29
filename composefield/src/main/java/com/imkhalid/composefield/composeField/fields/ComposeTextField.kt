@@ -18,7 +18,7 @@ import com.imkhalid.composefield.composeField.FieldMaskTransformation
 import com.imkhalid.composefield.composeField.Patterns
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldType
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardType
-import com.imkhalid.composefieldproject.composeField.ComposeFieldModule
+import com.imkhalid.composefield.composeField.model.ComposeFieldModule
 import io.michaelrocks.libphonenumber.android.CountryCodeToRegionCodeMap
 import java.util.regex.Pattern
 

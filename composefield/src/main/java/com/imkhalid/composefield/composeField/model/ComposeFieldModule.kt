@@ -1,4 +1,4 @@
-package com.imkhalid.composefieldproject.composeField
+package com.imkhalid.composefield.composeField.model
 
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldType
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo

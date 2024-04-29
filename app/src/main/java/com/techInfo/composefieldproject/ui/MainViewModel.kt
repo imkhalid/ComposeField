@@ -5,9 +5,9 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
-import com.imkhalid.composefieldproject.composeField.ComposeSections
-import com.imkhalid.composefieldproject.model.CustomFormData
-import com.imkhalid.composefieldproject.model.LoadingModel
+import com.imkhalid.composefield.composeField.ComposeSections
+import com.imkhalid.composefield.model.CustomFormData
+import com.imkhalid.composefield.model.LoadingModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -32,7 +32,7 @@ class MainViewModel @Inject constructor(
     }
     data class SectionState(
         val loadingModel: LoadingModel = LoadingModel(),
-        var section:CustomFormData?=null,
+        var section: CustomFormData?=null,
     )
 
     private val _sectionState = MutableStateFlow(SectionState())

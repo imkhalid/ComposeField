@@ -1,7 +1,7 @@
 package com.imkhalid.composefield.composeField
 
 import com.imkhalid.composefield.model.LoadingModel
-import com.imkhalid.composefieldproject.composeField.ComposeFieldModule
+import com.imkhalid.composefield.composeField.model.ComposeFieldModule
 
 
 data class ComposeFieldState(

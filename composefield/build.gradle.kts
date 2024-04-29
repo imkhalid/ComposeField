@@ -3,6 +3,7 @@ plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
     id("maven-publish")
+    id("kotlin-kapt")
 }
 
 ext {
@@ -31,9 +32,11 @@ android {
             )
         }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+    buildFeatures {
+        compose = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.1"
     }
     kotlinOptions {
         jvmTarget = "1.8"
@@ -78,4 +81,6 @@ dependencies {
     implementation ("io.michaelrocks:libphonenumber-android:8.13.28") //Phone Number
 
     implementation("androidx.hilt:hilt-navigation-compose:$hiltWork")
+
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.0")
 }

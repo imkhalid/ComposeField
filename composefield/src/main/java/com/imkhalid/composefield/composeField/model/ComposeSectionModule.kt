@@ -1,14 +1,14 @@
 package com.imkhalid.composefield.composeField.model
 
-import com.imkhalid.composefieldproject.composeField.ComposeFieldModule
-import com.imkhalid.composefieldproject.model.section
+import com.imkhalid.composefield.model.section
+
 
 data class ComposeSectionModule(
     var sortNumber: Int = 0,
     var fields:List<ComposeFieldModule> = emptyList(),
     var name:String ="",
 ){
-    fun parseSectionToComposeSec(entry:Map.Entry<String,section>) =apply{
+    fun parseSectionToComposeSec(entry:Map.Entry<String, section>) =apply{
         name = entry.key
         entry.value.let {
             sortNumber = it.sorting_number
