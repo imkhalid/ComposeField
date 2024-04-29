@@ -23,8 +23,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.techInfo.composefieldproject.composeField.ComposeFieldState
-import com.techInfo.composefieldproject.composeField.fieldTypes.ComposeKeyboardType
+import com.imkhalid.composefield.composeField.ComposeFieldState
+import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardType
 import io.michaelrocks.libphonenumber.android.PhoneNumberUtil
 
 

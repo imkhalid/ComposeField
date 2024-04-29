@@ -1,4 +1,4 @@
-package com.techInfo.composefieldproject
+package com.imkhalid.composefieldproject
 
 import android.os.Bundle
 import android.util.Log
@@ -32,14 +32,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.findNavController
-import com.techInfo.composefieldproject.composeField.ComposeFieldModule
-import com.techInfo.composefieldproject.composeField.ComposeSections
-import com.techInfo.composefieldproject.composeField.fieldTypes.ComposeFieldType
-import com.techInfo.composefieldproject.composeField.fieldTypes.ComposeKeyboardType
-import com.techInfo.composefieldproject.model.DefaultValues
-import com.techInfo.composefieldproject.ui.MainViewModel
+import com.imkhalid.composefieldproject.composeField.ComposeFieldModule
+import com.imkhalid.composefieldproject.composeField.ComposeSections
+import com.imkhalid.composefieldproject.composeField.fieldTypes.ComposeFieldType
+import com.imkhalid.composefieldproject.composeField.fieldTypes.ComposeKeyboardType
+import com.imkhalid.composefieldproject.model.DefaultValues
+import com.imkhalid.composefieldproject.ui.MainViewModel
 import com.imkhalid.composefield.composeField.model.ComposeSectionModule
-import com.techInfo.composefieldproject.ui.theme.ComposeFieldProjectTheme
+import com.imkhalid.composefieldproject.ui.theme.ComposeFieldProjectTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

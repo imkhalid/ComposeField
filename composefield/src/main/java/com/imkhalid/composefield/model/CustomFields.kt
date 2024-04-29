@@ -1,4 +1,4 @@
-package com.techInfo.composefieldproject.model
+package com.imkhalid.composefield.model
 
 data class CustomFields(
     val id: Int,

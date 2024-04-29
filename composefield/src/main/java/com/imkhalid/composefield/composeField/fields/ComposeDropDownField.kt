@@ -29,8 +29,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.techInfo.composefieldproject.composeField.ComposeFieldState
-import com.techInfo.composefieldproject.composeField.fields.ComposeField
+import com.imkhalid.composefield.composeField.ComposeFieldState
+import com.imkhalid.composefieldproject.composeField.fields.ComposeField
 
 class ComposeDropDownField : ComposeField() {
 

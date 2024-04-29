@@ -9,7 +9,7 @@ plugins {
 }
 
 android {
-    namespace = "com.techInfo.composefieldproject"
+    namespace = "com.imkhalid.composefieldproject"
     compileSdk = 34
 
     defaultConfig {

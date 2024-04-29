@@ -1,4 +1,4 @@
-package com.techInfo.composefieldproject.composeField
+package com.imkhalid.composefield.composeField
 
 enum class Patterns(var value:String,val length:Int,vararg var  pattern:String) {
     CNIC("#####-#######-#",13,"^[0-9]{5}-[0-9]{7}-[0-9]\$","^(?!([0-9])\\1{4})[0-9]{5}-[0-9]{7}-[0-9]\$"),

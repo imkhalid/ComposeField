@@ -1,7 +1,7 @@
 package com.imkhalid.composefield.composeField.model
 
-import com.techInfo.composefieldproject.composeField.ComposeFieldModule
-import com.techInfo.composefieldproject.model.section
+import com.imkhalid.composefieldproject.composeField.ComposeFieldModule
+import com.imkhalid.composefieldproject.model.section
 
 data class ComposeSectionModule(
     var sortNumber: Int = 0,

@@ -1,10 +1,11 @@
-package com.techInfo.composefieldproject.composeField
+package com.imkhalid.composefieldproject.composeField
 
-import com.techInfo.composefieldproject.composeField.fieldTypes.ComposeFieldType
-import com.techInfo.composefieldproject.composeField.fieldTypes.ComposeFieldYesNo
-import com.techInfo.composefieldproject.composeField.fieldTypes.ComposeKeyboardType
-import com.techInfo.composefieldproject.model.CustomFields
-import com.techInfo.composefieldproject.model.DefaultValues
+import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldType
+import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
+import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardType
+import com.imkhalid.composefield.model.CustomFields
+import com.imkhalid.composefield.model.DefaultValues
+
 
 /**
  * This Class is Used for parsing Server Field to Compose Field

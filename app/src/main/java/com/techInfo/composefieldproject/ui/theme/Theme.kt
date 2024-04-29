@@ -1,4 +1,4 @@
-package com.techInfo.composefieldproject.ui.theme
+package com.imkhalid.composefieldproject.ui.theme
 
 import android.app.Activity
 import android.os.Build

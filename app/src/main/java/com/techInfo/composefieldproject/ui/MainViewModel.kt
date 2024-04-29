@@ -1,13 +1,13 @@
-package com.techInfo.composefieldproject.ui
+package com.imkhalid.composefieldproject.ui
 
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
-import com.techInfo.composefieldproject.composeField.ComposeSections
-import com.techInfo.composefieldproject.model.CustomFormData
-import com.techInfo.composefieldproject.model.LoadingModel
+import com.imkhalid.composefieldproject.composeField.ComposeSections
+import com.imkhalid.composefieldproject.model.CustomFormData
+import com.imkhalid.composefieldproject.model.LoadingModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async

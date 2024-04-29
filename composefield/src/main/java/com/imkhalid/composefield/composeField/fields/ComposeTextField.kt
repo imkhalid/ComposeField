@@ -1,45 +1,25 @@
-package com.techInfo.composefieldproject.composeField.fields
+package com.imkhalid.composefieldproject.composeField.fields
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.currentCompositionLocalContext
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import com.techInfo.composefieldproject.composeField.ComposeFieldModule
-import com.techInfo.composefieldproject.composeField.ComposeFieldState
-import com.techInfo.composefieldproject.composeField.FieldMaskTransformation
-import com.techInfo.composefieldproject.composeField.Patterns
-import com.techInfo.composefieldproject.composeField.fieldTypes.ComposeFieldType
-import com.techInfo.composefieldproject.composeField.fieldTypes.ComposeFieldType.*
-import com.techInfo.composefieldproject.composeField.fieldTypes.ComposeKeyboardType
-import io.michaelrocks.libphonenumber.android.AsYouTypeFormatter
+import com.imkhalid.composefield.composeField.ComposeFieldState
+import com.imkhalid.composefield.composeField.FieldMaskTransformation
+import com.imkhalid.composefield.composeField.Patterns
+import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldType
+import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardType
+import com.imkhalid.composefieldproject.composeField.ComposeFieldModule
 import io.michaelrocks.libphonenumber.android.CountryCodeToRegionCodeMap
-import io.michaelrocks.libphonenumber.android.PhoneNumberMatch
-import io.michaelrocks.libphonenumber.android.PhoneNumberUtil
-import io.michaelrocks.libphonenumber.android.Phonenumber
-import java.util.Locale
 import java.util.regex.Pattern
 
 class ComposeTextField : ComposeField() {
@@ -51,7 +31,7 @@ class ComposeTextField : ComposeField() {
 
 
     @Composable
-    fun Build(state: ComposeFieldState, newValue: (Pair<Boolean,String>,String) -> Unit) {
+    fun Build(state: ComposeFieldState, newValue: (Pair<Boolean,String>, String) -> Unit) {
         val mask = getFieldMask(state.field)
         Column {
             OutlinedTextField(
@@ -72,7 +52,7 @@ class ComposeTextField : ComposeField() {
 
                 },
                 prefix = {
-                    if (state.field.keyboardType==ComposeKeyboardType.MOBILE_NO)
+                    if (state.field.keyboardType== ComposeKeyboardType.MOBILE_NO)
                         Text(text = "+1", modifier = Modifier.clickable {
 
                         })
@@ -83,7 +63,7 @@ class ComposeTextField : ComposeField() {
                 label = { Text(state.field.label) },
                 minLines = getMinLine(state.field.type),
                 maxLines = getMaxLine(state.field.type),
-                visualTransformation = if (mask!=Patterns.MOBILE && mask!=Patterns.NONE &&mask.value.isNotEmpty())
+                visualTransformation = if (mask!= Patterns.MOBILE && mask!=Patterns.NONE &&mask.value.isNotEmpty())
                     FieldMaskTransformation(mask.value)
                 else
                 VisualTransformation.None
@@ -105,16 +85,16 @@ class ComposeTextField : ComposeField() {
 
     private fun getMinLine(type: ComposeFieldType): Int {
         return when(type){
-            TEXT_BOX -> 1
-            TEXT_AREA -> 3
+            ComposeFieldType.TEXT_BOX -> 1
+            ComposeFieldType.TEXT_AREA -> 3
             else -> 1
         }
     }
 
     private fun getMaxLine(type: ComposeFieldType): Int {
         return when(type){
-            TEXT_BOX -> 1
-            TEXT_AREA -> 3
+            ComposeFieldType.TEXT_BOX -> 1
+            ComposeFieldType.TEXT_AREA -> 3
             else -> 1
         }
     }

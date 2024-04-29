@@ -1,4 +1,4 @@
-package com.techInfo.composefieldproject.composeField
+package com.imkhalid.composefield.composeField
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
@@ -18,6 +18,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.imkhalid.composefield.composeField.model.ComposeSectionModule
+import com.imkhalid.composefieldproject.composeField.ComposeFieldModule
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update

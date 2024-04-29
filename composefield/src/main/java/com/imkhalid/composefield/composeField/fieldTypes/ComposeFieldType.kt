@@ -1,4 +1,4 @@
-package com.techInfo.composefieldproject.composeField.fieldTypes
+package com.imkhalid.composefield.composeField.fieldTypes
 
 enum class ComposeFieldType {
     TEXT_BOX,

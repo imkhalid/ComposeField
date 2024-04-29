@@ -1,4 +1,4 @@
-package com.techInfo.composefieldproject.model
+package com.imkhalid.composefield.model
 
 data class LoadingModel(
     var shouldCallApi:Boolean=true,
