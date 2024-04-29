@@ -7,6 +7,7 @@ import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldType
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardType
 import com.imkhalid.composefield.composeField.fields.ComposeCheckBoxField
 import com.imkhalid.composefield.composeField.fields.ComposeDatePickerField
+import com.imkhalid.composefield.composeField.fields.ComposeDropDownField
 import com.imkhalid.composefield.composeField.fields.ComposeMobileField
 import com.imkhalid.composefield.composeField.fields.ComposeRadioGroupField
 import com.imkhalid.composefield.composeField.fields.ComposeSwitchField
@@ -63,7 +64,7 @@ class ComposeFieldBuilder {
                         })
                 }
             }
-            ComposeFieldType.DROP_DOWN -> ComposeSwitchField()
+            ComposeFieldType.DROP_DOWN -> ComposeRadioGroupField()
                 .Build(state,newValue ={error,newVal->
                     _fieldState.update {
                         it.copy(

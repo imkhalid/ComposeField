@@ -69,7 +69,7 @@ data class ComposeFieldModule(
     private fun getInitialValue(customField: CustomFields, selectedValue: String): String {
         return if (selectedValue.isNotEmpty())
             selectedValue
-        else if (customField.type.fieldType()==ComposeFieldType.DROP_DOWN){
+        else if (customField.type.fieldType()==ComposeFieldType.SWITCH){
             val falseValue = customField.default_values.find { x->x.text.contains("no",true) ||
                     x.text.contains("false",true) ||
                     x.text.contains("female",true)

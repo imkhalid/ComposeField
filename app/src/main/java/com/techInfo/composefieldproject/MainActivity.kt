@@ -33,6 +33,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.imkhalid.composefieldproject.ui.MainViewModel
 import com.imkhalid.composefield.composeField.model.ComposeSectionModule
+import com.imkhalid.composefield.theme.ComposeFieldTheme
 import com.imkhalid.composefieldproject.ui.theme.ComposeFieldProjectTheme
 import dagger.hilt.android.AndroidEntryPoint
 

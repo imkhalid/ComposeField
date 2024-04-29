@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -15,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.imkhalid.composefield.composeField.ComposeFieldState
+import com.imkhalid.composefield.theme.ComposeFieldTheme
 
 class ComposeSwitchField {
 
@@ -29,13 +31,16 @@ class ComposeSwitchField {
                 x.text.contains("female",true)
         }?.id
         Row(
-            modifier=Modifier
-                .defaultMinSize(minWidth = OutlinedTextFieldDefaults.MinWidth, minHeight = OutlinedTextFieldDefaults.MinHeight)
+            modifier= Modifier
+                .defaultMinSize(
+                    minWidth = OutlinedTextFieldDefaults.MinWidth,
+                    minHeight = OutlinedTextFieldDefaults.MinHeight
+                )
                 .clickable {
-                    if (state.text == falseValue){
-                        newValue.invoke(Pair(true,""),trueValue?:"")
-                    }else{
-                        newValue.invoke(Pair(true,""),falseValue?:"")
+                    if (state.text == falseValue) {
+                        newValue.invoke(Pair(true, ""), trueValue ?: "")
+                    } else {
+                        newValue.invoke(Pair(true, ""), falseValue ?: "")
                     }
                 },
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -48,7 +53,18 @@ class ComposeSwitchField {
             Spacer(modifier = Modifier.padding(start = 10.dp))
             Switch(
                 checked =state.text==trueValue ,
-                onCheckedChange = null)
+                onCheckedChange = null,
+                colors = SwitchDefaults.colors(
+                    checkedBorderColor = ComposeFieldTheme.focusedBorderColor,
+                    checkedIconColor =  ComposeFieldTheme.focusedBorderColor,
+                    uncheckedBorderColor = ComposeFieldTheme.unfocusedBorderColor,
+                    uncheckedIconColor = ComposeFieldTheme.unfocusedBorderColor,
+                    checkedTrackColor = ComposeFieldTheme.focusedBorderColor.copy(alpha = 0.4f),
+                    uncheckedTrackColor = ComposeFieldTheme.unfocusedBorderColor.copy(alpha = 0.4f),
+                    checkedThumbColor = ComposeFieldTheme.focusedBorderColor,
+                    uncheckedThumbColor = ComposeFieldTheme.unfocusedBorderColor,
+                )
+            )
         }
     }
 

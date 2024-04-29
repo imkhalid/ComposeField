@@ -10,6 +10,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -25,6 +26,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.imkhalid.composefield.composeField.ComposeFieldState
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardType
+import com.imkhalid.composefield.theme.ComposeFieldTheme
 import io.michaelrocks.libphonenumber.android.PhoneNumberUtil
 
 
@@ -74,11 +76,21 @@ class ComposeMobileField {
                 label = { Text(state.field.label) },
                 minLines = 1,
                 maxLines = 1,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = ComposeFieldTheme.focusedBorderColor,
+                    unfocusedBorderColor = ComposeFieldTheme.unfocusedBorderColor,
+                    errorBorderColor =  ComposeFieldTheme.errorColor,
+                    errorLabelColor = ComposeFieldTheme.errorColor,
+                    focusedLabelColor = ComposeFieldTheme.hintColor,
+                    focusedTextColor = ComposeFieldTheme.textColor,
+                    unfocusedTextColor = ComposeFieldTheme.textColor,
+                    focusedSupportingTextColor = ComposeFieldTheme.infoColor
+                )
             )
             if (state.hasError) {
                 Text(
                     text = state.errorMessage,
-                    color = MaterialTheme.colorScheme.error,
+                    color = ComposeFieldTheme.errorColor,
                     style = MaterialTheme.typography.labelSmall,
                     modifier = Modifier.padding(start = 16.dp)
                 )

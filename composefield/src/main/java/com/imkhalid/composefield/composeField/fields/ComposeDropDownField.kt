@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.imkhalid.composefield.composeField.ComposeFieldState
+import com.imkhalid.composefield.theme.ComposeFieldTheme
 import com.imkhalid.composefieldproject.composeField.fields.ComposeField
 
 class ComposeDropDownField : ComposeField() {
@@ -59,14 +60,16 @@ class ComposeDropDownField : ComposeField() {
             Box {
                 TextButton(
                     modifier = Modifier
+                        .padding(top = 5.dp)
                         .width(OutlinedTextFieldDefaults.MinWidth)
                         .height(OutlinedTextFieldDefaults.MinHeight),
-                    border = BorderStroke(0.5.dp, MaterialTheme.colorScheme.onBackground),
+                    border = BorderStroke(1.dp, ComposeFieldTheme.unfocusedBorderColor),
                     shape = OutlinedTextFieldDefaults.shape,
                     onClick = toggleDropdown
                 ) {
                     Text(
                         modifier=Modifier.fillMaxWidth(),
+                        color = ComposeFieldTheme.textColor,
                         text=dropDownText
                     )
                 }
@@ -94,6 +97,7 @@ class ComposeDropDownField : ComposeField() {
                         .padding(10.dp)
                 )
                 Text(
+                    color = ComposeFieldTheme.hintColor,
                     text = state.field.label,
                     fontSize = MaterialTheme.typography.labelSmall.fontSize,
                     modifier=Modifier.padding(10.dp)

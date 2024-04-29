@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -19,6 +20,7 @@ import com.imkhalid.composefield.composeField.Patterns
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldType
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardType
 import com.imkhalid.composefield.composeField.model.ComposeFieldModule
+import com.imkhalid.composefield.theme.ComposeFieldTheme
 import io.michaelrocks.libphonenumber.android.CountryCodeToRegionCodeMap
 import java.util.regex.Pattern
 
@@ -66,7 +68,17 @@ class ComposeTextField : ComposeField() {
                 visualTransformation = if (mask!= Patterns.MOBILE && mask!=Patterns.NONE &&mask.value.isNotEmpty())
                     FieldMaskTransformation(mask.value)
                 else
-                VisualTransformation.None
+                VisualTransformation.None,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = ComposeFieldTheme.focusedBorderColor,
+                    unfocusedBorderColor = ComposeFieldTheme.unfocusedBorderColor,
+                    errorBorderColor =  ComposeFieldTheme.errorColor,
+                    errorLabelColor = ComposeFieldTheme.errorColor,
+                    focusedLabelColor = ComposeFieldTheme.hintColor,
+                    focusedTextColor = ComposeFieldTheme.textColor,
+                    unfocusedTextColor = ComposeFieldTheme.textColor,
+                    focusedSupportingTextColor = ComposeFieldTheme.infoColor
+                )
             )
             if (state.hasError) {
                 Text(
