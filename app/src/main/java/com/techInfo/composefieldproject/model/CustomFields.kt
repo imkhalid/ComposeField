@@ -1,0 +1,31 @@
+package com.techInfo.composefieldproject.model
+
+data class CustomFields(
+    val id: Int,
+    var label: String,
+    var type: String,
+    val inputType: String,
+    val field_sort_number: Int,
+    val field_hint: String? = "",
+    val description: String? = null,
+    val child_id: Int,
+    var default_values: List<DefaultValues> = emptyList(),
+    val popular_values: List<DefaultValues>,
+    var selectedValue: String = "",
+    var required: Int,
+    val min_rule: String,
+    val max_rule: String,
+    val min_date: String,
+    val max_date: String,
+    val regex: String,
+    var field_name: String,
+    var search: Boolean,
+    val searchActon: String,
+    val allowedExtensions: String,
+    var translatedLabel: String = "",
+    var translatedFieldHint: String,
+    val visible: Int = 1,
+    var isEditable: Boolean? = true,
+    var isMultiSelect: Boolean? = false,
+    var sectionSortNumber: Int? = 0
+)
