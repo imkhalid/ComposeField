@@ -8,12 +8,12 @@ import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 
 @HiltAndroidApp
-class InitApp :Application(),androidx.work.Configuration.Provider{
+class InitApp :Application(),Configuration.Provider{
 
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
 
-    override fun getWorkManagerConfiguration() = androidx.work.Configuration
+    override fun getWorkManagerConfiguration() = Configuration
         .Builder()
         .setMinimumLoggingLevel(Log.INFO)
         .setWorkerFactory(workerFactory)

@@ -1,4 +1,4 @@
-package com.imkhalid.composefieldproject
+package com.techInfo.composefieldproject
 
 import android.os.Bundle
 import android.util.Log
