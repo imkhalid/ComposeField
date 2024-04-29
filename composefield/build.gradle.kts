@@ -6,12 +6,6 @@ plugins {
     id("kotlin-kapt")
 }
 
-ext {
-    val PUBLISH_GROUP_ID = "com.imkhalid"
-    val PUBLISH_ARTIFACT_ID = "composeField"
-    val PUBLISH_VERSION = "1.0.0"
-}
-
 android {
     namespace = "com.imkhalid.composefield"
     compileSdk = 34
@@ -39,11 +33,8 @@ android {
         kotlinCompilerExtensionVersion = "1.5.1"
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = "1.8"
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 }
 
