@@ -41,9 +41,9 @@ import com.imkhalid.composefield.theme.ComposeFieldTheme
 class ComposeRadioGroupField {
 
     @Composable
-    fun Build(state: ComposeFieldState, newValue: (Pair<Boolean, String>, String) -> Unit) {
+    fun Build(state: ComposeFieldState, newValue: (Pair<Boolean, String>, String) -> Unit,modifier: Modifier= Modifier) {
         val twoOption = state.field.defaultValues.size == 2 && state.field.defaultValues.all { x -> x.text.length <= 10 }
-        RadioGroupField {
+        RadioGroupField(modifier=modifier) {
             Text(
                 text = state.field.label,
                 fontSize = MaterialTheme.typography.titleMedium.fontSize,
@@ -114,11 +114,12 @@ class ComposeRadioGroupField {
 
 @Composable
 private fun RadioGroupField(
+    modifier: Modifier=Modifier,
     content: @Composable () -> Unit
 ){
     when(ComposeFieldTheme.fieldStyle){
         ComposeFieldTheme.FieldStyle.OUTLINE -> Column(
-            Modifier.width(OutlinedTextFieldDefaults.MinWidth),
+            Modifier.width(OutlinedTextFieldDefaults.MinWidth).then(modifier),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start,
             content={content.invoke()}
@@ -128,8 +129,9 @@ private fun RadioGroupField(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start,
             modifier = Modifier
-                .padding(top = 5.dp)
+                .padding(vertical = 5.dp)
                 .width(OutlinedTextFieldDefaults.MinWidth)
+                .then(modifier)
                 .border(
                     width = 0.dp,
                     color = Color.Transparent,

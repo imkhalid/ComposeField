@@ -64,7 +64,7 @@ class ComposeFieldBuilder {
                         })
                 }
             }
-            ComposeFieldType.DROP_DOWN -> ComposeRadioGroupField()
+            ComposeFieldType.DROP_DOWN -> ComposeDropDownField()
                 .Build(state,newValue ={error,newVal->
                     _fieldState.update {
                         it.copy(
@@ -107,6 +107,16 @@ class ComposeFieldBuilder {
                     }
                 })
         }
+        ComposeDatePickerField()
+            .Build(state,newValue ={error,newVal->
+                _fieldState.update {
+                    it.copy(
+                        text = newVal,
+                        hasError = error.first.not(),
+                        errorMessage = error.second
+                    )
+                }
+            })
     }
 
 
