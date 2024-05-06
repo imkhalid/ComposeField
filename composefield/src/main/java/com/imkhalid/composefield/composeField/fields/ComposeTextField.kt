@@ -327,21 +327,6 @@ class ComposeTextField : ComposeField() {
 
 
 
-    @Composable
-    private fun TrailingIcon(field: ComposeFieldModule, passwordVisible:Boolean, onClick:(()->Unit)?=null) {
-        if (field.keyboardType==ComposeKeyboardType.PASSWORD) {
-            Image(
-                painter = if (passwordVisible)
-                    painterResource(id = R.drawable.ic_open_password)
-                else
-                    painterResource(id = R.drawable.ic_close_password),
-                contentDescription = "Toggle password visibility",
-                modifier = Modifier.clickable {
-                    onClick?.invoke()
-                }
-            )
-        }
-    }
 
     private fun openCountryPicker(any: Any) {
         CountryCodeToRegionCodeMap.getCountryCodeToRegionCodeMap()

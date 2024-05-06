@@ -1,6 +1,5 @@
 package com.imkhalid.composefield.composeField.fields
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandHorizontally
@@ -31,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
@@ -42,19 +42,17 @@ class ComposeRadioGroupField {
 
     @Composable
     fun Build(state: ComposeFieldState, newValue: (Pair<Boolean, String>, String) -> Unit) {
-        Column(
-            Modifier.width(OutlinedTextFieldDefaults.MinWidth),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.Start
-        ) {
+        val twoOption = state.field.defaultValues.size == 2 && state.field.defaultValues.all { x -> x.text.length <= 10 }
+        RadioGroupField {
             Text(
                 text = state.field.label,
                 fontSize = MaterialTheme.typography.titleMedium.fontSize,
                 color = MaterialTheme.colorScheme.primary
             )
             Spacer(modifier = Modifier.padding(top = 5.dp))
-            if (state.field.defaultValues.size == 2 && state.field.defaultValues.all { x -> x.text.length <= 10 }) {
-                Row {
+            if (twoOption) {
+                Row(modifier = Modifier
+                    .padding(start = 10.dp)) {
                     state.field.defaultValues.forEach {
 
                         RoundedCornerRadiobox(
@@ -86,7 +84,8 @@ class ComposeRadioGroupField {
 //                        }
                     }
                 }
-            } else {
+            }
+            else {
                 state.field.defaultValues.forEach {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -114,11 +113,50 @@ class ComposeRadioGroupField {
 }
 
 @Composable
+private fun RadioGroupField(
+    content: @Composable () -> Unit
+){
+    when(ComposeFieldTheme.fieldStyle){
+        ComposeFieldTheme.FieldStyle.OUTLINE -> Column(
+            Modifier.width(OutlinedTextFieldDefaults.MinWidth),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.Start,
+            content={content.invoke()}
+        )
+        ComposeFieldTheme.FieldStyle.CONTAINER,
+        ComposeFieldTheme.FieldStyle.NORMAL -> Column(
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.Start,
+            modifier = Modifier
+                .padding(top = 5.dp)
+                .width(OutlinedTextFieldDefaults.MinWidth)
+                .border(
+                    width = 0.dp,
+                    color = Color.Transparent,
+                    shape = RoundedCornerShape(8.dp)
+                )
+                .shadow(
+                    elevation = 5.dp,
+                    shape = RoundedCornerShape(8.dp)
+                )
+                .background(
+                    color = Color.White,
+                    shape = RoundedCornerShape(8.dp)
+                )
+                .padding(5.dp)
+            ,
+            content={content.invoke()}
+        )
+    }
+}
+
+
+@Composable
 fun RoundedCornerRadiobox(
     label: String,
     isChecked: Boolean,
     modifier: Modifier = Modifier,
-    size: Float = 24f,
+    size: Float = 20f,
     checkedColor: Color = Color.Blue,
     uncheckedColor: Color = Color.White,
     onValueChange: ((Boolean) -> Unit)? = null
