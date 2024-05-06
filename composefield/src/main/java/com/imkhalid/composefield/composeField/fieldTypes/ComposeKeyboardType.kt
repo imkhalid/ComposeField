@@ -6,5 +6,7 @@ enum class ComposeKeyboardType {
     EMAIL,
     TEXT,
     NUMBER,
+    PASSWORD,
+    SENSITIVE,
     NONE
 }

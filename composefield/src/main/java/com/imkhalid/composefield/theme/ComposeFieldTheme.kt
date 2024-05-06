@@ -10,5 +10,11 @@ object ComposeFieldTheme {
     var hintColor = Color.Gray
     var infoColor = Color.Gray
     var textColor = Color.Black
+    var fieldStyle =FieldStyle.NORMAL
 
+    enum class FieldStyle {
+        OUTLINE,
+        CONTAINER,
+        NORMAL
+    }
 }
