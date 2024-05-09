@@ -2,10 +2,12 @@ package com.imkhalid.composefield.composeField.fields
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -23,18 +25,21 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.TimePickerDefaults
 import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import com.imkhalid.composefield.R
 import com.imkhalid.composefield.composeField.ComposeFieldState
 import com.imkhalid.composefield.theme.ComposeFieldTheme
@@ -44,60 +49,51 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-class ComposeDatePickerField :ComposeField(){
+class ComposeTimePickerField : ComposeField(){
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun Build(state: ComposeFieldState, newValue: (Pair<Boolean,String>, String) -> Unit,modifier: Modifier=Modifier) {
+    fun Build(state: ComposeFieldState, newValue: (Pair<Boolean,String>, String) -> Unit, modifier: Modifier = Modifier) {
 
         val calendar = Calendar.getInstance()
         val dropDownText = if (state.text.isEmpty())
-            "Choose an Date"
+            "Choose Time"
         else {
             changeDateFormat(date=state.text)
         }
 
 
-        val datePickerState = rememberDatePickerState()
+        val timePickerState = rememberTimePickerState()
         val showDialog = rememberSaveable { mutableStateOf(false) }
         if (showDialog.value) {
-            DatePickerDialog(
+            Dialog(
                 onDismissRequest = { showDialog.value = false },
-                confirmButton = {
-                    TextButton(onClick = {
-                        showDialog.value = false
-                        datePickerState.selectedDateMillis?.let {
-                            calendar.timeInMillis = it
-                            val result = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
+            ) {
+                Box(modifier = Modifier
+                    .background(color = Color.White, shape = RoundedCornerShape(12.dp))
+                    .padding(10.dp)
+                ) {
+                    TimePicker(
+                        modifier = Modifier.padding(vertical = 10.dp),
+                        state = timePickerState,
+                        colors = TimePickerDefaults.colors(
+                            clockDialColor = ComposeFieldTheme.unfocusedBorderColor,
+                            clockDialSelectedContentColor = ComposeFieldTheme.focusedBorderColor,
+                            selectorColor = ComposeFieldTheme.focusedBorderColor,
+                            containerColor = ComposeFieldTheme.unfocusedBorderColor
+                        )
+                    )
+
+                    TextButton(
+                        modifier=Modifier.align(Alignment.BottomEnd),
+                        onClick = {
+                            val result ="${timePickerState.hour}:${timePickerState.minute}"
                             newValue(Pair(true,""),result)
-                        }
-                    }) {
-                        Text("Ok")
-                    }
-                },
-                dismissButton = {
-                    TextButton(onClick = { showDialog.value = false }) {
-                        Text("Cancel")
+                            showDialog.value = false
+                        }) {
+                        Text("Done")
                     }
                 }
-            ) {
-                DatePicker(
-                    state = datePickerState,
-                    dateValidator = {current->
-                        val minMil:Long? = parseToDate(to="yyyy-MM-dd",date = state.field.minValue?:"")?.let {
-                            Calendar.getInstance().apply {
-                                time= it
-                            }.timeInMillis
-                        }
-                        val maxMil:Long? = parseToDate(to="yyyy-MM-dd",date = state.field.maxValue?:"")?.let {
-                            Calendar.getInstance().apply {
-                                time= it
-                            }.timeInMillis
-                        }
-                        (minMil==null || (minMil<current) ) &&
-                                (maxMil==null ||(maxMil>current))
-                    }
-                )
             }
         }
 
@@ -109,7 +105,8 @@ class ComposeDatePickerField :ComposeField(){
                     onClick = {showDialog.value=true}
                 ) {
                     Text(
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
                             .padding(start = 5.dp),
                         color = ComposeFieldTheme.textColor,
                         text = dropDownText
@@ -119,14 +116,14 @@ class ComposeDatePickerField :ComposeField(){
                     text = state.field.label,
                     color = ComposeFieldTheme.hintColor,
                     fontSize = MaterialTheme.typography.labelSmall.fontSize,
-                    modifier=Modifier.padding(start = 20.dp, top = 10.dp)
+                    modifier= Modifier.padding(start = 20.dp, top = 10.dp)
                 )
                 Image(
-                    painter = painterResource(id = R.drawable.ic_calendar),
+                    painter = painterResource(id = R.drawable.ic_clock_),
                     contentDescription = "",
                     modifier= Modifier
                         .align(Alignment.CenterEnd)
-                        .padding(horizontal = 10.dp))
+                        .padding(horizontal = 15.dp))
             }
         }
 
@@ -150,7 +147,7 @@ class ComposeDatePickerField :ComposeField(){
                 content = {content.invoke()}
             )
             ComposeFieldTheme.FieldStyle.CONTAINER ,
-            ComposeFieldTheme.FieldStyle.NORMAL ->TextButton(
+            ComposeFieldTheme.FieldStyle.NORMAL -> TextButton(
                 shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.White
@@ -176,10 +173,10 @@ class ComposeDatePickerField :ComposeField(){
     }
 
 
-    fun changeDateFormat(from:String="yyyy-MM-dd",to:String="dd-MMM-yyyy",date: String):String{
+    fun changeDateFormat(from:String="HH:mm",to:String="hh:mm aa",date: String):String{
         val date1 = parseToDate(from,date)
         return date1?.let {
-            SimpleDateFormat(to,Locale.getDefault()).format(it)
+            SimpleDateFormat(to, Locale.getDefault()).format(it)
         }?:run {
             date
         }

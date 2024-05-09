@@ -85,6 +85,7 @@ data class ComposeFieldModule(
             ComposeFieldType.TEXT_BOX ,
             ComposeFieldType.TEXT_AREA -> customField.min_rule
             ComposeFieldType.DATE_PICKER ,
+            ComposeFieldType.TIME_PICKER ,
             ComposeFieldType.DATE_TIME_PICKER -> customField.min_date
             ComposeFieldType.DROP_DOWN ,
             ComposeFieldType.SWITCH,
@@ -96,7 +97,8 @@ data class ComposeFieldModule(
         return when(type){
             ComposeFieldType.TEXT_BOX -> customField.max_rule
             ComposeFieldType.TEXT_AREA -> customField.max_rule
-            ComposeFieldType.DATE_PICKER -> customField.max_date
+            ComposeFieldType.DATE_PICKER,
+            ComposeFieldType.TIME_PICKER,
             ComposeFieldType.DATE_TIME_PICKER -> customField.max_date
             ComposeFieldType.DROP_DOWN ,
             ComposeFieldType.SWITCH,

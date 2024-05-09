@@ -5,6 +5,7 @@ enum class ComposeFieldType {
     TEXT_AREA,
     DROP_DOWN,
     DATE_PICKER,
+    TIME_PICKER,
     DATE_TIME_PICKER,
     SWITCH,
     CHECK_BOX,

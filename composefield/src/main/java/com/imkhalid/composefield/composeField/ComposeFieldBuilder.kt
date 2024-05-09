@@ -11,6 +11,7 @@ import com.imkhalid.composefield.composeField.fields.ComposeDropDownField
 import com.imkhalid.composefield.composeField.fields.ComposeMobileField
 import com.imkhalid.composefield.composeField.fields.ComposeRadioGroupField
 import com.imkhalid.composefield.composeField.fields.ComposeSwitchField
+import com.imkhalid.composefield.composeField.fields.ComposeTimePickerField
 import com.imkhalid.composefieldproject.composeField.fields.ComposeTextField
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -75,6 +76,16 @@ class ComposeFieldBuilder {
                     }
                 })
             ComposeFieldType.DATE_PICKER -> ComposeDatePickerField()
+                .Build(state,newValue ={error,newVal->
+                    _fieldState.update {
+                        it.copy(
+                            text = newVal,
+                            hasError = error.first.not(),
+                            errorMessage = error.second
+                        )
+                    }
+                })
+            ComposeFieldType.TIME_PICKER->ComposeTimePickerField()
                 .Build(state,newValue ={error,newVal->
                     _fieldState.update {
                         it.copy(
