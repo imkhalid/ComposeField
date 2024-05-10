@@ -20,6 +20,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
@@ -50,6 +51,17 @@ class ComposeDatePickerField :ComposeField(){
     @Composable
     fun Build(state: ComposeFieldState, newValue: (Pair<Boolean,String>, String) -> Unit,modifier: Modifier=Modifier) {
 
+        val minMil:Long? = parseToDate(to="yyyy-MM-dd",date = state.field.minValue?:"")?.let {
+            Calendar.getInstance().apply {
+                time= it
+            }.timeInMillis
+        }
+        val maxMil:Long? = parseToDate(to="yyyy-MM-dd",date = state.field.maxValue?:"")?.let {
+            Calendar.getInstance().apply {
+                time= it
+            }.timeInMillis
+        }
+
         val calendar = Calendar.getInstance()
         val dropDownText = if (state.text.isEmpty())
             "Choose an Date"
@@ -58,7 +70,14 @@ class ComposeDatePickerField :ComposeField(){
         }
 
 
-        val datePickerState = rememberDatePickerState()
+        val datePickerState = rememberDatePickerState(
+            selectableDates = object :SelectableDates{
+                override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                    return (minMil==null || (minMil<utcTimeMillis) ) &&
+                            (maxMil==null ||(maxMil>utcTimeMillis))
+                }
+            }
+        )
         val showDialog = rememberSaveable { mutableStateOf(false) }
         if (showDialog.value) {
             DatePickerDialog(
@@ -83,20 +102,6 @@ class ComposeDatePickerField :ComposeField(){
             ) {
                 DatePicker(
                     state = datePickerState,
-                    dateValidator = {current->
-                        val minMil:Long? = parseToDate(to="yyyy-MM-dd",date = state.field.minValue?:"")?.let {
-                            Calendar.getInstance().apply {
-                                time= it
-                            }.timeInMillis
-                        }
-                        val maxMil:Long? = parseToDate(to="yyyy-MM-dd",date = state.field.maxValue?:"")?.let {
-                            Calendar.getInstance().apply {
-                                time= it
-                            }.timeInMillis
-                        }
-                        (minMil==null || (minMil<current) ) &&
-                                (maxMil==null ||(maxMil>current))
-                    }
                 )
             }
         }
