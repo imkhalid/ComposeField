@@ -45,13 +45,14 @@ import com.imkhalid.composefieldproject.composeField.fields.ComposeField
 class ComposeDropDownField : ComposeField() {
 
 
-    fun setFocusCallback(callback:((isValidated:Boolean,fieldName:String)->Unit)?)= apply{
-        focusCallback =callback
+    fun setFocusCallback(callback: ((isValidated: Boolean, fieldName: String) -> Unit)?) = apply {
+        focusCallback = callback
     }
 
     @Composable
     fun Build(
-        state: ComposeFieldState, newValue: (Pair<Boolean, String>, String) -> Unit
+        state: ComposeFieldState, newValue: (Pair<Boolean, String>, String) -> Unit,
+        modifier: Modifier=Modifier
     ) {
         var expanded by remember { mutableStateOf(false) }
         val toggleDropdown: () -> Unit = { expanded = !expanded }
@@ -65,13 +66,13 @@ class ComposeDropDownField : ComposeField() {
             } ?: ""
         }
 
-        Column {
-            Box {
+        Column(modifier=modifier) {
+            Box (Modifier.fillMaxWidth()){
                 DropDownField(onClick = toggleDropdown) {
                     Text(
-                        modifier=Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth(),
                         color = ComposeFieldTheme.textColor,
-                        text=dropDownText
+                        text = dropDownText
                     )
                 }
                 DropdownMenu(
@@ -82,7 +83,7 @@ class ComposeDropDownField : ComposeField() {
                         DropdownMenuItem(
                             text = { Text(text = option) },
                             onClick = {
-                                focusCallback?.invoke(true,state.field.name)
+                                focusCallback?.invoke(true, state.field.name)
                                 options.indexOf(option).takeIf { it != -1 }?.let {
                                     newValue(Pair(true, ""), values[it])
                                 }
@@ -93,7 +94,7 @@ class ComposeDropDownField : ComposeField() {
                 Icon(
                     imageVector = Icons.Default.ArrowDropDown,
                     contentDescription = null,
-                    modifier= Modifier
+                    modifier = Modifier
                         .align(Alignment.CenterEnd)
                         .padding(10.dp)
                 )
@@ -101,11 +102,11 @@ class ComposeDropDownField : ComposeField() {
                     color = ComposeFieldTheme.hintColor,
                     text = state.field.label,
                     fontSize = MaterialTheme.typography.labelSmall.fontSize,
-                    modifier=Modifier.padding(10.dp)
+                    modifier = Modifier.padding(10.dp)
                 )
                 if (expanded && options.size > 6) {
                     DropdownDialog(options = options, values = values, onOptionSelected = {
-                        focusCallback?.invoke(true,state.field.name)
+                        focusCallback?.invoke(true, state.field.name)
                         newValue(Pair(true, ""), it)
                         expanded = false
                     })
@@ -124,21 +125,22 @@ class ComposeDropDownField : ComposeField() {
 
 
     @Composable
-    private fun DropDownField(onClick:()->Unit,content:@Composable () ->Unit){
+    private fun DropDownField(onClick: () -> Unit, content: @Composable () -> Unit) {
         val focusRequester = remember { FocusRequester() }
         var isFocused by remember { mutableStateOf(false) }
-        when(ComposeFieldTheme.fieldStyle){
+        when (ComposeFieldTheme.fieldStyle) {
             ComposeFieldTheme.FieldStyle.OUTLINE -> TextButton(
                 modifier = Modifier
                     .padding(top = 5.dp)
-                    .width(OutlinedTextFieldDefaults.MinWidth)
+                    .fillMaxWidth()
                     .height(OutlinedTextFieldDefaults.MinHeight),
                 border = BorderStroke(1.dp, ComposeFieldTheme.unfocusedBorderColor),
                 shape = OutlinedTextFieldDefaults.shape,
                 onClick = { onClick() },
-                content = {content.invoke()}
+                content = { content.invoke() }
             )
-            ComposeFieldTheme.FieldStyle.CONTAINER ,
+
+            ComposeFieldTheme.FieldStyle.CONTAINER,
             ComposeFieldTheme.FieldStyle.NORMAL -> TextButton(
                 shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.buttonColors(
@@ -146,7 +148,7 @@ class ComposeDropDownField : ComposeField() {
                 ),
                 modifier = Modifier
                     .padding(5.dp)
-                    .width(TextFieldDefaults.MinWidth)
+                    .fillMaxWidth()
                     .height(TextFieldDefaults.MinHeight)
                     .focusRequester(focusRequester)
                     .onFocusChanged { s ->
@@ -162,7 +164,7 @@ class ComposeDropDownField : ComposeField() {
                         shape = RoundedCornerShape(8.dp)
                     ),
                 onClick = { onClick() },
-                content = {content.invoke()}
+                content = { content.invoke() }
             )
         }
     }
@@ -187,9 +189,11 @@ class ComposeDropDownField : ComposeField() {
                         label = { Text("Search") },
                         modifier = Modifier.fillMaxWidth()
                     )
-                    LazyColumn(modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(max = 200.dp)) {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(max = 200.dp)
+                    ) {
                         items(filteredOptions) { option ->
                             TextButton(onClick = {
                                 options.indexOf(option).takeIf { it != -1 }?.let {

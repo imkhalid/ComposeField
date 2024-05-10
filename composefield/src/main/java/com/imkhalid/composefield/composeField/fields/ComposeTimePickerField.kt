@@ -97,11 +97,11 @@ class ComposeTimePickerField : ComposeField(){
             }
         }
 
-        Column {
+        Column(modifier=modifier) {
             Spacer(modifier = Modifier.padding(top=8.dp))
             Box {
-                DatePickerField(
-                    modifier = modifier,
+                TimePickerField(
+                    modifier = Modifier.fillMaxWidth(),
                     onClick = {showDialog.value=true}
                 ) {
                     Text(
@@ -109,7 +109,7 @@ class ComposeTimePickerField : ComposeField(){
                             .fillMaxWidth()
                             .padding(start = 5.dp),
                         color = ComposeFieldTheme.textColor,
-                        text = dropDownText
+                        text = dropDownText,
                     )
                 }
                 Text(
@@ -130,7 +130,7 @@ class ComposeTimePickerField : ComposeField(){
     }
 
     @Composable
-    private fun DatePickerField(
+    private fun TimePickerField(
         modifier: Modifier,
         onClick:()->Unit,
         content:@Composable ()->Unit

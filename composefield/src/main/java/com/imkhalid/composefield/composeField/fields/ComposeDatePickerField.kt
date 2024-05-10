@@ -106,18 +106,18 @@ class ComposeDatePickerField :ComposeField(){
             }
         }
 
-        Column {
+        Column(modifier=modifier) {
             Spacer(modifier = Modifier.padding(top=8.dp))
-            Box {
+            Box (modifier=Modifier.fillMaxWidth()){
                 DatePickerField(
-                    modifier = modifier,
-                    onClick = {showDialog.value=true}
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {showDialog.value=true},
                 ) {
                     Text(
                         modifier = Modifier.fillMaxWidth()
                             .padding(start = 5.dp),
                         color = ComposeFieldTheme.textColor,
-                        text = dropDownText
+                        text = dropDownText,
                     )
                 }
                 Text(
@@ -145,10 +145,9 @@ class ComposeDatePickerField :ComposeField(){
     ){
         when(ComposeFieldTheme.fieldStyle){
             ComposeFieldTheme.FieldStyle.OUTLINE -> TextButton(
-                modifier = Modifier
+                modifier = modifier
                     .width(OutlinedTextFieldDefaults.MinWidth)
-                    .height(OutlinedTextFieldDefaults.MinHeight)
-                    .then(modifier),
+                    .height(OutlinedTextFieldDefaults.MinHeight),
                 border = BorderStroke(0.5.dp, MaterialTheme.colorScheme.onBackground),
                 shape = OutlinedTextFieldDefaults.shape,
                 onClick = {onClick.invoke()},
@@ -160,11 +159,10 @@ class ComposeDatePickerField :ComposeField(){
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.White
                 ),
-                modifier = Modifier
+                modifier = modifier
                     .padding(5.dp)
                     .width(TextFieldDefaults.MinWidth)
                     .height(TextFieldDefaults.MinHeight)
-                    .then(modifier)
                     .border(
                         width = 0.dp,
                         color = Color.Transparent,
