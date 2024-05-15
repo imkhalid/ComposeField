@@ -29,17 +29,24 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.imkhalid.composefield.composeField.ComposeFieldState
+import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardType
 import com.imkhalid.composefield.theme.ComposeFieldTheme
 import com.imkhalid.composefieldproject.composeField.fields.ComposeField
+import com.ozonedDigital.jhk.ui.common.responsiveTextSize
 import io.michaelrocks.libphonenumber.android.PhoneNumberUtil
 
 
-class ComposeMobileField:ComposeField() {
+class ComposeMobileField : ComposeField() {
     companion object {
         var phoneNumberUtil: PhoneNumberUtil? = null
         var preFix: String = "+92"
@@ -110,9 +117,13 @@ class ComposeMobileField:ComposeField() {
                 },
                 prefix = {
                     if (state.field.keyboardType == ComposeKeyboardType.MOBILE_NO)
-                        Text(text = preFix, modifier = Modifier.clickable {
-                            toggleDropdown()
-                        })
+                        Text(
+                            text = preFix,
+                            modifier = Modifier.clickable {
+                                toggleDropdown()
+                            },
+                            fontSize = responsiveTextSize(size = 15).sp
+                        )
                     else null
                 },
                 keyboardOptions = KeyboardOptions(
@@ -124,11 +135,15 @@ class ComposeMobileField:ComposeField() {
                 label = { Text(state.field.label) },
                 minLines = 1,
                 maxLines = 1,
+                textStyle = TextStyle.Default.copy(
+                    fontSize = responsiveTextSize(size = 15).sp
+                ),
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color.White,
                     unfocusedContainerColor = Color.White,
                     errorLabelColor = ComposeFieldTheme.errorColor,
-                    focusedLabelColor = ComposeFieldTheme.hintColor,
+                    focusedLabelColor = ComposeFieldTheme.focusedBorderColor,
+                    unfocusedPlaceholderColor = ComposeFieldTheme.hintColor,
                     focusedTextColor = ComposeFieldTheme.textColor,
                     unfocusedTextColor = ComposeFieldTheme.textColor,
                     focusedSupportingTextColor = ComposeFieldTheme.infoColor,
@@ -144,7 +159,7 @@ class ComposeMobileField:ComposeField() {
                         shape = RoundedCornerShape(8.dp)
                     ),
                 trailingIcon = {
-                    TrailingIcon(state.field, passwordVisible = false){
+                    TrailingIcon(state.field, passwordVisible = false) {
 //                        passwordVisible = passwordVisible.not()
                     }
                 }
@@ -197,9 +212,13 @@ class ComposeMobileField:ComposeField() {
                 },
                 prefix = {
                     if (state.field.keyboardType == ComposeKeyboardType.MOBILE_NO)
-                        Text(text = preFix, modifier = Modifier.clickable {
-                            toggleDropdown()
-                        })
+                        Text(
+                            text = preFix,
+                            modifier = Modifier.clickable {
+                                toggleDropdown()
+                            },
+                            fontSize = responsiveTextSize(size = 15).sp
+                        )
                     else null
                 },
                 keyboardOptions = KeyboardOptions(
@@ -208,14 +227,42 @@ class ComposeMobileField:ComposeField() {
                     imeAction = ImeAction.Next
                 ),
                 isError = state.hasError,
-                label = { Text(state.field.label) },
+                label = {
+                    val label = buildAnnotatedString {
+                        withStyle(
+                            style = SpanStyle(
+                                fontSize = responsiveTextSize(size = 13).sp
+                            )
+                        ) {
+                            append(state.field.label)
+                        }
+                        if (state.field.required== ComposeFieldYesNo.YES){
+                            withStyle(
+                                style = SpanStyle(
+                                    fontSize = responsiveTextSize(size = 13).sp,
+                                    color = Color.Red
+                                )
+                            ) {
+                                append("*")
+                            }
+                        }
+                    }
+                    Text(
+                        label,
+                        fontSize = responsiveTextSize(size = 13).sp
+                    )
+                },
+                textStyle = TextStyle.Default.copy(
+                    fontSize = responsiveTextSize(size = 15).sp
+                ),
                 minLines = 1,
                 maxLines = 1,
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color.White,
                     unfocusedContainerColor = Color.White,
                     errorLabelColor = ComposeFieldTheme.errorColor,
-                    focusedLabelColor = ComposeFieldTheme.hintColor,
+                    focusedLabelColor = ComposeFieldTheme.focusedBorderColor,
+                    unfocusedPlaceholderColor = ComposeFieldTheme.hintColor,
                     focusedTextColor = ComposeFieldTheme.textColor,
                     unfocusedTextColor = ComposeFieldTheme.textColor,
                     focusedSupportingTextColor = ComposeFieldTheme.infoColor,
@@ -240,7 +287,7 @@ class ComposeMobileField:ComposeField() {
                         shape = RoundedCornerShape(8.dp)
                     ),
                 trailingIcon = {
-                    TrailingIcon(state.field, passwordVisible = false){
+                    TrailingIcon(state.field, passwordVisible = false) {
 //                        passwordVisible = passwordVisible.not()
                     }
                 }
@@ -309,15 +356,16 @@ class ComposeMobileField:ComposeField() {
                     unfocusedBorderColor = ComposeFieldTheme.unfocusedBorderColor,
                     errorBorderColor = ComposeFieldTheme.errorColor,
                     errorLabelColor = ComposeFieldTheme.errorColor,
-                    focusedLabelColor = ComposeFieldTheme.hintColor,
+                    focusedLabelColor = ComposeFieldTheme.focusedBorderColor,
+                    unfocusedPlaceholderColor = ComposeFieldTheme.hintColor,
                     focusedTextColor = ComposeFieldTheme.textColor,
                     unfocusedTextColor = ComposeFieldTheme.textColor,
                     focusedSupportingTextColor = ComposeFieldTheme.infoColor
                 ),
-                modifier= Modifier
+                modifier = Modifier
                     .then(modifier),
                 trailingIcon = {
-                    TrailingIcon(field = state.field, passwordVisible = false){
+                    TrailingIcon(field = state.field, passwordVisible = false) {
 //                        passwordVisible = passwordVisible.not()
                     }
                 }

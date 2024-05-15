@@ -34,9 +34,15 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.imkhalid.composefield.composeField.ComposeFieldState
+import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
 import com.imkhalid.composefield.theme.ComposeFieldTheme
+import com.ozonedDigital.jhk.ui.common.responsiveTextSize
 
 class ComposeRadioGroupField {
 
@@ -44,15 +50,34 @@ class ComposeRadioGroupField {
     fun Build(state: ComposeFieldState, newValue: (Pair<Boolean, String>, String) -> Unit,modifier: Modifier= Modifier) {
         val twoOption = state.field.defaultValues.size == 2 && state.field.defaultValues.all { x -> x.text.length <= 10 }
         RadioGroupField(modifier=modifier) {
+            val label = buildAnnotatedString {
+                withStyle(
+                    style = SpanStyle(
+                        fontSize = responsiveTextSize(size = 13).sp,
+                        color = ComposeFieldTheme.focusedBorderColor,
+                    )
+                ) {
+                    append(state.field.label)
+                }
+                if (state.field.required== ComposeFieldYesNo.YES){
+                    withStyle(
+                        style = SpanStyle(
+                            fontSize = responsiveTextSize(size = 13).sp,
+                            color = Color.Red
+                        )
+                    ) {
+                        append("*")
+                    }
+                }
+            }
             Text(
-                text = state.field.label,
-                fontSize = MaterialTheme.typography.titleMedium.fontSize,
-                color = MaterialTheme.colorScheme.primary
+                text = label,
+                modifier=Modifier.padding(start = 20.dp, end = 20.dp, top = 10.dp)
             )
             Spacer(modifier = Modifier.padding(top = 5.dp))
             if (twoOption) {
                 Row(modifier = Modifier
-                    .padding(start = 10.dp)) {
+                    .padding(start = 20.dp)) {
                     state.field.defaultValues.forEach {
 
                         RoundedCornerRadiobox(
@@ -63,25 +88,6 @@ class ComposeRadioGroupField {
                                 newValue(Pair(true, ""), it.id)
                             }
                         )
-//                        Row(
-//                            verticalAlignment = Alignment.CenterVertically,
-//                            horizontalArrangement = Arrangement.Center,
-//                            modifier = Modifier
-//                                .clickable {
-//                                    newValue(Pair(true,""),it.id)
-//                                }) {
-//                            RadioButton(
-//                                modifier = Modifier.padding(8.dp),
-//                                selected = state.text==it.id,
-//                                onClick = null
-//                            )
-//                            Text(
-//                                text = it.text,
-//                                fontSize = MaterialTheme.typography.titleMedium.fontSize,
-//                                color = MaterialTheme.colorScheme.onBackground
-//                            )
-//
-//                        }
                     }
                 }
             }
@@ -101,7 +107,7 @@ class ComposeRadioGroupField {
                         )
                         Text(
                             text = it.text,
-                            fontSize = MaterialTheme.typography.titleMedium.fontSize,
+                            fontSize = responsiveTextSize(size = 15).sp,
                             color = MaterialTheme.colorScheme.onBackground
                         )
 
@@ -119,7 +125,7 @@ private fun RadioGroupField(
 ){
     when(ComposeFieldTheme.fieldStyle){
         ComposeFieldTheme.FieldStyle.OUTLINE -> Column(
-            Modifier.width(OutlinedTextFieldDefaults.MinWidth).then(modifier),
+            modifier.width(OutlinedTextFieldDefaults.MinWidth),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start,
             content={content.invoke()}
@@ -128,10 +134,9 @@ private fun RadioGroupField(
         ComposeFieldTheme.FieldStyle.NORMAL -> Column(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start,
-            modifier = Modifier
+            modifier = modifier
                 .padding(vertical = 5.dp)
                 .width(OutlinedTextFieldDefaults.MinWidth)
-                .then(modifier)
                 .border(
                     width = 0.dp,
                     color = Color.Transparent,
@@ -204,6 +209,7 @@ fun RoundedCornerRadiobox(
         Text(
             modifier = Modifier.padding(start = 8.dp, end = 8.dp),
             text = label,
+            fontSize = responsiveTextSize(size = 15).sp
         )
     }
 }

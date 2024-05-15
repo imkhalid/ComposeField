@@ -37,20 +37,28 @@ import androidx.compose.ui.platform.LocalTextToolbar
 import androidx.compose.ui.platform.TextToolbar
 import androidx.compose.ui.platform.TextToolbarStatus
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.imkhalid.composefield.R
 import com.imkhalid.composefield.composeField.ComposeFieldState
 import com.imkhalid.composefield.composeField.FieldMaskTransformation
 import com.imkhalid.composefield.composeField.Patterns
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldType
+import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardType
 import com.imkhalid.composefield.composeField.model.ComposeFieldModule
 import com.imkhalid.composefield.theme.ComposeFieldTheme
+import com.ozonedDigital.jhk.ui.common.responsiveTextSize
 import io.michaelrocks.libphonenumber.android.CountryCodeToRegionCodeMap
 import java.util.regex.Pattern
 
@@ -63,7 +71,11 @@ class ComposeTextField : ComposeField() {
 
 
     @Composable
-    fun Build(state: ComposeFieldState, newValue: (Pair<Boolean, String>, String) -> Unit,modifier: Modifier=Modifier,) {
+    fun Build(
+        state: ComposeFieldState,
+        newValue: (Pair<Boolean, String>, String) -> Unit,
+        modifier: Modifier = Modifier,
+    ) {
         val toolbar = if (state.field.keyboardType == ComposeKeyboardType.SENSITIVE)
             LocalTextToolbar provides EmptyTextToolbar
         else LocalTextToolbar provides LocalTextToolbar.current
@@ -72,19 +84,19 @@ class ComposeTextField : ComposeField() {
             CompositionLocalProvider(toolbar) {
                 when (ComposeFieldTheme.fieldStyle) {
                     ComposeFieldTheme.FieldStyle.OUTLINE -> OutlineField(
-                        modifier=modifier,
+                        modifier = modifier,
                         state = state,
                         newValue = newValue
                     )
 
                     ComposeFieldTheme.FieldStyle.CONTAINER -> ContainerField(
-                        modifier=modifier,
+                        modifier = modifier,
                         state = state,
                         newValue = newValue
                     )
 
                     ComposeFieldTheme.FieldStyle.NORMAL -> NormalField(
-                        modifier=modifier,
+                        modifier = modifier,
                         state = state,
                         newValue = newValue
                     )
@@ -96,13 +108,14 @@ class ComposeTextField : ComposeField() {
 
     @Composable
     private fun NormalField(
-        modifier:Modifier=Modifier,
+        modifier: Modifier = Modifier,
         state: ComposeFieldState,
         newValue: (Pair<Boolean, String>, String) -> Unit
     ) {
         val mask = getFieldMask(state.field)
         var passwordVisible by remember { mutableStateOf(false) }
-        val visualTransformation = getVisualTransformation(mask, state.field.keyboardType,passwordVisible)
+        val visualTransformation =
+            getVisualTransformation(mask, state.field.keyboardType, passwordVisible)
 
         TextField(
             value = state.text,
@@ -154,7 +167,7 @@ class ComposeTextField : ComposeField() {
                     shape = RoundedCornerShape(8.dp)
                 ),
             trailingIcon = {
-                TrailingIcon(state.field, passwordVisible = passwordVisible){
+                TrailingIcon(state.field, passwordVisible = passwordVisible) {
                     passwordVisible = passwordVisible.not()
                 }
             }
@@ -171,7 +184,7 @@ class ComposeTextField : ComposeField() {
 
     @Composable
     private fun ContainerField(
-        modifier:Modifier=Modifier,
+        modifier: Modifier = Modifier,
         state: ComposeFieldState,
         newValue: (Pair<Boolean, String>, String) -> Unit
     ) {
@@ -179,7 +192,8 @@ class ComposeTextField : ComposeField() {
         val focusRequester = remember { FocusRequester() }
         var isFocused by remember { mutableStateOf(false) }
         var passwordVisible by remember { mutableStateOf(false) }
-        val visualTransformation = getVisualTransformation(mask, state.field.keyboardType,passwordVisible)
+        val visualTransformation =
+            getVisualTransformation(mask, state.field.keyboardType, passwordVisible)
 
 
         TextField(
@@ -208,7 +222,15 @@ class ComposeTextField : ComposeField() {
             },
             keyboardOptions = getKeyboardOptions(state.field),
             isError = state.hasError,
-            label = { Text(state.field.label) },
+            label = {
+                Text(
+                    state.field.label,
+                    fontSize = responsiveTextSize(size = 13).sp
+                )
+            },
+            textStyle = TextStyle.Default.copy(
+                fontSize = responsiveTextSize(size = 15).sp
+            ),
             minLines = getMinLine(state.field.type),
             maxLines = getMaxLine(state.field.type),
             visualTransformation = visualTransformation,
@@ -216,7 +238,8 @@ class ComposeTextField : ComposeField() {
                 focusedContainerColor = Color.White,
                 unfocusedContainerColor = Color.White,
                 errorLabelColor = ComposeFieldTheme.errorColor,
-                focusedLabelColor = ComposeFieldTheme.hintColor,
+                focusedLabelColor = ComposeFieldTheme.focusedBorderColor,
+                unfocusedPlaceholderColor = ComposeFieldTheme.hintColor,
                 focusedTextColor = ComposeFieldTheme.textColor,
                 unfocusedTextColor = ComposeFieldTheme.textColor,
                 focusedSupportingTextColor = ComposeFieldTheme.infoColor,
@@ -241,7 +264,7 @@ class ComposeTextField : ComposeField() {
                     shape = RoundedCornerShape(8.dp)
                 ),
             trailingIcon = {
-                TrailingIcon(state.field, passwordVisible = passwordVisible){
+                TrailingIcon(state.field, passwordVisible = passwordVisible) {
                     passwordVisible = passwordVisible.not()
                 }
             }
@@ -259,13 +282,14 @@ class ComposeTextField : ComposeField() {
 
     @Composable
     private fun OutlineField(
-        modifier:Modifier=Modifier,
+        modifier: Modifier = Modifier,
         state: ComposeFieldState,
         newValue: (Pair<Boolean, String>, String) -> Unit
     ) {
         val mask = getFieldMask(state.field)
         var passwordVisible by remember { mutableStateOf(false) }
-        val visualTransformation = getVisualTransformation(mask, state.field.keyboardType,passwordVisible)
+        val visualTransformation =
+            getVisualTransformation(mask, state.field.keyboardType, passwordVisible)
 
         OutlinedTextField(
             value = state.text,
@@ -293,7 +317,34 @@ class ComposeTextField : ComposeField() {
             },
             keyboardOptions = getKeyboardOptions(state.field),
             isError = state.hasError,
-            label = { Text(state.field.label) },
+            label = {
+                val label =buildAnnotatedString {
+                    withStyle(
+                        style = SpanStyle(
+                            fontSize = responsiveTextSize(size = 13).sp
+                        )
+                    ) {
+                        append(state.field.label)
+                    }
+                    if (state.field.required==ComposeFieldYesNo.YES){
+                        withStyle(
+                            style = SpanStyle(
+                                fontSize = responsiveTextSize(size = 13).sp,
+                                color = Color.Red
+                            )
+                        ) {
+                            append("*")
+                        }
+                    }
+                }
+                Text(
+                    label,
+                    fontSize = responsiveTextSize(size = 13).sp
+                )
+            },
+            textStyle = TextStyle.Default.copy(
+                fontSize = responsiveTextSize(size = 16).sp
+            ),
             minLines = getMinLine(state.field.type),
             maxLines = getMaxLine(state.field.type),
             visualTransformation = visualTransformation,
@@ -302,15 +353,16 @@ class ComposeTextField : ComposeField() {
                 unfocusedBorderColor = ComposeFieldTheme.unfocusedBorderColor,
                 errorBorderColor = ComposeFieldTheme.errorColor,
                 errorLabelColor = ComposeFieldTheme.errorColor,
-                focusedLabelColor = ComposeFieldTheme.hintColor,
+                focusedLabelColor = ComposeFieldTheme.focusedBorderColor,
+                unfocusedPlaceholderColor = ComposeFieldTheme.hintColor,
                 focusedTextColor = ComposeFieldTheme.textColor,
                 unfocusedTextColor = ComposeFieldTheme.textColor,
-                focusedSupportingTextColor = ComposeFieldTheme.infoColor
+                focusedSupportingTextColor = ComposeFieldTheme.infoColor,
             ),
-            modifier= Modifier
+            modifier = Modifier
                 .then(modifier),
             trailingIcon = {
-                TrailingIcon(field = state.field, passwordVisible = passwordVisible){
+                TrailingIcon(field = state.field, passwordVisible = passwordVisible) {
                     passwordVisible = passwordVisible.not()
                 }
             }
@@ -324,8 +376,6 @@ class ComposeTextField : ComposeField() {
             )
         }
     }
-
-
 
 
     private fun openCountryPicker(any: Any) {
@@ -394,7 +444,7 @@ class ComposeTextField : ComposeField() {
             if (passwordVisible)
                 VisualTransformation.None
             else
-                PasswordVisualTransformation(mask='●')
+                PasswordVisualTransformation(mask = '●')
         else
             VisualTransformation.None
     }
@@ -439,10 +489,25 @@ class ComposeTextField : ComposeField() {
                         bool = false
                         message = "Please enter valid Email Address"
                     }
+                } else if (state.field.pattern.isNotEmpty() && Pattern.matches(
+                        state.field.pattern,
+                        valueToBeUsed
+                    ).not()
+                ) {
+                    bool = false
+                    message = state.field.patternMessage
                 }
             }
 
             else -> {
+                if (state.field.pattern.isNotEmpty() && Pattern.matches(
+                        state.field.pattern,
+                        valueToBeUsed
+                    ).not()
+                ) {
+                    bool = false
+                    message = state.field.patternMessage
+                }
 
             }
         }

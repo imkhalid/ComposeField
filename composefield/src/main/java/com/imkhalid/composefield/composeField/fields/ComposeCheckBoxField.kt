@@ -12,6 +12,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,7 +21,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
@@ -30,11 +30,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ElevatedFilterChip
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -57,10 +53,16 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.imkhalid.composefield.composeField.ComposeFieldState
+import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
 import com.imkhalid.composefield.theme.ComposeFieldTheme
+import com.ozonedDigital.jhk.ui.common.responsiveTextSize
 
 class ComposeCheckBoxField {
 
@@ -83,51 +85,74 @@ class ComposeCheckBoxField {
         val values = state.field.defaultValues.map { it.id }
         // Create ScrollState to own it and be able to control scroll behaviour of scrollable Row below
         val scrollState = rememberScrollState()
+
+        val label = buildAnnotatedString {
+            withStyle(
+                style = SpanStyle(
+                    fontSize = responsiveTextSize(size = 13).sp,
+                    color = ComposeFieldTheme.hintColor,
+                )
+            ) {
+                append(state.field.label)
+            }
+            if (state.field.required== ComposeFieldYesNo.YES){
+                withStyle(
+                    style = SpanStyle(
+                        fontSize = responsiveTextSize(size = 13).sp,
+                        color = Color.Red
+                    )
+                ) {
+                    append("*")
+                }
+            }
+        }
+
         Column(
-            modifier=modifier,
+            modifier = modifier,
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
             if (state.field.defaultValues.size > 3) {
-                Box(Modifier.fillMaxWidth()) {
-                    CheckboxField(
-                        onClick = toggleDropdown) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .horizontalScroll(scrollState),
-                        ) {
-                            if (selectedvalues.isNotEmpty()) {
-                                for (element in selectedvalues) {
-                                    ElevatedFilterChip(
-                                        modifier = Modifier.height(20.dp),
-                                        selected = false,
-                                        onClick = toggleDropdown,
-                                        colors = FilterChipDefaults.elevatedFilterChipColors(
-                                            containerColor = ComposeFieldTheme.unfocusedBorderColor,
-                                            selectedContainerColor = ComposeFieldTheme.unfocusedBorderColor,
-                                            disabledSelectedContainerColor = ComposeFieldTheme.unfocusedBorderColor,
-                                            selectedLabelColor = ComposeFieldTheme.textColor,
-                                        ),
-                                        label = {
-                                            Text(
-                                                text = element,
-                                                fontSize = 10.sp,
-                                                color = ComposeFieldTheme.textColor
-                                            )
-                                        })
-                                    Spacer(modifier = Modifier.padding(3.dp))
-                                }
-                            } else {
-                                Text(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    text = state.field.label,
-                                    color = ComposeFieldTheme.textColor
-                                )
+                CheckboxField(
+                    onClick = toggleDropdown
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.CenterStart)
+                            .horizontalScroll(scrollState)
+                            .padding(start = 20.dp, top = 7.dp),
+                    ) {
+                        if (selectedvalues.isNotEmpty()) {
+                            for (element in selectedvalues) {
+                                ElevatedFilterChip(
+                                    modifier = Modifier.height(20.dp),
+                                    selected = false,
+                                    onClick = toggleDropdown,
+                                    colors = FilterChipDefaults.elevatedFilterChipColors(
+                                        containerColor = ComposeFieldTheme.unfocusedBorderColor,
+                                        selectedContainerColor = ComposeFieldTheme.unfocusedBorderColor,
+                                        disabledSelectedContainerColor = ComposeFieldTheme.unfocusedBorderColor,
+                                        selectedLabelColor = ComposeFieldTheme.textColor,
+                                    ),
+                                    label = {
+                                        Text(
+                                            text = element,
+                                            fontSize = 10.sp,
+                                            fontWeight = FontWeight.Medium,
+                                            color = ComposeFieldTheme.textColor
+                                        )
+                                    })
+                                Spacer(modifier = Modifier.padding(3.dp))
                             }
+                        } else {
+                            Text(
+                                modifier = Modifier.fillMaxWidth(),
+                                text = state.field.label,
+                                color = ComposeFieldTheme.textColor
+                            )
                         }
                     }
-
                     Icon(
                         imageVector = Icons.Default.ArrowDropDown,
                         contentDescription = null,
@@ -136,10 +161,8 @@ class ComposeCheckBoxField {
                             .padding(10.dp)
                     )
                     Text(
-                        text = state.field.label,
-                        color = ComposeFieldTheme.hintColor,
-                        fontSize = MaterialTheme.typography.labelSmall.fontSize,
-                        modifier=Modifier.padding(start = 20.dp, top = 10.dp)
+                        text = label,
+                        modifier = Modifier.padding(start = 20.dp, top = 7.dp)
                     )
                     if (expanded && options.size > 3) {
                         CheckboxDialog(
@@ -161,7 +184,9 @@ class ComposeCheckBoxField {
                 }
             } else {
                 Text(
-                    modifier = Modifier.padding(top = 7.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 7.dp),
                     text = state.field.label,
                     fontSize = MaterialTheme.typography.titleMedium.fontSize,
                     color = ComposeFieldTheme.hintColor
@@ -188,27 +213,27 @@ class ComposeCheckBoxField {
 
 
     @Composable
-    private fun CheckboxField(modifier: Modifier=Modifier,onClick:()->Unit,content:@Composable () ->Unit){
+    private fun CheckboxField(onClick: () -> Unit, content: @Composable BoxScope.() -> Unit) {
         val focusRequester = remember { FocusRequester() }
         var isFocused by remember { mutableStateOf(false) }
-        when(ComposeFieldTheme.fieldStyle){
-            ComposeFieldTheme.FieldStyle.OUTLINE -> TextButton(
-                modifier = modifier
+        when (ComposeFieldTheme.fieldStyle) {
+            ComposeFieldTheme.FieldStyle.OUTLINE -> Box(
+                modifier = Modifier
+                    .border(
+                        border = BorderStroke(1.dp, ComposeFieldTheme.unfocusedBorderColor),
+                        shape = OutlinedTextFieldDefaults.shape
+                    )
                     .padding(top = 5.dp)
                     .fillMaxWidth()
-                    .height(OutlinedTextFieldDefaults.MinHeight),
-                border = BorderStroke(1.dp, ComposeFieldTheme.unfocusedBorderColor),
-                shape = OutlinedTextFieldDefaults.shape,
-                onClick = { onClick() },
-                content = {content.invoke()}
-            )
-            ComposeFieldTheme.FieldStyle.CONTAINER ,
-            ComposeFieldTheme.FieldStyle.NORMAL -> TextButton(
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.White
-                ),
-                modifier = modifier
+                    .height(OutlinedTextFieldDefaults.MinHeight)
+                    .clickable { onClick() }
+            ) {
+                content.invoke(this)
+            }
+
+            ComposeFieldTheme.FieldStyle.CONTAINER,
+            ComposeFieldTheme.FieldStyle.NORMAL -> Box(
+                modifier = Modifier
                     .padding(5.dp)
                     .fillMaxWidth()
                     .height(TextFieldDefaults.MinHeight)
@@ -216,18 +241,20 @@ class ComposeCheckBoxField {
                     .onFocusChanged { s ->
                         isFocused = s.isFocused
                     }
+                    .shadow(
+                        elevation = 5.dp,
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    .background(color = Color.White, shape = RoundedCornerShape(8.dp))
                     .border(
                         width = if (isFocused) 1.dp else 0.dp,
                         color = if (isFocused) ComposeFieldTheme.focusedBorderColor else Color.Transparent,
                         shape = RoundedCornerShape(8.dp)
                     )
-                    .shadow(
-                        elevation = 5.dp,
-                        shape = RoundedCornerShape(8.dp)
-                    ),
-                onClick = { onClick() },
-                content = {content.invoke()}
-            )
+                    .clickable { onClick() },
+            ) {
+                content.invoke(this)
+            }
         }
     }
 

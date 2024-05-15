@@ -3,6 +3,7 @@ package com.imkhalid.composefield.composeField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldType
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardType
 import com.imkhalid.composefield.composeField.fields.ComposeCheckBoxField
@@ -35,14 +36,16 @@ class ComposeFieldBuilder {
 
 
     @Composable
-    fun build(){
+    fun build(modifier: Modifier=Modifier){
         val state by fieldState.collectAsState()
         when(state.field.type){
             ComposeFieldType.TEXT_BOX ,
             ComposeFieldType.TEXT_AREA -> {
                 if (state.field.keyboardType== ComposeKeyboardType.MOBILE_NO){
                     ComposeMobileField()
-                        .Build(state,newValue ={error,newVal->
+                        .Build(
+                            state,
+                            newValue ={error,newVal->
                             _fieldState.update {
                                 it.copy(
                                     text = newVal,
@@ -50,11 +53,15 @@ class ComposeFieldBuilder {
                                     errorMessage = error.second
                                 )
                             }
-                        })
+                        },
+                            modifier = modifier
+                        )
                 }else {
                     ComposeTextField()
                         .setFocusCallback(callback)
-                        .Build(state, newValue = { error, newVal ->
+                        .Build(
+                            state,
+                            newValue = { error, newVal ->
                             _fieldState.update {
                                 it.copy(
                                     text = newVal,
@@ -62,11 +69,15 @@ class ComposeFieldBuilder {
                                     errorMessage = error.second
                                 )
                             }
-                        })
+                        },
+                            modifier = modifier
+                        )
                 }
             }
             ComposeFieldType.DROP_DOWN -> ComposeDropDownField()
-                .Build(state,newValue ={error,newVal->
+                .Build(
+                    state,
+                    newValue ={error,newVal->
                     _fieldState.update {
                         it.copy(
                             text = newVal,
@@ -74,9 +85,13 @@ class ComposeFieldBuilder {
                             errorMessage = error.second
                         )
                     }
-                })
+                },
+                    modifier = modifier
+                )
             ComposeFieldType.DATE_PICKER -> ComposeDatePickerField()
-                .Build(state,newValue ={error,newVal->
+                .Build(
+                    state,
+                    newValue ={error,newVal->
                     _fieldState.update {
                         it.copy(
                             text = newVal,
@@ -84,9 +99,13 @@ class ComposeFieldBuilder {
                             errorMessage = error.second
                         )
                     }
-                })
+                },
+                    modifier = modifier
+                )
             ComposeFieldType.TIME_PICKER->ComposeTimePickerField()
-                .Build(state,newValue ={error,newVal->
+                .Build(
+                    state,
+                    newValue ={error,newVal->
                     _fieldState.update {
                         it.copy(
                             text = newVal,
@@ -94,11 +113,15 @@ class ComposeFieldBuilder {
                             errorMessage = error.second
                         )
                     }
-                })
+                },
+                    modifier = modifier
+                )
             ComposeFieldType.DATE_TIME_PICKER -> TODO()
             ComposeFieldType.SWITCH -> TODO()
             ComposeFieldType.CHECK_BOX -> ComposeCheckBoxField()
-                .Build(state,newValue ={error,newVal->
+                .Build(
+                    state,
+                    newValue ={error,newVal->
                     _fieldState.update {
                         it.copy(
                             text = newVal,
@@ -106,9 +129,12 @@ class ComposeFieldBuilder {
                             errorMessage = error.second
                         )
                     }
-                })
+                },
+                    modifier = modifier
+                )
             ComposeFieldType.RADIO_BUTTON -> ComposeRadioGroupField()
-                .Build(state,newValue ={error,newVal->
+                .Build(
+                    state,newValue ={error,newVal->
                     _fieldState.update {
                         it.copy(
                             text = newVal,
@@ -116,18 +142,9 @@ class ComposeFieldBuilder {
                             errorMessage = error.second
                         )
                     }
-                })
+                },
+                    modifier = modifier)
         }
-        ComposeDatePickerField()
-            .Build(state,newValue ={error,newVal->
-                _fieldState.update {
-                    it.copy(
-                        text = newVal,
-                        hasError = error.first.not(),
-                        errorMessage = error.second
-                    )
-                }
-            })
     }
 
 

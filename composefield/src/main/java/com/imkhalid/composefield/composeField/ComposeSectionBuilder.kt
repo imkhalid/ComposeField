@@ -17,6 +17,7 @@ import androidx.navigation.NavigatorProvider
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
 import com.imkhalid.composefield.composeField.model.ComposeSectionModule
 import com.imkhalid.composefield.composeField.model.ComposeFieldModule
 import com.imkhalid.composefield.theme.ComposeFieldTheme
@@ -75,7 +76,7 @@ class ComposeSectionBuilder(preStateList:ArrayList<MutableStateFlow<ComposeField
     }
 
     @Composable
-    fun build()=apply {
+    fun build(modifier: Modifier =Modifier)=apply {
         LazyColumn(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
@@ -84,7 +85,7 @@ class ComposeSectionBuilder(preStateList:ArrayList<MutableStateFlow<ComposeField
                 ComposeFieldBuilder()
                     .setFieldModule(list[it])
                     .setFocusCallback { b, s ->  }
-                    .build()
+                    .build(modifier =modifier)
             }
         }
     }
@@ -158,5 +159,19 @@ class ComposeSections(){
         }else{
             lastPage.invoke()
         }
+    }
+}
+
+fun ArrayList<MutableStateFlow<ComposeFieldState>>.validateSection():Boolean{
+    return this.all { x->
+        val state= x.value
+        (
+                state.field.required== ComposeFieldYesNo.YES &&
+                        (state.text.isNotEmpty() &&
+                                state.hasError.not())
+                ) ||
+                (
+                        state.field.required == ComposeFieldYesNo.NO &&
+                                state.hasError.not())
     }
 }

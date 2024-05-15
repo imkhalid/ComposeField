@@ -1,9 +1,14 @@
 package com.imkhalid.composefield.composeField.fields
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -37,10 +42,17 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.imkhalid.composefield.composeField.ComposeFieldState
+import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
 import com.imkhalid.composefield.theme.ComposeFieldTheme
 import com.imkhalid.composefieldproject.composeField.fields.ComposeField
+import com.ozonedDigital.jhk.ui.common.responsiveTextSize
 
 class ComposeDropDownField : ComposeField() {
 
@@ -52,7 +64,7 @@ class ComposeDropDownField : ComposeField() {
     @Composable
     fun Build(
         state: ComposeFieldState, newValue: (Pair<Boolean, String>, String) -> Unit,
-        modifier: Modifier=Modifier
+        modifier: Modifier = Modifier
     ) {
         var expanded by remember { mutableStateOf(false) }
         val toggleDropdown: () -> Unit = { expanded = !expanded }
@@ -66,15 +78,50 @@ class ComposeDropDownField : ComposeField() {
             } ?: ""
         }
 
-        Column(modifier=modifier) {
-            Box (Modifier.fillMaxWidth()){
-                DropDownField(onClick = toggleDropdown) {
-                    Text(
-                        modifier = Modifier.fillMaxWidth(),
-                        color = ComposeFieldTheme.textColor,
-                        text = dropDownText
+        val label = buildAnnotatedString {
+            withStyle(
+                style = SpanStyle(
+                    fontSize = responsiveTextSize(size = 13).sp,
+                    color = ComposeFieldTheme.hintColor,
+                )
+            ) {
+                append(state.field.label)
+            }
+            if (state.field.required== ComposeFieldYesNo.YES){
+                withStyle(
+                    style = SpanStyle(
+                        fontSize = responsiveTextSize(size = 13).sp,
+                        color = Color.Red
                     )
+                ) {
+                    append("*")
                 }
+            }
+        }
+
+        Column(modifier = modifier) {
+            DropDownField(onClick = toggleDropdown) {
+                Text(
+                    text = label,
+                    modifier = Modifier.padding(start = 20.dp, top = 7.dp),
+                )
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.CenterStart)
+                        .padding(start = 20.dp, top = 7.dp),
+                    color = ComposeFieldTheme.textColor,
+                    text = dropDownText,
+                    fontSize = responsiveTextSize(size = 15).sp,
+                    fontWeight = FontWeight.Medium
+                )
+                Icon(
+                    imageVector = Icons.Default.ArrowDropDown,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .padding(10.dp)
+                )
                 DropdownMenu(
                     expanded = expanded && options.size <= 6,
                     onDismissRequest = { expanded = false },
@@ -91,19 +138,6 @@ class ComposeDropDownField : ComposeField() {
                             })
                     }
                 }
-                Icon(
-                    imageVector = Icons.Default.ArrowDropDown,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .padding(10.dp)
-                )
-                Text(
-                    color = ComposeFieldTheme.hintColor,
-                    text = state.field.label,
-                    fontSize = MaterialTheme.typography.labelSmall.fontSize,
-                    modifier = Modifier.padding(10.dp)
-                )
                 if (expanded && options.size > 6) {
                     DropdownDialog(options = options, values = values, onOptionSelected = {
                         focusCallback?.invoke(true, state.field.name)
@@ -112,6 +146,7 @@ class ComposeDropDownField : ComposeField() {
                     })
                 }
             }
+
             if (state.hasError) {
                 Text(
                     text = state.errorMessage,
@@ -125,27 +160,29 @@ class ComposeDropDownField : ComposeField() {
 
 
     @Composable
-    private fun DropDownField(onClick: () -> Unit, content: @Composable () -> Unit) {
+    private fun DropDownField(
+        onClick: () -> Unit,
+        content: @Composable (BoxScope.() -> Unit)? = null
+    ) {
         val focusRequester = remember { FocusRequester() }
         var isFocused by remember { mutableStateOf(false) }
         when (ComposeFieldTheme.fieldStyle) {
-            ComposeFieldTheme.FieldStyle.OUTLINE -> TextButton(
+            ComposeFieldTheme.FieldStyle.OUTLINE -> Box(
                 modifier = Modifier
+                    .border(
+                        border = BorderStroke(1.dp, ComposeFieldTheme.unfocusedBorderColor),
+                        shape = OutlinedTextFieldDefaults.shape
+                    )
                     .padding(top = 5.dp)
                     .fillMaxWidth()
-                    .height(OutlinedTextFieldDefaults.MinHeight),
-                border = BorderStroke(1.dp, ComposeFieldTheme.unfocusedBorderColor),
-                shape = OutlinedTextFieldDefaults.shape,
-                onClick = { onClick() },
-                content = { content.invoke() }
-            )
+                    .height(OutlinedTextFieldDefaults.MinHeight)
+                    .clickable { onClick() },
+            ) {
+                content?.invoke(this)
+            }
 
             ComposeFieldTheme.FieldStyle.CONTAINER,
-            ComposeFieldTheme.FieldStyle.NORMAL -> TextButton(
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.White
-                ),
+            ComposeFieldTheme.FieldStyle.NORMAL -> Box(
                 modifier = Modifier
                     .padding(5.dp)
                     .fillMaxWidth()
@@ -154,18 +191,20 @@ class ComposeDropDownField : ComposeField() {
                     .onFocusChanged { s ->
                         isFocused = s.isFocused
                     }
+                    .shadow(
+                        elevation = 5.dp,
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    .background(color = Color.White, shape = RoundedCornerShape(8.dp))
                     .border(
                         width = if (isFocused) 1.dp else 0.dp,
                         color = if (isFocused) ComposeFieldTheme.focusedBorderColor else Color.Transparent,
                         shape = RoundedCornerShape(8.dp)
                     )
-                    .shadow(
-                        elevation = 5.dp,
-                        shape = RoundedCornerShape(8.dp)
-                    ),
-                onClick = { onClick() },
-                content = { content.invoke() }
-            )
+                    .clickable { onClick() },
+            ) {
+                content?.invoke(this)
+            }
         }
     }
 

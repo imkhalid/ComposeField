@@ -13,10 +13,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.imkhalid.composefield.composeField.ComposeFieldState
+import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
 import com.imkhalid.composefield.theme.ComposeFieldTheme
+import com.ozonedDigital.jhk.ui.common.responsiveTextSize
 
 class ComposeSwitchField {
 
@@ -30,6 +37,28 @@ class ComposeSwitchField {
                 x.text.contains("false",true) ||
                 x.text.contains("female",true)
         }?.id
+
+        val label = buildAnnotatedString {
+            withStyle(
+                style = SpanStyle(
+                    fontSize = responsiveTextSize(size = 13).sp,
+                    color = ComposeFieldTheme.hintColor,
+                )
+            ) {
+                append(state.field.label)
+            }
+            if (state.field.required== ComposeFieldYesNo.YES){
+                withStyle(
+                    style = SpanStyle(
+                        fontSize = responsiveTextSize(size = 13).sp,
+                        color = Color.Red
+                    )
+                ) {
+                    append("*")
+                }
+            }
+        }
+
         Row(
             modifier= Modifier
                 .defaultMinSize(
@@ -47,8 +76,8 @@ class ComposeSwitchField {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = state.field.label,
-                fontWeight = FontWeight.Bold
+                text = label,
+                fontWeight = FontWeight.Medium
             )
             Spacer(modifier = Modifier.padding(start = 10.dp))
             Switch(

@@ -35,11 +35,17 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.imkhalid.composefield.R
 import com.imkhalid.composefield.composeField.ComposeFieldState
+import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
 import com.imkhalid.composefield.theme.ComposeFieldTheme
 import com.imkhalid.composefieldproject.composeField.fields.ComposeField
+import com.ozonedDigital.jhk.ui.common.responsiveTextSize
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -60,6 +66,27 @@ class ComposeDatePickerField :ComposeField(){
             Calendar.getInstance().apply {
                 time= it
             }.timeInMillis
+        }
+
+        val label = buildAnnotatedString {
+            withStyle(
+                style = SpanStyle(
+                    fontSize = responsiveTextSize(size = 13).sp,
+                    color = ComposeFieldTheme.hintColor
+                )
+            ) {
+                append(state.field.label)
+            }
+            if (state.field.required== ComposeFieldYesNo.YES){
+                withStyle(
+                    style = SpanStyle(
+                        fontSize = responsiveTextSize(size = 13).sp,
+                        color = Color.Red
+                    )
+                ) {
+                    append("*")
+                }
+            }
         }
 
         val calendar = Calendar.getInstance()
@@ -118,12 +145,13 @@ class ComposeDatePickerField :ComposeField(){
                             .padding(start = 5.dp),
                         color = ComposeFieldTheme.textColor,
                         text = dropDownText,
+                        fontSize = responsiveTextSize(size = 15).sp
                     )
                 }
                 Text(
-                    text = state.field.label,
+                    text = label,
                     color = ComposeFieldTheme.hintColor,
-                    fontSize = MaterialTheme.typography.labelSmall.fontSize,
+                    fontSize = responsiveTextSize(size = 13).sp,
                     modifier=Modifier.padding(start = 20.dp, top = 10.dp)
                 )
                 Image(
