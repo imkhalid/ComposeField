@@ -2,8 +2,11 @@ package com.imkhalid.composefield.composeField.fields
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,13 +14,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.SelectableDates
@@ -37,6 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -53,9 +54,19 @@ import java.util.Locale
 
 class ComposeDatePickerField :ComposeField(){
 
+
+    @Composable
+    override fun Build(
+        modifier: Modifier,
+        state: ComposeFieldState,
+        newValue: (Pair<Boolean, String>, String) -> Unit
+    ) {
+        MyBuild(state = state, newValue = newValue, modifier = modifier)
+    }
+
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun Build(state: ComposeFieldState, newValue: (Pair<Boolean,String>, String) -> Unit,modifier: Modifier=Modifier) {
+    private fun MyBuild(state: ComposeFieldState, newValue: (Pair<Boolean,String>, String) -> Unit,modifier: Modifier=Modifier) {
 
         val minMil:Long? = parseToDate(to="yyyy-MM-dd",date = state.field.minValue?:"")?.let {
             Calendar.getInstance().apply {
@@ -142,18 +153,20 @@ class ComposeDatePickerField :ComposeField(){
                 ) {
                     Text(
                         modifier = Modifier.fillMaxWidth()
-                            .padding(start = 5.dp),
+                            .padding(start = 20.dp, top = 7.dp)
+                            .align(Alignment.CenterStart),
                         color = ComposeFieldTheme.textColor,
                         text = dropDownText,
+                        fontWeight = FontWeight.Medium,
                         fontSize = responsiveTextSize(size = 15).sp
                     )
+                    Text(
+                        text = label,
+                        color = ComposeFieldTheme.hintColor,
+                        fontSize = responsiveTextSize(size = 13).sp,
+                        modifier=Modifier.padding(start = 20.dp, top = 7.dp)
+                    )
                 }
-                Text(
-                    text = label,
-                    color = ComposeFieldTheme.hintColor,
-                    fontSize = responsiveTextSize(size = 13).sp,
-                    modifier=Modifier.padding(start = 20.dp, top = 10.dp)
-                )
                 Image(
                     painter = painterResource(id = R.drawable.ic_calendar),
                     contentDescription = "",
@@ -169,40 +182,37 @@ class ComposeDatePickerField :ComposeField(){
     private fun DatePickerField(
         modifier: Modifier,
         onClick:()->Unit,
-        content:@Composable ()->Unit
+        content: @Composable (BoxScope.() -> Unit)? = null
     ){
         when(ComposeFieldTheme.fieldStyle){
-            ComposeFieldTheme.FieldStyle.OUTLINE -> TextButton(
-                modifier = modifier
-                    .width(OutlinedTextFieldDefaults.MinWidth)
-                    .height(OutlinedTextFieldDefaults.MinHeight),
-                border = BorderStroke(0.5.dp, MaterialTheme.colorScheme.onBackground),
-                shape = OutlinedTextFieldDefaults.shape,
-                onClick = {onClick.invoke()},
-                content = {content.invoke()}
-            )
-            ComposeFieldTheme.FieldStyle.CONTAINER ,
-            ComposeFieldTheme.FieldStyle.NORMAL ->TextButton(
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.White
-                ),
-                modifier = modifier
-                    .padding(5.dp)
-                    .width(TextFieldDefaults.MinWidth)
-                    .height(TextFieldDefaults.MinHeight)
+            ComposeFieldTheme.FieldStyle.OUTLINE -> Box(
+                modifier = Modifier
                     .border(
-                        width = 0.dp,
-                        color = Color.Transparent,
-                        shape = RoundedCornerShape(8.dp)
+                        border = BorderStroke(1.dp, ComposeFieldTheme.unfocusedBorderColor),
+                        shape = OutlinedTextFieldDefaults.shape
                     )
+                    .padding(top = 5.dp)
+                    .fillMaxWidth()
+                    .height(OutlinedTextFieldDefaults.MinHeight)
+                    .clickable { onClick() },
+            ) {
+                content?.invoke(this)
+            }
+            ComposeFieldTheme.FieldStyle.CONTAINER ,
+            ComposeFieldTheme.FieldStyle.NORMAL ->Box(
+                modifier = Modifier
+                    .padding(5.dp)
+                    .fillMaxWidth()
+                    .height(TextFieldDefaults.MinHeight)
                     .shadow(
                         elevation = 5.dp,
                         shape = RoundedCornerShape(8.dp)
-                    ),
-                onClick = { onClick() },
-                content = {content.invoke()}
-            )
+                    )
+                    .background(color = Color.White, shape = RoundedCornerShape(8.dp))
+                    .clickable { onClick() },
+            ) {
+                content?.invoke(this)
+            }
         }
     }
 

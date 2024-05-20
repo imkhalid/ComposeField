@@ -65,7 +65,16 @@ class ComposeMobileField : ComposeField() {
 
 
     @Composable
-    fun Build(
+    override fun Build(
+        modifier: Modifier,
+        state: ComposeFieldState,
+        newValue: (Pair<Boolean, String>, String) -> Unit
+    ) {
+        MyBuild(state = state, newValue = newValue, modifier = modifier)
+    }
+
+    @Composable
+    private fun MyBuild(
         state: ComposeFieldState,
         newValue: (Pair<Boolean, String>, String) -> Unit,
         modifier: Modifier = Modifier

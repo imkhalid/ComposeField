@@ -42,12 +42,22 @@ import androidx.compose.ui.unit.sp
 import com.imkhalid.composefield.composeField.ComposeFieldState
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
 import com.imkhalid.composefield.theme.ComposeFieldTheme
+import com.imkhalid.composefieldproject.composeField.fields.ComposeField
 import com.ozonedDigital.jhk.ui.common.responsiveTextSize
 
-class ComposeRadioGroupField {
+class ComposeRadioGroupField:ComposeField() {
 
     @Composable
-    fun Build(state: ComposeFieldState, newValue: (Pair<Boolean, String>, String) -> Unit,modifier: Modifier= Modifier) {
+    override fun Build(
+        modifier: Modifier,
+        state: ComposeFieldState,
+        newValue: (Pair<Boolean, String>, String) -> Unit
+    ) {
+        MyBuild(state = state, newValue = newValue, modifier = modifier)
+    }
+
+    @Composable
+    private fun MyBuild(state: ComposeFieldState, newValue: (Pair<Boolean, String>, String) -> Unit,modifier: Modifier= Modifier) {
         val twoOption = state.field.defaultValues.size == 2 && state.field.defaultValues.all { x -> x.text.length <= 10 }
         RadioGroupField(modifier=modifier) {
             val label = buildAnnotatedString {

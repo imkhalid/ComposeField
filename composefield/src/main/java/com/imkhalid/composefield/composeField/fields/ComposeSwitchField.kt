@@ -23,12 +23,23 @@ import androidx.compose.ui.unit.sp
 import com.imkhalid.composefield.composeField.ComposeFieldState
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
 import com.imkhalid.composefield.theme.ComposeFieldTheme
+import com.imkhalid.composefieldproject.composeField.fields.ComposeField
 import com.ozonedDigital.jhk.ui.common.responsiveTextSize
 
-class ComposeSwitchField {
+class ComposeSwitchField:ComposeField() {
+
 
     @Composable
-    fun Build(state: ComposeFieldState, newValue: (Pair<Boolean,String>, String) -> Unit) {
+    override fun Build(
+        modifier: Modifier,
+        state: ComposeFieldState,
+        newValue: (Pair<Boolean, String>, String) -> Unit
+    ) {
+        MyBuild(state = state, newValue = newValue, modifier = modifier)
+    }
+
+    @Composable
+    private fun MyBuild(state: ComposeFieldState, newValue: (Pair<Boolean,String>, String) -> Unit,modifier: Modifier=Modifier) {
         val trueValue = state.field.defaultValues.find { x->x.text.contains("yes",true) ||
                 x.text.contains("true",true) ||
                 x.text.contains("male",true)

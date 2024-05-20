@@ -62,16 +62,24 @@ import androidx.compose.ui.unit.sp
 import com.imkhalid.composefield.composeField.ComposeFieldState
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
 import com.imkhalid.composefield.theme.ComposeFieldTheme
+import com.imkhalid.composefieldproject.composeField.fields.ComposeField
 import com.ozonedDigital.jhk.ui.common.responsiveTextSize
 
-class ComposeCheckBoxField {
+class ComposeCheckBoxField :ComposeField(){
 
     /**
      * value will look like this
      * 132::234::*/
-
     @Composable
-    fun Build(
+    override fun Build(
+        modifier: Modifier,
+        state: ComposeFieldState,
+        newValue: (Pair<Boolean, String>, String) -> Unit
+    ) {
+        MyBuild(state = state, newValue = newValue, modifier = modifier)
+    }
+    @Composable
+    private fun MyBuild(
         state: ComposeFieldState,
         newValue: (Pair<Boolean, String>, String) -> Unit,
         modifier: Modifier = Modifier
@@ -341,7 +349,7 @@ fun RoundedCornerCheckbox(
             modifier = Modifier
                 .size(size.dp)
                 .background(color = checkboxColor, shape = RoundedCornerShape(4.dp))
-                .border(width = 1.5.dp, color = checkedColor, shape = RoundedCornerShape(4.dp)),
+                .border(width = 1.dp, color = checkedColor, shape = RoundedCornerShape(4.dp)),
             contentAlignment = Alignment.Center
         ) {
             androidx.compose.animation.AnimatedVisibility(

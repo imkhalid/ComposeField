@@ -4,7 +4,9 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -40,6 +42,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -57,9 +60,19 @@ import java.util.Locale
 
 class ComposeTimePickerField : ComposeField(){
 
+
+    @Composable
+    override fun Build(
+        modifier: Modifier,
+        state: ComposeFieldState,
+        newValue: (Pair<Boolean, String>, String) -> Unit
+    ) {
+        MyBuild(state = state, newValue = newValue,modifier=modifier)
+    }
+
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun Build(state: ComposeFieldState, newValue: (Pair<Boolean,String>, String) -> Unit, modifier: Modifier = Modifier) {
+    private fun MyBuild(state: ComposeFieldState, newValue: (Pair<Boolean,String>, String) -> Unit, modifier: Modifier = Modifier) {
 
         val dropDownText = if (state.text.isEmpty())
             "Choose Time"
@@ -104,7 +117,6 @@ class ComposeTimePickerField : ComposeField(){
                         state = timePickerState,
                         colors = TimePickerDefaults.colors(
                             clockDialColor = ComposeFieldTheme.unfocusedBorderColor,
-                            clockDialSelectedContentColor = ComposeFieldTheme.focusedBorderColor,
                             selectorColor = ComposeFieldTheme.focusedBorderColor,
                             containerColor = ComposeFieldTheme.unfocusedBorderColor
                         )
@@ -133,16 +145,19 @@ class ComposeTimePickerField : ComposeField(){
                     Text(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(start = 5.dp),
+                            .padding(start = 20.dp, top = 7.dp)
+                            .align(Alignment.CenterStart),
                         color = ComposeFieldTheme.textColor,
                         text = dropDownText,
+                        fontWeight = FontWeight.Medium,
                         fontSize = responsiveTextSize(size = 15).sp
                     )
+                    Text(
+                        text = label,
+                        fontSize = responsiveTextSize(size = 13).sp,
+                        modifier= Modifier.padding(start = 20.dp, top = 7.dp)
+                    )
                 }
-                Text(
-                    text = label,
-                    modifier= Modifier.padding(start = 20.dp, top = 10.dp)
-                )
                 Image(
                     painter = painterResource(id = R.drawable.ic_clock_),
                     contentDescription = "",
@@ -158,42 +173,37 @@ class ComposeTimePickerField : ComposeField(){
     private fun TimePickerField(
         modifier: Modifier,
         onClick:()->Unit,
-        content:@Composable ()->Unit
+        content: @Composable (BoxScope.() -> Unit)? = null
     ){
         when(ComposeFieldTheme.fieldStyle){
-            ComposeFieldTheme.FieldStyle.OUTLINE -> TextButton(
+            ComposeFieldTheme.FieldStyle.OUTLINE -> Box(
                 modifier = Modifier
-                    .width(OutlinedTextFieldDefaults.MinWidth)
+                    .border(
+                        border = BorderStroke(1.dp, ComposeFieldTheme.unfocusedBorderColor),
+                        shape = OutlinedTextFieldDefaults.shape
+                    )
+                    .padding(top = 5.dp)
+                    .fillMaxWidth()
                     .height(OutlinedTextFieldDefaults.MinHeight)
-                    .then(modifier),
-                border = BorderStroke(0.5.dp, MaterialTheme.colorScheme.onBackground),
-                shape = OutlinedTextFieldDefaults.shape,
-                onClick = {onClick.invoke()},
-                content = {content.invoke()}
-            )
+                    .clickable { onClick() },
+            ) {
+                content?.invoke(this)
+            }
             ComposeFieldTheme.FieldStyle.CONTAINER ,
-            ComposeFieldTheme.FieldStyle.NORMAL -> TextButton(
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.White
-                ),
+            ComposeFieldTheme.FieldStyle.NORMAL -> Box(
                 modifier = Modifier
                     .padding(5.dp)
-                    .width(TextFieldDefaults.MinWidth)
+                    .fillMaxWidth()
                     .height(TextFieldDefaults.MinHeight)
-                    .then(modifier)
-                    .border(
-                        width = 0.dp,
-                        color = Color.Transparent,
-                        shape = RoundedCornerShape(8.dp)
-                    )
                     .shadow(
                         elevation = 5.dp,
                         shape = RoundedCornerShape(8.dp)
-                    ),
-                onClick = { onClick() },
-                content = {content.invoke()}
-            )
+                    )
+                    .background(color = Color.White, shape = RoundedCornerShape(8.dp))
+                    .clickable { onClick() },
+            ) {
+                content?.invoke(this)
+            }
         }
     }
 
