@@ -80,6 +80,35 @@ fun rememberFieldState(
     }
 }
 
+
+
+@Composable
+fun rememberFieldState(
+    fieldModule: ComposeFieldModule,
+    stateHolder: ComposeFieldStateHolder?=null
+): ComposeFieldStateHolder {
+    val initialField = ComposeFieldState(
+        field = fieldModule,
+        text = stateHolder?.state?.text?:fieldModule.value.takeIf { x->x.isNotEmpty() }?:""
+    )
+    val value = stateHolder?.state?.text ?: fieldModule.value
+    return rememberSaveable(
+        inputs = arrayOf(
+            fieldModule.id,
+            fieldModule.name,
+            fieldModule.type,
+            fieldModule.keyboardType,
+            value,
+            fieldModule.label,
+            fieldModule.defaultValues
+        ),
+        saver = ComposeFieldStateHolder.Saver,
+    ) {
+        ComposeFieldStateHolder(initialField)
+    }
+}
+
+
 class ComposeFieldStateHolder(initialField: ComposeFieldState) {
     var state by mutableStateOf(initialField)
         private set

@@ -9,22 +9,19 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavController
-import androidx.navigation.NavDestination
-import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import androidx.navigation.NavigatorProvider
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
-import com.imkhalid.composefield.composeField.model.ComposeSectionModule
 import com.imkhalid.composefield.composeField.model.ComposeFieldModule
-import com.imkhalid.composefield.theme.ComposeFieldTheme
+import com.imkhalid.composefield.composeField.model.ComposeSectionModule
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
+@Deprecated(
+    message = "This class is Deprecated, Use Sections Class Instead"
+)
 class ComposeSectionBuilder(preStateList:ArrayList<MutableStateFlow<ComposeFieldState>>?=null) {
     var list: ArrayList<MutableStateFlow<ComposeFieldState>> = preStateList?:arrayListOf()
     var isLocked:Boolean=false
@@ -92,6 +89,9 @@ class ComposeSectionBuilder(preStateList:ArrayList<MutableStateFlow<ComposeField
 }
 
 
+@Deprecated(
+    message = "This class is Deprecated, Use Sections Class Instead"
+)
 class ComposeSections(){
     val mSections:ArrayList<ComposeSectionBuilder> = arrayListOf()
     var isLocked:Boolean=false

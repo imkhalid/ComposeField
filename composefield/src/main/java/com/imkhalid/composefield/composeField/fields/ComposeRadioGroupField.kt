@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -135,7 +136,7 @@ private fun RadioGroupField(
 ){
     when(ComposeFieldTheme.fieldStyle){
         ComposeFieldTheme.FieldStyle.OUTLINE -> Column(
-            modifier.width(OutlinedTextFieldDefaults.MinWidth),
+            modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start,
             content={content.invoke()}
@@ -146,7 +147,7 @@ private fun RadioGroupField(
             horizontalAlignment = Alignment.Start,
             modifier = modifier
                 .padding(vertical = 5.dp)
-                .width(OutlinedTextFieldDefaults.MinWidth)
+                .fillMaxWidth()
                 .border(
                     width = 0.dp,
                     color = Color.Transparent,
