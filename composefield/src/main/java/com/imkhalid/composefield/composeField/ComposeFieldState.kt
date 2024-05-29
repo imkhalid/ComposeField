@@ -118,6 +118,14 @@ class ComposeFieldStateHolder(initialField: ComposeFieldState) {
             text = text
         )
     }
+
+    fun updatedFieldDefaultValues(list: List<DefaultValues>){
+        state = state.copy(
+            field = state.field.copy(
+                defaultValues = list
+            )
+        )
+    }
     fun updateValidation(pair: Pair<Boolean,String>){
         state = state.copy(
             hasError = pair.first.not(),
@@ -128,6 +136,14 @@ class ComposeFieldStateHolder(initialField: ComposeFieldState) {
     fun updatedState(pair: Pair<Boolean, String>,text: String){
         updateField(text)
         updateValidation(pair)
+    }
+
+    fun updatedState(pair: Pair<Boolean, String>,text: String,onValueChangeForChild: ((value: String) -> Unit)?){
+        updateField(text)
+        updateValidation(pair)
+        if (state.field.childID!="-1"){
+            onValueChangeForChild?.invoke(text)
+        }
     }
 
     companion object {

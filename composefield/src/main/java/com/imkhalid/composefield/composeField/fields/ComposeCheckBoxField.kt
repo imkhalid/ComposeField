@@ -98,7 +98,7 @@ class ComposeCheckBoxField :ComposeField(){
             withStyle(
                 style = SpanStyle(
                     fontSize = responsiveTextSize(size = 13).sp,
-                    color = ComposeFieldTheme.hintColor,
+                    color = ComposeFieldTheme.focusedLabelColor,
                 )
             ) {
                 append(state.field.label)

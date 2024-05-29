@@ -10,6 +10,8 @@ object ComposeFieldTheme {
     var hintColor = Color.Gray
     var infoColor = Color.Gray
     var textColor = Color.Black
+    var unfocusedLabelColor = Color.Gray
+    var focusedLabelColor = Color.Gray
     var fieldStyle =FieldStyle.NORMAL
 
     enum class FieldStyle {

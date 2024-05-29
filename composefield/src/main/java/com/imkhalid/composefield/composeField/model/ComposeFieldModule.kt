@@ -21,8 +21,8 @@ data class ComposeFieldModule(
     val hint: String = "",
     val required: ComposeFieldYesNo = ComposeFieldYesNo.YES,
     val description: String = "",
-    val defaultValues: List<DefaultValues> = listOf(),
-    val childID: String = "0",
+    var defaultValues: List<DefaultValues> = listOf(),
+    val childID: String = "-1",
     val minValue: String? = "",
     val maxValue: String? = "",
     val sortNumber: Int = 0,
@@ -109,6 +109,24 @@ data class ComposeFieldModule(
         }
 
     }
+
+    fun getTextFromValue(value:String):String{
+        return when(this.type){
+            ComposeFieldType.TEXT_BOX,
+            ComposeFieldType.TEXT_AREA ,
+            ComposeFieldType.DATE_PICKER ,
+            ComposeFieldType.TIME_PICKER ,
+            ComposeFieldType.DATE_TIME_PICKER -> {
+                value
+            }
+            ComposeFieldType.SWITCH ,
+            ComposeFieldType.DROP_DOWN ,
+            ComposeFieldType.CHECK_BOX ,
+            ComposeFieldType.RADIO_BUTTON -> {
+                this.defaultValues.find { x->x.id==value }?.text?:""
+            }
+        }
+    }
 }
 
 fun String.CHOICE(): ComposeFieldYesNo {
@@ -142,3 +160,9 @@ fun String.keyboardType(): ComposeKeyboardType {
         else -> ComposeKeyboardType.NONE
     }
 }
+
+data class ChildValueModel(
+    val fieldModule: ComposeFieldModule,
+    val value: String,
+    val childValues: (List<DefaultValues>)->Unit
+)

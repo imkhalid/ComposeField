@@ -146,7 +146,7 @@ private fun RadioGroupField(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start,
             modifier = modifier
-                .padding(vertical = 5.dp)
+                .padding(5.dp)
                 .fillMaxWidth()
                 .border(
                     width = 0.dp,

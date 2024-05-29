@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -85,23 +86,23 @@ class ComposeTextField : ComposeField() {
             LocalTextToolbar provides EmptyTextToolbar
         else LocalTextToolbar provides LocalTextToolbar.current
 
-        Column {
+        Column(modifier=modifier) {
             CompositionLocalProvider(toolbar) {
                 when (ComposeFieldTheme.fieldStyle) {
                     ComposeFieldTheme.FieldStyle.OUTLINE -> OutlineField(
-                        modifier = modifier,
+                        modifier = Modifier.fillMaxWidth(),
                         state = state,
                         newValue = newValue
                     )
 
                     ComposeFieldTheme.FieldStyle.CONTAINER -> ContainerField(
-                        modifier = modifier,
+                        modifier = Modifier.fillMaxWidth(),
                         state = state,
                         newValue = newValue
                     )
 
                     ComposeFieldTheme.FieldStyle.NORMAL -> NormalField(
-                        modifier = modifier,
+                        modifier = Modifier.fillMaxWidth(),
                         state = state,
                         newValue = newValue
                     )
@@ -164,8 +165,7 @@ class ComposeTextField : ComposeField() {
                 unfocusedIndicatorColor = Color.Transparent
             ),
             shape = RoundedCornerShape(8.dp),
-            modifier = Modifier
-                .then(modifier)
+            modifier = modifier
                 .padding(5.dp)
                 .shadow(
                     elevation = 5.dp,
@@ -243,8 +243,9 @@ class ComposeTextField : ComposeField() {
                 focusedContainerColor = Color.White,
                 unfocusedContainerColor = Color.White,
                 errorLabelColor = ComposeFieldTheme.errorColor,
-                focusedLabelColor = ComposeFieldTheme.focusedBorderColor,
-                unfocusedPlaceholderColor = ComposeFieldTheme.hintColor,
+                focusedLabelColor = ComposeFieldTheme.focusedLabelColor,
+                unfocusedLabelColor = ComposeFieldTheme.unfocusedLabelColor,
+                unfocusedPlaceholderColor = ComposeFieldTheme.unfocusedLabelColor,
                 focusedTextColor = ComposeFieldTheme.textColor,
                 unfocusedTextColor = ComposeFieldTheme.textColor,
                 focusedSupportingTextColor = ComposeFieldTheme.infoColor,
@@ -252,8 +253,7 @@ class ComposeTextField : ComposeField() {
                 unfocusedIndicatorColor = Color.Transparent
             ),
             shape = RoundedCornerShape(8.dp),
-            modifier = Modifier
-                .then(modifier)
+            modifier = modifier
                 .focusRequester(focusRequester)
                 .onFocusChanged { s ->
                     isFocused = s.isFocused
@@ -364,8 +364,7 @@ class ComposeTextField : ComposeField() {
                 unfocusedTextColor = ComposeFieldTheme.textColor,
                 focusedSupportingTextColor = ComposeFieldTheme.infoColor,
             ),
-            modifier = Modifier
-                .then(modifier),
+            modifier = modifier,
             trailingIcon = {
                 TrailingIcon(field = state.field, passwordVisible = passwordVisible) {
                     passwordVisible = passwordVisible.not()
@@ -398,7 +397,7 @@ class ComposeTextField : ComposeField() {
     private fun getMaxLine(type: ComposeFieldType): Int {
         return when (type) {
             ComposeFieldType.TEXT_BOX -> 1
-            ComposeFieldType.TEXT_AREA -> 3
+            ComposeFieldType.TEXT_AREA -> 4
             else -> 1
         }
     }

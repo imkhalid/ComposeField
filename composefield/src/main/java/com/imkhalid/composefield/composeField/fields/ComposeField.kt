@@ -44,8 +44,11 @@ abstract class ComposeField {
     }
 
     @Composable
-    abstract fun Build(modifier: Modifier, state: ComposeFieldState, newValue:(Pair<Boolean,String>, String)->Unit)
-
+    abstract fun Build(
+        modifier: Modifier,
+        state: ComposeFieldState,
+        newValue:(Pair<Boolean,String>, String)->Unit,
+    )
 
 }
 
@@ -55,6 +58,7 @@ class ComposeFieldBuilder{
         modifier: Modifier = Modifier,
         stateHolder: ComposeFieldStateHolder = rememberFieldState(name = "", label = ""),
         focusCallback: ((isValidated: Boolean, fieldName: String) -> Unit)? = null,
+        onValueChangeForChild:((value:String)->Unit)?=null
     ) {
         val state = stateHolder.state
         val field = when (state.field.type) {
@@ -90,7 +94,7 @@ class ComposeFieldBuilder{
         field.Build(
             state = state,
             newValue =  { error, newVal ->
-                updateFieldState(error, newVal, stateHolder)
+                updateFieldState(error, newVal, stateHolder,onValueChangeForChild)
             },
             modifier = modifier
         )
@@ -99,9 +103,10 @@ class ComposeFieldBuilder{
     fun updateFieldState(
         error: Pair<Boolean, String>,
         text: String,
-        stateHolder: ComposeFieldStateHolder
+        stateHolder: ComposeFieldStateHolder,
+        onValueChangeForChild: ((value: String) -> Unit)?
     ) {
-        stateHolder.updatedState(error, text)
+        stateHolder.updatedState(error, text,onValueChangeForChild)
     }
 
 }
