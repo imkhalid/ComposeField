@@ -1,12 +1,15 @@
 package com.imkhalid.composefield.composeField.section
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -17,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -33,14 +37,18 @@ import com.imkhalid.composefield.composeField.model.ComposeSectionModule
 import com.imkhalid.composefield.composeField.rememberFieldState
 import com.imkhalid.composefield.model.DefaultValues
 import com.imkhalid.composefieldproject.composeField.fields.ComposeFieldBuilder
+import com.ozonedDigital.jhk.ui.common.responsiveHeight
+import com.ozonedDigital.jhk.ui.common.responsiveSize
 import com.ozonedDigital.jhk.ui.common.responsiveTextSize
 
 class Sections(
     private val parentNav: NavHostController,
     private val nav: NavHostController,
     private val sectionType: SectionType,
-    private val stepSectionContentItem: (@Composable LazyItemScope.(name: String, clickCallback: (sectionName: String) -> Unit) -> Unit)? = null
-) {
+    private val stepSectionContentItem: (@Composable LazyItemScope.(name: String, clickCallback: (sectionName: String) -> Unit) -> Unit)? = null,
+    private val tabContentItem: (@Composable LazyItemScope.(name: String, isSelected: Boolean, clickCallback: (() -> Unit)?) -> Unit)? = null,
+
+    ) {
     val sectionState: HashMap<String, List<ComposeFieldStateHolder>> = HashMap()
     val sectionNames: ArrayList<String> = arrayListOf()
     var currentSectionIndex = 0
@@ -60,12 +68,21 @@ class Sections(
             onDismiss: () -> Unit
         ) -> Unit)? = null
     ) {
-        sections.mapTo(sectionNames) {
-            it.name
-        }
+        if (sectionNames.isEmpty())
+            sections.mapTo(sectionNames) {
+                it.name
+            }
         when (sectionType) {
             SectionType.Simple -> SimpleSections(
-                nav=nav,
+                nav = nav,
+                sections = sections,
+                valueChangeForChild = valueChangeForChild,
+                button = button,
+                onLastPageReach = onLastPageReach
+            )
+
+            SectionType.Tab -> TabSections(
+                nav = nav,
                 sections = sections,
                 valueChangeForChild = valueChangeForChild,
                 button = button,
@@ -73,7 +90,7 @@ class Sections(
             )
 
             SectionType.Step -> StepsSections(
-                nav=nav,
+                nav = nav,
                 modifier = modifier,
                 sections = sections,
                 valueChangeForChild = valueChangeForChild,
@@ -85,7 +102,7 @@ class Sections(
 
     @Composable
     private fun SimpleSections(
-        nav:NavHostController,
+        nav: NavHostController,
         sections: List<ComposeSectionModule>,
         valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
         button: (@Composable ColumnScope.(onClick: () -> Unit) -> Unit)?,
@@ -133,8 +150,86 @@ class Sections(
     }
 
     @Composable
+    private fun TabSections(
+        nav: NavHostController,
+        sections: List<ComposeSectionModule>,
+        valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
+        button: (@Composable ColumnScope.(onClick: () -> Unit) -> Unit)?,
+        onLastPageReach: ((Sections) -> Unit)? = null
+    ) {
+        var currentSection by remember {
+            mutableStateOf(sections[currentSectionIndex].name ?: "")
+        }
+        Column {
+            Tabs(currentSection) {
+
+            }
+            NavHost(
+                navController = nav,
+                startDestination = sections.firstOrNull()?.name ?: ""
+            ) {
+                sections.forEach { section ->
+                    composable(section.name) {
+                        if (section.subSections.isNotEmpty()) {
+                            Column {
+                                section.subSections.forEachIndexed { itemindex, item ->
+                                    sectionState[item.name] = buildInnerSection(
+                                        section = item,
+                                        valueChangeForChild = valueChangeForChild
+                                    )
+                                }
+                            }
+                        } else {
+                            sectionState[section.name] = buildInnerSection(
+                                section = section,
+                                valueChangeForChild = valueChangeForChild
+                            )
+                        }
+                    }
+                }
+            }
+            button?.invoke(this) {
+                navigateToNext(nav, onLastPageReach)
+                currentSection = sectionNames[currentSectionIndex]
+            }
+
+            BackHandler {
+                if (currentSectionIndex != 0) {
+                    --currentSectionIndex
+                    nav.popBackStack()
+                    currentSection = sectionNames[currentSectionIndex]
+                } else {
+                    parentNav.popBackStack()
+                }
+
+            }
+        }
+    }
+
+    private @Composable
+    fun Tabs(currentSection: String, clickCallback: (() -> Unit)?) {
+        LazyRow(
+            modifier = Modifier
+                .padding(bottom = responsiveHeight(size = 20))
+                .background(
+                    color = Color.White,
+                    shape = RoundedCornerShape(size = responsiveSize(size = 17))
+                )
+        ) {
+            items(sectionNames.size) {
+                tabContentItem?.invoke(
+                    this@items,
+                    sectionNames[it],
+                    sectionNames[it] == currentSection,
+                    clickCallback
+                )
+            }
+        }
+    }
+
+    @Composable
     fun StepsSections(
-        nav:NavHostController,
+        nav: NavHostController,
         modifier: Modifier,
         sections: List<ComposeSectionModule>,
         valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
@@ -217,21 +312,23 @@ class Sections(
         section: ComposeSectionModule,
         stateList: List<ComposeFieldStateHolder> = emptyList(),
         showButton: Boolean = false,
+        showSectionName: Boolean = false,
         clickCallback: (() -> Unit)? = null,
         valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
     ): List<ComposeFieldStateHolder> {
 
         val sectionState: ArrayList<ComposeFieldStateHolder> = arrayListOf()
         LazyColumn {
-            item {
-                Text(
-                    text = section.name,
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Medium,
-                    fontSize = responsiveTextSize(size = 15).sp,
-                    modifier = Modifier.padding(5.dp)
-                )
-            }
+            if (showSectionName)
+                item {
+                    Text(
+                        text = section.name,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Medium,
+                        fontSize = responsiveTextSize(size = 15).sp,
+                        modifier = Modifier.padding(5.dp)
+                    )
+                }
             section.fields.forEach { field ->
                 item {
                     val selectedState = stateList.find { x -> x.state.field.name == field.name }
