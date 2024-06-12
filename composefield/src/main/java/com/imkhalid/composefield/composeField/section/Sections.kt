@@ -19,7 +19,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -28,12 +27,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import com.imkhalid.composefield.composeField.ComposeFieldStateHolder
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
 import com.imkhalid.composefield.composeField.fieldTypes.SectionType
 import com.imkhalid.composefield.composeField.model.ChildValueModel
-import com.imkhalid.composefield.composeField.model.ComposeFieldModule
 import com.imkhalid.composefield.composeField.model.ComposeSectionModule
 import com.imkhalid.composefield.composeField.rememberFieldState
 import com.imkhalid.composefield.model.DefaultValues
@@ -42,7 +39,7 @@ import com.ozonedDigital.jhk.ui.common.responsiveHeight
 import com.ozonedDigital.jhk.ui.common.responsiveSize
 import com.ozonedDigital.jhk.ui.common.responsiveTextSize
 
-class Sections(
+open class Sections(
     private val parentNav: NavHostController,
     private val nav: NavHostController,
     private val sectionType: SectionType,
@@ -77,7 +74,8 @@ class Sections(
             }
             sections.forEach {
                 sectionState[it.name] = it.fields.map { field ->
-                    val preFieldState = preState?.getOrDefault(it.name, emptyList())?.find { x->x.state.field.name==field.name }
+                    val preFieldState = preState?.getOrDefault(it.name, emptyList())
+                        ?.find { x -> x.state.field.name == field.name }
                     rememberFieldState(
                         fieldModule = field,
                         stateHolder = preFieldState
@@ -403,7 +401,7 @@ class Sections(
         newValues: List<DefaultValues>,
         sectionState: List<ComposeFieldStateHolder>
     ) {
-        val childs =childID.split(",")
+        val childs = childID.split(",")
         childs.forEach {
             sectionState.find { x -> x.state.field.id == it }?.let {
                 it.updatedFieldDefaultValues(newValues)
@@ -537,3 +535,5 @@ fun getFieldByFieldName(
     }
     return null
 }
+
+
