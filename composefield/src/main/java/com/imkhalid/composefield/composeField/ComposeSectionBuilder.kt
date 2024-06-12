@@ -18,6 +18,7 @@ import com.imkhalid.composefield.composeField.model.ComposeFieldModule
 import com.imkhalid.composefield.composeField.model.ComposeSectionModule
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import java.util.HashMap
 
 @Deprecated(
     message = "This class is Deprecated, Use Sections Class Instead"
@@ -173,5 +174,16 @@ fun ArrayList<MutableStateFlow<ComposeFieldState>>.validateSection():Boolean{
                 (
                         state.field.required == ComposeFieldYesNo.NO &&
                                 state.hasError.not())
+    }
+}
+
+fun HashMap<String,List<ComposeFieldStateHolder>>.validate():Boolean{
+    return this.all { x->
+        x.value.all {
+            it.state.field.required == ComposeFieldYesNo.YES && (it.state.text.isNotEmpty() &&
+                    it.state.hasError.not()) ||
+                    (it.state.field.required == ComposeFieldYesNo.NO &&
+                    it.state.hasError.not())
+        }
     }
 }
