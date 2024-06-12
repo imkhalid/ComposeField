@@ -8,6 +8,7 @@ import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldType
+import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardType
 import com.imkhalid.composefield.model.LoadingModel
 import com.imkhalid.composefield.composeField.model.ComposeFieldModule
@@ -57,9 +58,10 @@ fun rememberFieldState(
     type: ComposeFieldType = ComposeFieldType.TEXT_BOX,
     keyboardType: ComposeKeyboardType = ComposeKeyboardType.TEXT,
     value: String = "",
-    defaultValues:List<DefaultValues> = emptyList()
+    defaultValues: List<DefaultValues> = emptyList()
 ): ComposeFieldStateHolder {
     val initialField = ComposeFieldState(
+        text = value,
         field = ComposeFieldModule(
             id = id,
             name = name,
@@ -72,7 +74,7 @@ fun rememberFieldState(
     )
     return rememberSaveable(
         inputs = arrayOf(
-            id, name, type, keyboardType, value, label,defaultValues
+            id, name, type, keyboardType, value, label, defaultValues
         ),
         saver = ComposeFieldStateHolder.Saver,
     ) {
@@ -81,15 +83,14 @@ fun rememberFieldState(
 }
 
 
-
 @Composable
 fun rememberFieldState(
     fieldModule: ComposeFieldModule,
-    stateHolder: ComposeFieldStateHolder?=null
+    stateHolder: ComposeFieldStateHolder? = null
 ): ComposeFieldStateHolder {
     val initialField = ComposeFieldState(
-        field = fieldModule,
-        text = stateHolder?.state?.text?:fieldModule.value.takeIf { x->x.isNotEmpty() }?:""
+        field = stateHolder?.state?.field?:fieldModule,
+        text = stateHolder?.state?.text ?: fieldModule.value.takeIf { x -> x.isNotEmpty() } ?: ""
     )
     val value = stateHolder?.state?.text ?: fieldModule.value
     return rememberSaveable(
@@ -100,7 +101,22 @@ fun rememberFieldState(
             fieldModule.keyboardType,
             value,
             fieldModule.label,
-            fieldModule.defaultValues
+            fieldModule.hint,
+            fieldModule.required,
+            fieldModule.description,
+            fieldModule.defaultValues,
+            fieldModule.childID,
+            fieldModule.minValue,
+            fieldModule.maxValue,
+            fieldModule.sortNumber,
+            fieldModule.sectionSortNumber,
+            stateHolder?.state?.field?.isEditable?:fieldModule.isEditable,
+            fieldModule.useIDValue,
+            fieldModule.hideInitial,
+            fieldModule.autoFocusable,
+            fieldModule.pattern,
+            fieldModule.patternMessage,
+            stateHolder?.state?.field?.hidden?:fieldModule.hidden,
         ),
         saver = ComposeFieldStateHolder.Saver,
     ) {
@@ -119,29 +135,40 @@ class ComposeFieldStateHolder(initialField: ComposeFieldState) {
         )
     }
 
-    fun updatedFieldDefaultValues(list: List<DefaultValues>){
+    fun updatedField(field: ComposeFieldModule) {
+        state = state.copy(
+            field = field
+        )
+    }
+
+    fun updatedFieldDefaultValues(list: List<DefaultValues>) {
         state = state.copy(
             field = state.field.copy(
                 defaultValues = list
             )
         )
     }
-    fun updateValidation(pair: Pair<Boolean,String>){
+
+    fun updateValidation(pair: Pair<Boolean, String>) {
         state = state.copy(
             hasError = pair.first.not(),
             errorMessage = pair.second
         )
     }
 
-    fun updatedState(pair: Pair<Boolean, String>,text: String){
+    fun updatedState(pair: Pair<Boolean, String>, text: String) {
         updateField(text)
         updateValidation(pair)
     }
 
-    fun updatedState(pair: Pair<Boolean, String>,text: String,onValueChangeForChild: ((value: String) -> Unit)?){
+    fun updatedState(
+        pair: Pair<Boolean, String>,
+        text: String,
+        onValueChangeForChild: ((value: String) -> Unit)?
+    ) {
         updateField(text)
         updateValidation(pair)
-        if (state.field.childID!="-1"){
+        if (state.field.childID != "-1") {
             onValueChangeForChild?.invoke(text)
         }
     }
@@ -157,7 +184,22 @@ class ComposeFieldStateHolder(initialField: ComposeFieldState) {
                     it.state.field.keyboardType,
                     it.state.field.value,
                     it.state.field.label,
-                    it.state.field.defaultValues
+                    it.state.field.defaultValues,
+                    it.state.field.hint,
+                    it.state.field.required,
+                    it.state.field.description,
+                    it.state.field.childID,
+                    it.state.field.minValue,
+                    it.state.field.maxValue,
+                    it.state.field.sortNumber,
+                    it.state.field.sectionSortNumber,
+                    it.state.field.isEditable,
+                    it.state.field.useIDValue,
+                    it.state.field.hideInitial,
+                    it.state.field.autoFocusable,
+                    it.state.field.pattern,
+                    it.state.field.patternMessage,
+                    it.state.field.hidden,
                 )
             },
             restore = {
@@ -171,7 +213,22 @@ class ComposeFieldStateHolder(initialField: ComposeFieldState) {
                             it[4] as ComposeKeyboardType,
                             it[5] as String,
                             it[6] as String,
-                            defaultValues = it[7] as List<DefaultValues>
+                            defaultValues = it[7] as List<DefaultValues>,
+                            hint=it[8] as String,
+                            required = it[9] as ComposeFieldYesNo,
+                            description = it[10] as String,
+                            childID = it[11] as String,
+                            minValue = it[12] as? String,
+                            maxValue = it[13] as? String,
+                            sortNumber = it[14] as Int,
+                            sectionSortNumber = it[15] as Int,
+                            isEditable = it[16] as ComposeFieldYesNo,
+                            useIDValue = it[17] as ComposeFieldYesNo,
+                            hideInitial = it[18] as ComposeFieldYesNo,
+                            autoFocusable = it[19] as ComposeFieldYesNo,
+                            pattern = it[20] as String,
+                            patternMessage = it[21] as String,
+                            hidden=it[22] as ComposeFieldYesNo
                         )
 
                     )
