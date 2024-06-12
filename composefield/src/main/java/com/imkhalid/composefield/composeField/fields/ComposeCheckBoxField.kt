@@ -197,7 +197,7 @@ class ComposeCheckBoxField :ComposeField(){
                         .padding(top = 7.dp),
                     text = state.field.label,
                     fontSize = MaterialTheme.typography.titleMedium.fontSize,
-                    color = ComposeFieldTheme.hintColor
+                    color = ComposeFieldTheme.focusedBorderColor
                 )
                 Spacer(modifier = Modifier.padding(top = 5.dp))
                 state.field.defaultValues.forEach { defV ->
