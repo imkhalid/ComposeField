@@ -48,7 +48,7 @@ abstract class ComposeField {
     abstract fun Build(
         modifier: Modifier,
         state: ComposeFieldState,
-        newValue:(Pair<Boolean,String>, String)->Unit,
+        newValue: (Pair<Boolean, String>, String) -> Unit,
     )
 
 }
