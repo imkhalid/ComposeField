@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -60,7 +61,9 @@ class Sections(
     fun Build(
         modifier: Modifier = Modifier,
         sections: List<ComposeSectionModule>,
+        preState: HashMap<String, List<ComposeFieldStateHolder>>? = null,
         button: (@Composable ColumnScope.(onClick: () -> Unit) -> Unit)? = null,
+        onValueChange: ((name: String, newValue: String) -> Unit)? = null,
         valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
         onLastPageReach: ((Sections) -> Unit)? = null,
         errorDialog: (@Composable (
@@ -68,17 +71,37 @@ class Sections(
             onDismiss: () -> Unit
         ) -> Unit)? = null
     ) {
-        if (sectionNames.isEmpty())
+        if (sectionNames.isEmpty()) {
             sections.mapTo(sectionNames) {
                 it.name
             }
+            sections.forEach {
+                sectionState[it.name] = it.fields.map { field ->
+                    val preFieldState = preState?.getOrDefault(it.name, emptyList())?.find { x->x.state.field.name==field.name }
+                    rememberFieldState(
+                        fieldModule = field,
+                        stateHolder = preFieldState
+                    )
+                }
+            }
+        }
         when (sectionType) {
             SectionType.Simple -> SimpleSections(
                 nav = nav,
                 sections = sections,
                 valueChangeForChild = valueChangeForChild,
                 button = button,
-                onLastPageReach = onLastPageReach
+                onLastPageReach = onLastPageReach,
+                onValueChange = onValueChange
+            )
+
+            SectionType.SIMPLE_VERTICAL -> SimpleVertical(
+                nav = nav,
+                sections = sections,
+                valueChangeForChild = valueChangeForChild,
+                button = button,
+                onLastPageReach = onLastPageReach,
+                onValueChange = onValueChange
             )
 
             SectionType.Tab -> TabSections(
@@ -93,7 +116,11 @@ class Sections(
                 nav = nav,
                 modifier = modifier,
                 sections = sections,
+                onValueChange = onValueChange,
                 valueChangeForChild = valueChangeForChild,
+                sectionNames = sectionNames,
+                sectionState = sectionState,
+                stepSectionContentItem = stepSectionContentItem,
                 errorDialog = errorDialog
             )
         }
@@ -106,7 +133,8 @@ class Sections(
         sections: List<ComposeSectionModule>,
         valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
         button: (@Composable ColumnScope.(onClick: () -> Unit) -> Unit)?,
-        onLastPageReach: ((Sections) -> Unit)? = null
+        onLastPageReach: ((Sections) -> Unit)? = null,
+        onValueChange: ((name: String, newValue: String) -> Unit)?
     ) {
         Column {
             NavHost(
@@ -115,23 +143,74 @@ class Sections(
             ) {
                 sections.forEach { section ->
                     composable(section.name) {
-                        if (section.subSections.isNotEmpty()) {
-                            Column {
+                        LazyColumn {
+                            if (section.subSections.isNotEmpty()) {
                                 section.subSections.forEachIndexed { itemindex, item ->
-                                    sectionState[item.name] = buildInnerSection(
+                                    buildInnerSection(
                                         section = item,
-                                        valueChangeForChild = valueChangeForChild
+                                        valueChangeForChild = valueChangeForChild,
+                                        onValueChange = onValueChange
                                     )
                                 }
+                            } else {
+                                buildInnerSection(
+                                    section = section,
+                                    valueChangeForChild = valueChangeForChild,
+                                    onValueChange = onValueChange
+                                )
                             }
-                        } else {
-                            sectionState[section.name] = buildInnerSection(
-                                section = section,
-                                valueChangeForChild = valueChangeForChild
-                            )
                         }
                     }
                 }
+            }
+            button?.invoke(this) {
+                navigateToNext(nav, onLastPageReach)
+            }
+
+            BackHandler {
+                if (currentSectionIndex != 0) {
+                    --currentSectionIndex
+                    nav.popBackStack()
+                } else {
+                    parentNav.popBackStack()
+                }
+
+            }
+        }
+    }
+
+    @Composable
+    private fun SimpleVertical(
+        nav: NavHostController,
+        sections: List<ComposeSectionModule>,
+        valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
+        button: (@Composable ColumnScope.(onClick: () -> Unit) -> Unit)?,
+        onLastPageReach: ((Sections) -> Unit)? = null,
+        onValueChange: ((name: String, newValue: String) -> Unit)?
+    ) {
+        Column {
+            LazyColumn {
+                sections.forEach { section ->
+                    if (section.subSections.isNotEmpty()) {
+                        section.subSections.forEachIndexed { itemindex, item ->
+                            buildInnerSection(
+                                section = item,
+                                showSectionName = true,
+                                valueChangeForChild = valueChangeForChild,
+                                onValueChange = onValueChange
+                            )
+                        }
+                    } else {
+                        buildInnerSection(
+                            section = section,
+                            showSectionName = true,
+                            valueChangeForChild = valueChangeForChild,
+                            onValueChange = onValueChange
+                        )
+
+                    }
+                }
+
             }
             button?.invoke(this) {
                 navigateToNext(nav, onLastPageReach)
@@ -170,20 +249,20 @@ class Sections(
             ) {
                 sections.forEach { section ->
                     composable(section.name) {
-                        if (section.subSections.isNotEmpty()) {
-                            Column {
+                        LazyColumn {
+                            if (section.subSections.isNotEmpty()) {
                                 section.subSections.forEachIndexed { itemindex, item ->
-                                    sectionState[item.name] = buildInnerSection(
+                                    this.buildInnerSection(
                                         section = item,
                                         valueChangeForChild = valueChangeForChild
                                     )
                                 }
+                            } else {
+                                buildInnerSection(
+                                    section = section,
+                                    valueChangeForChild = valueChangeForChild
+                                )
                             }
-                        } else {
-                            sectionState[section.name] = buildInnerSection(
-                                section = section,
-                                valueChangeForChild = valueChangeForChild
-                            )
                         }
                     }
                 }
@@ -227,11 +306,129 @@ class Sections(
         }
     }
 
+
+    @Composable
+    private fun Build(section: ComposeSectionModule) {
+
+        LazyColumn {
+            if (section.subSections.isNotEmpty()) {
+                section.subSections.forEachIndexed { itemindex, item ->
+                    this@LazyColumn.buildInnerSection(section = item)
+                }
+            } else {
+                buildInnerSection(section = section)
+            }
+        }
+    }
+
+    private fun navigateToNext(
+        navController: NavHostController,
+        lastPage: ((Sections) -> Unit)? = null
+    ) {
+        if (currentSectionIndex < sectionNames.lastIndex) {
+            navController.navigate(sectionNames[++currentSectionIndex])
+        } else {
+            lastPage?.invoke(this)
+        }
+    }
+
+    private fun LazyListScope.buildInnerSection(
+        modifier: Modifier = Modifier,
+        section: ComposeSectionModule,
+        showButton: Boolean = false,
+        showSectionName: Boolean = false,
+        clickCallback: (() -> Unit)? = null,
+        valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
+        onValueChange: ((name: String, newValue: String) -> Unit)? = null
+    ) {
+        item {
+            if (showSectionName)
+                Text(
+                    text = section.name,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = responsiveTextSize(size = 15).sp,
+                    modifier = Modifier.padding(5.dp)
+                )
+            section.fields.forEach { field ->
+                val selectedState =
+                    this@Sections.sectionState[section.name]?.find { x -> x.state.field.name == field.name }
+
+//                val state = rememberFieldState(
+//                    fieldModule = field,
+//                    stateHolder = selectedState
+//                )
+                val state = sectionState[section.name]
+                    ?.find { x -> x.state.field.name == field.name }
+                    ?: rememberFieldState(
+                        fieldModule = field,
+                        stateHolder = selectedState
+                    )
+
+                ComposeFieldBuilder()
+                    .Build(
+                        modifier = modifier,
+                        stateHolder = state,
+                        onValueChange = onValueChange,
+                        onValueChangeForChild = {
+                            valueChangeForChild?.invoke(
+                                ChildValueModel(
+                                    state.state.field,
+                                    it,
+                                    childValues = {
+                                        updatedChildValues(
+                                            state.state.field.childID,
+                                            it,
+                                            sectionState[section.name] ?: emptyList()
+                                        )
+                                    }
+                                )
+                            )
+                        }
+                    )
+
+            }
+            if (showButton)
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth(0.7f),
+                    onClick = { clickCallback?.invoke() }) {
+                    Text(text = "Continue")
+                }
+        }
+    }
+
+    internal fun updatedChildValues(
+        childID: String,
+        newValues: List<DefaultValues>,
+        sectionState: List<ComposeFieldStateHolder>
+    ) {
+        val childs =childID.split(",")
+        childs.forEach {
+            sectionState.find { x -> x.state.field.id == it }?.let {
+                it.updatedFieldDefaultValues(newValues)
+            }
+        }
+    }
+
+    internal fun validatedSection(sectionState: List<ComposeFieldStateHolder>): Boolean {
+        return sectionState.all { x ->
+            x.state.field.required == ComposeFieldYesNo.YES &&
+                    x.state.text.isNotEmpty() &&
+                    x.state.hasError.not()
+        }
+    }
+
+
     @Composable
     fun StepsSections(
         nav: NavHostController,
         modifier: Modifier,
+        sectionNames: List<String>,
         sections: List<ComposeSectionModule>,
+        sectionState: HashMap<String, List<ComposeFieldStateHolder>>,
+        stepSectionContentItem: (@Composable LazyItemScope.(name: String, clickCallback: (sectionName: String) -> Unit) -> Unit)?,
+        onValueChange: ((name: String, newValue: String) -> Unit)? = null,
         valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
         errorDialog: (@Composable (
             onClick: (positive: Boolean) -> Unit,
@@ -259,23 +456,56 @@ class Sections(
                 }
             }
             composable("CurrentSection/{data}") {
-                Column {
+                LazyColumn {
                     sections.find { x -> x.name == it.arguments?.getString("data") }?.let {
-                        sectionState[it.name] = buildInnerSection(
-                            modifier = modifier,
-                            section = it,
-                            stateList = sectionState[it.name] ?: emptyList(),
-                            showButton = true,
-                            valueChangeForChild = valueChangeForChild,
-                            clickCallback = {
-                                val isValidated =
-                                    validatedSection(sectionState[it.name] ?: emptyList())
-                                if (isValidated)
-                                    nav.popBackStack()
-                                else
-                                    showDialog = true
+                        if (it.subSections.isNotEmpty()) {
+                            it.subSections.forEach { subSec ->
+                                buildInnerSection(
+                                    modifier = modifier,
+                                    section = subSec,
+                                    showButton = false,
+                                    showSectionName = true,
+                                    onValueChange = onValueChange,
+                                    valueChangeForChild = valueChangeForChild,
+                                )
                             }
-                        )
+                            item {
+                                Button(
+                                    modifier = Modifier
+                                        .fillMaxWidth(0.7f),
+                                    onClick = {
+                                        val isValidated =
+                                            it.subSections.map { subSec ->
+                                                validatedSection(
+                                                    sectionState[subSec.name] ?: emptyList()
+                                                )
+                                            }
+
+                                        if (isValidated.all { x -> x })
+                                            nav.popBackStack()
+                                        else
+                                            showDialog = true
+                                    }) {
+                                    Text(text = "Continue")
+                                }
+                            }
+                        } else {
+                            buildInnerSection(
+                                modifier = modifier,
+                                section = it,
+                                showButton = true,
+                                onValueChange = onValueChange,
+                                valueChangeForChild = valueChangeForChild,
+                                clickCallback = {
+                                    val isValidated =
+                                        validatedSection(sectionState[it.name] ?: emptyList())
+                                    if (isValidated)
+                                        nav.popBackStack()
+                                    else
+                                        showDialog = true
+                                }
+                            )
+                        }
                     }
                 }
                 if (showDialog)
@@ -292,115 +522,18 @@ class Sections(
 
     }
 
-    @Composable
-    private fun Build(section: ComposeSectionModule) {
+}
 
-        if (section.subSections.isNotEmpty()) {
-            Column {
-                section.subSections.forEachIndexed { itemindex, item ->
-                    sectionState[item.name] = buildInnerSection(section = item)
-                }
-            }
-        } else {
-            sectionState[section.name] = buildInnerSection(section = section)
+fun getFieldByFieldName(
+    name: String,
+    state: HashMap<String, List<ComposeFieldStateHolder>>
+): ComposeFieldStateHolder? {
+    for (i in 0 until state.entries.size) {
+        val foundState =
+            state.entries.toList().get(i).value.find { x -> x.state.field.name == name }
+        if (foundState != null) {
+            return foundState
         }
     }
-
-    @Composable
-    private fun buildInnerSection(
-        modifier: Modifier = Modifier,
-        section: ComposeSectionModule,
-        stateList: List<ComposeFieldStateHolder> = emptyList(),
-        showButton: Boolean = false,
-        showSectionName: Boolean = false,
-        clickCallback: (() -> Unit)? = null,
-        valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
-    ): List<ComposeFieldStateHolder> {
-
-        val sectionState: ArrayList<ComposeFieldStateHolder> = arrayListOf()
-        LazyColumn {
-            if (showSectionName)
-                item {
-                    Text(
-                        text = section.name,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Medium,
-                        fontSize = responsiveTextSize(size = 15).sp,
-                        modifier = Modifier.padding(5.dp)
-                    )
-                }
-            section.fields.forEach { field ->
-                item {
-                    val selectedState = stateList.find { x -> x.state.field.name == field.name }
-                    val state = rememberFieldState(
-                        fieldModule = field,
-                        stateHolder = selectedState
-                    )
-                    ComposeFieldBuilder()
-                        .Build(
-                            modifier = modifier,
-                            stateHolder = state,
-                            onValueChangeForChild = {
-                                valueChangeForChild?.invoke(
-                                    ChildValueModel(
-                                        state.state.field,
-                                        it,
-                                        childValues = {
-                                            updatedChildValues(
-                                                state.state.field.childID,
-                                                it,
-                                                sectionState
-                                            )
-                                        }
-                                    )
-                                )
-                            }
-                        )
-                    sectionState.add(state)
-
-                }
-
-            }
-            if (showButton)
-                item {
-                    Button(
-                        modifier = Modifier
-                            .fillMaxWidth(0.7f),
-                        onClick = { clickCallback?.invoke() }) {
-                        Text(text = "Continue")
-                    }
-                }
-        }
-        return sectionState
-    }
-
-    private fun updatedChildValues(
-        childID: String,
-        newValues: List<DefaultValues>,
-        sectionState: java.util.ArrayList<ComposeFieldStateHolder>
-    ) {
-        sectionState.find { x -> x.state.field.id == childID }?.let {
-            it.updatedFieldDefaultValues(newValues)
-        }
-    }
-
-    private fun navigateToNext(
-        navController: NavHostController,
-        lastPage: ((Sections) -> Unit)? = null
-    ) {
-        if (currentSectionIndex < sectionNames.lastIndex) {
-            navController.navigate(sectionNames[++currentSectionIndex])
-        } else {
-            lastPage?.invoke(this)
-        }
-    }
-
-
-    private fun validatedSection(sectionState: List<ComposeFieldStateHolder>): Boolean {
-        return sectionState.all { x ->
-            x.state.field.required == ComposeFieldYesNo.YES &&
-                    x.state.text.isNotEmpty() &&
-                    x.state.hasError.not()
-        }
-    }
+    return null
 }
