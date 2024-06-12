@@ -28,12 +28,12 @@ data class ComposeFieldModule(
     val sortNumber: Int = 0,
     val sectionSortNumber: Int = 0,
     val isEditable: ComposeFieldYesNo = ComposeFieldYesNo.YES,
-    val display: ComposeFieldYesNo = ComposeFieldYesNo.YES,
     val useIDValue: ComposeFieldYesNo = ComposeFieldYesNo.YES,
     val hideInitial: ComposeFieldYesNo = ComposeFieldYesNo.YES,
     val autoFocusable: ComposeFieldYesNo = ComposeFieldYesNo.YES,
-    val pattern:String = "",
-    val patternMessage:String = ""
+    val pattern: String = "",
+    val patternMessage: String = "",
+    val hidden: ComposeFieldYesNo = ComposeFieldYesNo.NO
 ) {
 
     fun parseCustomField(
@@ -53,56 +53,61 @@ data class ComposeFieldModule(
             childID = customField.child_id.toString(),
             type = customField.type.fieldType(),
             keyboardType = customField.inputType.keyboardType(),
-            value = getInitialValue(customField,selected_value),
+            value = getInitialValue(customField, selected_value),
             label = customField.label,
             hint = customField.field_hint ?: "",
             description = customField.description ?: "",
             defaultValues = customField.default_values,
             required = customField.required.toString().CHOICE(),
-            minValue = getMinValue(customField,customField.type.fieldType()),
-            maxValue = getMaxValue(customField,customField.type.fieldType()),
+            minValue = getMinValue(customField, customField.type.fieldType()),
+            maxValue = getMaxValue(customField, customField.type.fieldType()),
             sortNumber = customField.field_sort_number,
             sectionSortNumber = sortNumber,
-            display = customField.visible?.toString()?.CHOICE()?:ComposeFieldYesNo.YES,
-            hideInitial = customField.visible.toString()?.CHOICE()?:ComposeFieldYesNo.YES
+            hidden = customField.visible?.toString()?.CHOICE() ?: ComposeFieldYesNo.YES,
+            hideInitial = customField.visible.toString()?.CHOICE() ?: ComposeFieldYesNo.YES
         )
     }
 
     private fun getInitialValue(customField: CustomFields, selectedValue: String): String {
         return if (selectedValue.isNotEmpty())
             selectedValue
-        else if (customField.type.fieldType()==ComposeFieldType.SWITCH){
-            val falseValue = customField.default_values.find { x->x.text.contains("no",true) ||
-                    x.text.contains("false",true) ||
-                    x.text.contains("female",true)
-            }?.id?:""
+        else if (customField.type.fieldType() == ComposeFieldType.SWITCH) {
+            val falseValue = customField.default_values.find { x ->
+                x.text.contains("no", true) ||
+                        x.text.contains("false", true) ||
+                        x.text.contains("female", true)
+            }?.id ?: ""
             falseValue
-        }else{
+        } else {
             selectedValue
         }
     }
 
-    fun getMinValue(customField: CustomFields,type: ComposeFieldType):String{
-        return when(type){
-            ComposeFieldType.TEXT_BOX ,
+    fun getMinValue(customField: CustomFields, type: ComposeFieldType): String {
+        return when (type) {
+            ComposeFieldType.TEXT_BOX,
             ComposeFieldType.TEXT_AREA -> customField.min_rule
-            ComposeFieldType.DATE_PICKER ,
-            ComposeFieldType.TIME_PICKER ,
+
+            ComposeFieldType.DATE_PICKER,
+            ComposeFieldType.TIME_PICKER,
             ComposeFieldType.DATE_TIME_PICKER -> customField.min_date
-            ComposeFieldType.DROP_DOWN ,
+
+            ComposeFieldType.DROP_DOWN,
             ComposeFieldType.SWITCH,
             ComposeFieldType.CHECK_BOX,
             ComposeFieldType.RADIO_BUTTON -> ""
         }
     }
-    fun getMaxValue(customField: CustomFields,type: ComposeFieldType):String{
-        return when(type){
+
+    fun getMaxValue(customField: CustomFields, type: ComposeFieldType): String {
+        return when (type) {
             ComposeFieldType.TEXT_BOX -> customField.max_rule
             ComposeFieldType.TEXT_AREA -> customField.max_rule
             ComposeFieldType.DATE_PICKER,
             ComposeFieldType.TIME_PICKER,
             ComposeFieldType.DATE_TIME_PICKER -> customField.max_date
-            ComposeFieldType.DROP_DOWN ,
+
+            ComposeFieldType.DROP_DOWN,
             ComposeFieldType.SWITCH,
             ComposeFieldType.CHECK_BOX,
             ComposeFieldType.RADIO_BUTTON -> ""
@@ -110,27 +115,32 @@ data class ComposeFieldModule(
 
     }
 
-    fun getTextFromValue(value:String):String{
-        return when(this.type){
+    fun getTextFromValue(value: String): String {
+        return when (this.type) {
             ComposeFieldType.TEXT_BOX,
-            ComposeFieldType.TEXT_AREA ,
-            ComposeFieldType.DATE_PICKER ,
-            ComposeFieldType.TIME_PICKER ,
+            ComposeFieldType.TEXT_AREA,
+            ComposeFieldType.DATE_PICKER,
+            ComposeFieldType.TIME_PICKER,
             ComposeFieldType.DATE_TIME_PICKER -> {
                 value
             }
-            ComposeFieldType.SWITCH ,
-            ComposeFieldType.DROP_DOWN ,
-            ComposeFieldType.CHECK_BOX ,
+
+            ComposeFieldType.SWITCH,
+            ComposeFieldType.DROP_DOWN,
+            ComposeFieldType.CHECK_BOX,
             ComposeFieldType.RADIO_BUTTON -> {
-                this.defaultValues.find { x->x.id==value }?.text?:""
+                this.defaultValues.find { x -> x.id == value }?.text ?: ""
             }
         }
     }
 }
 
 fun String.CHOICE(): ComposeFieldYesNo {
-    return if (this.equals("0", true))
+    return if (
+        this.equals("0", true) ||
+        this.equals("false", true) ||
+        this.equals("no", true)
+    )
         ComposeFieldYesNo.NO
     else
         ComposeFieldYesNo.YES
@@ -154,8 +164,9 @@ fun String.keyboardType(): ComposeKeyboardType {
         "text" -> ComposeKeyboardType.TEXT
         "cnic" -> ComposeKeyboardType.CNIC
         "email" -> ComposeKeyboardType.EMAIL
-        "mobile" ,
+        "mobile",
         "mobile_number" -> ComposeKeyboardType.MOBILE_NO
+
         "number" -> ComposeKeyboardType.NUMBER
         else -> ComposeKeyboardType.NONE
     }
@@ -164,5 +175,5 @@ fun String.keyboardType(): ComposeKeyboardType {
 data class ChildValueModel(
     val fieldModule: ComposeFieldModule,
     val value: String,
-    val childValues: (List<DefaultValues>)->Unit
+    val childValues: (List<DefaultValues>) -> Unit
 )
