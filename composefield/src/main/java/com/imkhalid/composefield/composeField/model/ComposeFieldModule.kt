@@ -29,7 +29,7 @@ data class ComposeFieldModule(
     val sectionSortNumber: Int = 0,
     val isEditable: ComposeFieldYesNo = ComposeFieldYesNo.YES,
     val useIDValue: ComposeFieldYesNo = ComposeFieldYesNo.YES,
-    val hideInitial: ComposeFieldYesNo = ComposeFieldYesNo.YES,
+    val hideInitial: ComposeFieldYesNo = ComposeFieldYesNo.NO,
     val autoFocusable: ComposeFieldYesNo = ComposeFieldYesNo.YES,
     val pattern: String = "",
     val patternMessage: String = "",
