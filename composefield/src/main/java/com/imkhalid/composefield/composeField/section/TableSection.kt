@@ -284,11 +284,6 @@ class TableSection(
                     modifier = modifier,
                     sections = sections,
                     preState = preState,
-                    button = {
-                        DoneButton?.invoke(this){
-
-                        }
-                    }
                 )
                 DoneButton?.invoke(this) {
                     onDone.invoke(

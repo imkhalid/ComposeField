@@ -73,7 +73,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
 
-    implementation ("io.michaelrocks:libphonenumber-android:8.13.28") //Phone Number
+    implementation ("io.michaelrocks:libphonenumber-android:8.13.35") //Phone Number
 
     implementation("androidx.hilt:hilt-navigation-compose:$hiltWork")
 
