@@ -33,7 +33,7 @@ data class ComposeFieldModule(
     val autoFocusable: ComposeFieldYesNo = ComposeFieldYesNo.YES,
     val pattern: String = "",
     val patternMessage: String = "",
-    val hidden: ComposeFieldYesNo = ComposeFieldYesNo.NO
+    val hidden: ComposeFieldYesNo = if (hideInitial==ComposeFieldYesNo.YES) ComposeFieldYesNo.YES else ComposeFieldYesNo.NO
 ) {
 
     fun parseCustomField(

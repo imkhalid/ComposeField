@@ -37,6 +37,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
 import com.imkhalid.composefield.composeField.ComposeFieldStateHolder
 import com.imkhalid.composefield.composeField.fieldTypes.SectionType
+import com.imkhalid.composefield.composeField.model.ChildValueModel
 import com.imkhalid.composefield.composeField.model.ComposeSectionModule
 import com.imkhalid.composefield.composeField.rememberFieldState
 import com.imkhalid.composefield.theme.ComposeFieldTheme
@@ -64,6 +65,8 @@ class TableSection(
         onItemAdded: (HashMap<String, List<ComposeFieldStateHolder>>) -> Unit,
         onDeleteItem: (index: Int) -> Unit,
         onItemEdited: (HashMap<String, List<ComposeFieldStateHolder>>,index:Int) -> Unit,
+        onValueChange: ((name: String, newValue: String) -> Unit)? = null,
+        valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
         AddButton: (@Composable ColumnScope.(onClick: () -> Unit) -> Unit)? = null,
         DoneButton: (@Composable ColumnScope.(onClick: () -> Unit) -> Unit)? = null,
         SingleItemHeader: @Composable (onEditClick: () -> Unit, onDeleteClick: () -> Unit, onExpandClick: () -> Unit, textTitle: String) -> Unit,
@@ -158,6 +161,8 @@ class TableSection(
             TableItemDialog(
                 preState = tableDataList.getOrNull(editItem),
                 sections = sections,
+                valueChangeForChild = valueChangeForChild,
+                onValueChange = onValueChange,
                 DoneButton = DoneButton ?: AddButton,
                 onDismiss = { showDialog = false },
                 onDone = {
@@ -267,6 +272,8 @@ class TableSection(
     fun TableItemDialog(
         modifier: Modifier = Modifier,
         preState: HashMap<String, List<ComposeFieldStateHolder>>?,
+        onValueChange: ((name: String, newValue: String) -> Unit)? = null,
+        valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
         DoneButton: (@Composable ColumnScope.(onClick: () -> Unit) -> Unit)?,
         sections: List<ComposeSectionModule>,
         onDismiss: () -> Unit,
@@ -284,6 +291,8 @@ class TableSection(
                     modifier = modifier,
                     sections = sections,
                     preState = preState,
+                    onValueChange = onValueChange,
+                    valueChangeForChild = valueChangeForChild
                 )
                 DoneButton?.invoke(this) {
                     onDone.invoke(
