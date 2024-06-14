@@ -17,3 +17,4 @@ dependencyResolutionManagement {
 rootProject.name = "ComposeFieldProject"
 include(":app")
 include(":composefield")
+include(":library")

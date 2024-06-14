@@ -92,8 +92,7 @@ dependencies {
     api("androidx.compose.ui:ui-graphics")
     api("androidx.compose.ui:ui-tooling-preview")
     api("androidx.compose.material3:material3")
-
-    api("io.michaelrocks:libphonenumber-android:8.13.35") //Phone Number
+    implementation(project(":library"))
 
     implementation("androidx.hilt:hilt-navigation-compose:$hiltWork")
 
