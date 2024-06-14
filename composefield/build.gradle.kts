@@ -51,6 +51,23 @@ afterEvaluate {
                     builtBy(tasks.named("assembleRelease"))
                 }
             }
+            create<MavenPublication>("mavenJava") {
+                // Adjust according to what you are publishing (e.g., 'java', 'androidRelease', etc.)
+                from(components.getByName("release"))
+
+                // Configure the POM file
+                pom.withXml {
+                    val dependenciesNode = asNode().appendNode("dependencies")
+                    configurations["implementation"].allDependencies.forEach {
+                        val dependencyNode = dependenciesNode.appendNode("dependency")
+                        dependencyNode.appendNode("groupId", it.group)
+                        dependencyNode.appendNode("artifactId", it.name)
+                        dependencyNode.appendNode("version", it.version)
+                        // 'compile' scope means it is needed for compilation and is transitively available
+                        dependencyNode.appendNode("scope", "compile")
+                    }
+                }
+            }
         }
     }
 
