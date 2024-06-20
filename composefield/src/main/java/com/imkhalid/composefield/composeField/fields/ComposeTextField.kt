@@ -56,7 +56,6 @@ import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardType
 import com.imkhalid.composefield.composeField.model.ComposeFieldModule
 import com.imkhalid.composefield.theme.ComposeFieldTheme
 import com.ozonedDigital.jhk.ui.common.responsiveTextSize
-import io.michaelrocks.libphonenumber.android.CountryCodeToRegionCodeMap
 import java.util.regex.Pattern
 
 class ComposeTextField : ComposeField() {
@@ -381,10 +380,6 @@ class ComposeTextField : ComposeField() {
         }
     }
 
-
-    private fun openCountryPicker(any: Any) {
-        CountryCodeToRegionCodeMap.getCountryCodeToRegionCodeMap()
-    }
 
     private fun getMinLine(type: ComposeFieldType): Int {
         return when (type) {
