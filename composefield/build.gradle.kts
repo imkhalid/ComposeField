@@ -39,64 +39,44 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 }
+afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>("aar") {
+                groupId = "com.imkhalid"
+                // The version will be provided by the build environment
+                artifactId = project.name
 
-//afterEvaluate {
-//    publishing {
-//        publications {
-//            create<MavenPublication>("mavenJava") {
-//                from(components["release"])
-//
-//                groupId = "com.github.imkhalid"
-//                artifactId = "ComposeField"
-//                version = "1.0.15" // You should dynamically set this or match your actual versioning
-//
-//                // Configure the POM file
-//                pom {
-//                    name.set("ComposeField")
-//                    description.set("A Library to create all type of Fields base on Module supplied")
-//                    url.set("https://github.com/imkhalid/ComposeField")
-//
-//                    scm {
-//                        connection.set("scm:git:git://github.com/imkhalid/ComposeField.git")
-//                        developerConnection.set("scm:git:ssh://github.com:imkhalid/ComposeField.git")
-//                        url.set("https://github.com/imkhalid/ComposeField")
-//                    }
-//
-//                    licenses {
-//                        license {
-//                            name.set("The Apache License, Version 2.0")
-//                            url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
-//                        }
-//                    }
-//
-//                    developers {
-//                        developer {
-//                            id.set("imkhalid")
-//                            name.set("Khalid Saeed")
-//                            email.set("your_email@example.com")
-//                        }
-//                    }
-//
-//                    withXml {
-//                        val dependenciesNode = asNode().appendNode("dependencies")
-//                        configurations["implementation"].allDependencies.forEach {
-//                            if (it.group != null && it.version != null) {
-//                                val dependencyNode = dependenciesNode.appendNode("dependency")
-//                                dependencyNode.appendNode("groupId", it.group)
-//                                dependencyNode.appendNode("artifactId", it.name)
-//                                dependencyNode.appendNode("version", it.version)
-//                                dependencyNode.appendNode("scope", "compile")
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        repositories {
-//            mavenLocal()
-//        }
-//    }
-//}
+                // Tell maven to prepare the generated "*.aar" file for publishing
+                artifact("${buildDir}/outputs/aar/${project.name}-release.aar") {
+                    builtBy(tasks.named("assembleRelease"))
+                }
+            }
+            create<MavenPublication>("mavenJava") {
+                // Adjust according to what you are publishing (e.g., 'java', 'androidRelease', etc.)
+                from(components.getByName("release"))
+
+                // Configure the POM file
+                pom.withXml {
+                    val dependenciesNode = asNode().appendNode("dependencies")
+                    // Ensure all configurations that could contain dependencies are included
+                    arrayOf("api", "implementation").forEach { configName ->
+                        configurations[configName].allDependencies.forEach {
+                            val dependencyNode = dependenciesNode.appendNode("dependency")
+                            dependencyNode.appendNode("groupId", it.group)
+                            dependencyNode.appendNode("artifactId", it.name)
+                            dependencyNode.appendNode("version", it.version)
+                            dependencyNode.appendNode(
+                                "scope",
+                                "compile"
+                            ) // 'compile' for api exposure
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
 
 
 dependencies {
