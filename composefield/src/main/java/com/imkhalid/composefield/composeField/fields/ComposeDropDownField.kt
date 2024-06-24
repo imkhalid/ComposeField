@@ -115,10 +115,10 @@ class ComposeDropDownField : ComposeField() {
                         .fillMaxWidth()
                         .align(Alignment.CenterStart)
                         .padding(start = 20.dp, top = 7.dp),
-                    color = ComposeFieldTheme.textColor,
+                    color = if (state.text.isEmpty()) ComposeFieldTheme.hintColor else ComposeFieldTheme.textColor,
                     text = dropDownText,
                     fontSize = responsiveTextSize(size = 15).sp,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = if (state.text.isEmpty()) FontWeight.Normal else FontWeight.Medium,
                 )
                 Icon(
                     imageVector = Icons.Default.ArrowDropDown,
