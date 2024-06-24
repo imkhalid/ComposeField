@@ -147,7 +147,7 @@ class ComposeTimePickerField : ComposeField(){
                             .fillMaxWidth()
                             .padding(start = 20.dp, top = 7.dp)
                             .align(Alignment.CenterStart),
-                        color = if (state.text.isEmpty()) ComposeFieldTheme.hintColor else ComposeFieldTheme.textColor,
+                        color = if (state.text.isEmpty()) ComposeFieldTheme.unfocusedLabelColor else ComposeFieldTheme.textColor,
                         text = dropDownText,
                         fontWeight = if (state.text.isEmpty()) FontWeight.Normal else FontWeight.Medium,
                         fontSize = responsiveTextSize(size = 15).sp
