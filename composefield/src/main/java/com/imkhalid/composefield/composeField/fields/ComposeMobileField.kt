@@ -55,11 +55,16 @@ class ComposeMobileField : ComposeField() {
         state: ComposeFieldState,
         newValue: (Pair<Boolean, String>, String) -> Unit
     ) {
-        val phoneNumberUtil:MutableState<PhoneNumberUtil> = remember {
+        val phoneNumberUtil: MutableState<PhoneNumberUtil> = remember {
             mutableStateOf(PhoneNumberUtil())
         }
 
-        MyBuild(state = state, newValue = newValue, modifier = modifier,phoneNumberUtil=phoneNumberUtil.value)
+        MyBuild(
+            state = state,
+            newValue = newValue,
+            modifier = modifier,
+            phoneNumberUtil = phoneNumberUtil.value
+        )
     }
 
     @Composable
@@ -105,12 +110,12 @@ class ComposeMobileField : ComposeField() {
         val toggleDropdown: () -> Unit = { expanded = !expanded }
         Column {
             TextField(
-                value = state.text,
+                value = state.text.removePrefix(phoneNumberUtil.prefix),
                 enabled = state.field.isEditable.value,
                 onValueChange = { curVal ->
                     if (curVal.length <= phoneNumberUtil.length) {
-                        builtinValidations(curVal,phoneNumberUtil) { validated, newVal ->
-                            newValue.invoke(validated, newVal)
+                        builtinValidations(curVal, phoneNumberUtil) { validated, newVal ->
+                            newValue.invoke(validated, phoneNumberUtil.prefix.plus(newVal))
                         }
                     }
 
@@ -118,7 +123,7 @@ class ComposeMobileField : ComposeField() {
                 prefix = {
                     if (state.field.keyboardType == ComposeKeyboardType.MOBILE_NO)
                         Text(
-                            text = phoneNumberUtil.prefix,
+                            text = "+${phoneNumberUtil.prefix}",
                             modifier = Modifier.clickable {
                                 toggleDropdown()
                             },
@@ -177,7 +182,8 @@ class ComposeMobileField : ComposeField() {
                     toggleDropdown()
                 }, onOptionSelected = { iosCode: String, code: String ->
                     phoneNumberUtil.currentCountryCode = iosCode
-                    phoneNumberUtil.prefix = "+$code"
+                    phoneNumberUtil.prefix = code
+                    newValue.invoke(Pair(true, ""), "")
                     toggleDropdown()
                 })
             }
@@ -198,12 +204,12 @@ class ComposeMobileField : ComposeField() {
         val toggleDropdown: () -> Unit = { expanded = !expanded }
         Column {
             TextField(
-                value = state.text,
+                value = state.text.removePrefix(phoneNumberUtil.prefix),
                 enabled = state.field.isEditable.value,
                 onValueChange = { curVal ->
                     if (curVal.length <= phoneNumberUtil.length) {
-                        builtinValidations(curVal,phoneNumberUtil) { validated, newVal ->
-                            newValue.invoke(validated, newVal)
+                        builtinValidations(curVal, phoneNumberUtil) { validated, newVal ->
+                            newValue.invoke(validated, phoneNumberUtil.prefix.plus(newVal))
                         }
                     }
 
@@ -211,7 +217,7 @@ class ComposeMobileField : ComposeField() {
                 prefix = {
                     if (state.field.keyboardType == ComposeKeyboardType.MOBILE_NO)
                         Text(
-                            text = phoneNumberUtil.prefix,
+                            text = "+${phoneNumberUtil.prefix}",
                             modifier = Modifier.clickable {
                                 toggleDropdown()
                             },
@@ -234,7 +240,7 @@ class ComposeMobileField : ComposeField() {
                         ) {
                             append(state.field.label)
                         }
-                        if (state.field.required== ComposeFieldYesNo.YES){
+                        if (state.field.required == ComposeFieldYesNo.YES) {
                             withStyle(
                                 style = SpanStyle(
                                     fontSize = responsiveTextSize(size = 13).sp,
@@ -304,7 +310,8 @@ class ComposeMobileField : ComposeField() {
                     toggleDropdown()
                 }, onOptionSelected = { iosCode: String, code: String ->
                     phoneNumberUtil.currentCountryCode = iosCode
-                    phoneNumberUtil.prefix = "+$code"
+                    phoneNumberUtil.prefix = code
+                    newValue.invoke(Pair(true, ""), "")
                     toggleDropdown()
                 })
             }
@@ -322,19 +329,19 @@ class ComposeMobileField : ComposeField() {
         val toggleDropdown: () -> Unit = { expanded = !expanded }
         Column {
             OutlinedTextField(
-                value = state.text,
+                value = state.text.removePrefix(phoneNumberUtil.prefix),
                 enabled = state.field.isEditable.value,
                 onValueChange = { curVal ->
                     if (curVal.length <= phoneNumberUtil.length) {
-                        builtinValidations(curVal,phoneNumberUtil) { validated, newVal ->
-                            newValue.invoke(validated, newVal)
+                        builtinValidations(curVal, phoneNumberUtil) { validated, newVal ->
+                            newValue.invoke(validated, phoneNumberUtil.prefix.plus(newVal))
                         }
                     }
 
                 },
                 prefix = {
                     if (state.field.keyboardType == ComposeKeyboardType.MOBILE_NO)
-                        Text(text = phoneNumberUtil.prefix, modifier = Modifier.clickable {
+                        Text(text = "+${phoneNumberUtil.prefix}", modifier = Modifier.clickable {
                             toggleDropdown()
                         })
                     else null
@@ -380,7 +387,8 @@ class ComposeMobileField : ComposeField() {
                     toggleDropdown()
                 }, onOptionSelected = { iosCode: String, code: String ->
                     phoneNumberUtil.currentCountryCode = iosCode
-                    phoneNumberUtil.prefix = "+$code"
+                    phoneNumberUtil.prefix = code
+                    newValue.invoke(Pair(true, ""), "")
                     toggleDropdown()
                 })
             }
@@ -388,7 +396,11 @@ class ComposeMobileField : ComposeField() {
     }
 
 
-    fun builtinValidations(curVal: String,phoneNumberUtil: PhoneNumberUtil, newValue: (Pair<Boolean, String>, String) -> Unit) {
+    fun builtinValidations(
+        curVal: String,
+        phoneNumberUtil: PhoneNumberUtil,
+        newValue: (Pair<Boolean, String>, String) -> Unit
+    ) {
         var bool = true
         var message = ""
         bool = phoneNumberUtil.validateNumbers(curVal)
