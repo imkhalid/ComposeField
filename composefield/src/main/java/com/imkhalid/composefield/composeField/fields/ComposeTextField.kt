@@ -415,6 +415,7 @@ class ComposeTextField : ComposeField() {
     private fun getKeyboardOptions(fieldState: ComposeFieldModule): KeyboardOptions {
         val type = when (fieldState.keyboardType) {
             ComposeKeyboardType.CNIC,
+            ComposeKeyboardType.ID_NO,
             ComposeKeyboardType.MOBILE_NO,
             ComposeKeyboardType.NUMBER -> KeyboardType.Number
 
@@ -472,6 +473,18 @@ class ComposeTextField : ComposeField() {
                     message = ""
                 }
             }
+            ComposeKeyboardType.ID_NO->{
+                val pattern = Patterns.ID_NO.pattern.toList()
+                if (!Pattern.matches(pattern.first(), valueToBeUsed)) {
+                    bool = false
+                    message = "ID No must 8 Character Long"
+                } else if (!Pattern.matches(pattern[1], valueToBeUsed)) {
+                    bool = false
+                    message = "Provide Valid ID NO"
+                } else {
+                    message = ""
+                }
+            }
 
             ComposeKeyboardType.EMAIL -> {
                 val pattern = Patterns.EMAIL.pattern.toList()
@@ -518,6 +531,7 @@ class ComposeTextField : ComposeField() {
 
         return when (keyboardType) {
             ComposeKeyboardType.CNIC -> Patterns.CNIC
+            ComposeKeyboardType.ID_NO -> Patterns.ID_NO
             ComposeKeyboardType.MOBILE_NO ->
                 Patterns.MOBILE.apply {
                     value = ""
@@ -551,6 +565,7 @@ class ComposeTextField : ComposeField() {
     private fun getValueWithMask(currValue: String, field: ComposeFieldModule): String {
         val mask = when (field.keyboardType) {
             ComposeKeyboardType.CNIC -> Patterns.CNIC.value
+            ComposeKeyboardType.ID_NO -> Patterns.ID_NO.value
             ComposeKeyboardType.MOBILE_NO -> Patterns.MOBILE.value
             ComposeKeyboardType.EMAIL -> Patterns.EMAIL.value
             ComposeKeyboardType.TEXT,
