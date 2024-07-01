@@ -125,7 +125,7 @@ class ComposeTimePickerField : ComposeField(){
                     TextButton(
                         modifier=Modifier.align(Alignment.BottomEnd),
                         onClick = {
-                            val result ="${timePickerState.hour}:${timePickerState.minute}"
+                            val result ="${timePickerState.hour}:${timePickerState.minute}:00"
                             newValue(Pair(true,""),result)
                             showDialog.value = false
                         }) {
@@ -208,7 +208,7 @@ class ComposeTimePickerField : ComposeField(){
     }
 
 
-    fun changeDateFormat(from:String="HH:mm",to:String="hh:mm aa",date: String):String{
+    fun changeDateFormat(from:String="HH:mm:ss",to:String="hh:mm aa",date: String):String{
         val date1 = parseToDate(from,date)
         return date1?.let {
             SimpleDateFormat(to, Locale.getDefault()).format(it)
