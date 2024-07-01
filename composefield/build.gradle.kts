@@ -69,7 +69,7 @@ afterEvaluate {
                             dependencyNode.appendNode(
                                 "scope",
                                 "compile"
-                            ) // 'compile' for api exposure
+                            ) // 'compile' for api
                         }
                     }
                 }
