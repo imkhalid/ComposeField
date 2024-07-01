@@ -125,7 +125,7 @@ class ComposeTimePickerField : ComposeField(){
                     TextButton(
                         modifier=Modifier.align(Alignment.BottomEnd),
                         onClick = {
-                            val result ="${timePickerState.hour}:${timePickerState.minute}:00"
+                            val result ="${String.format("%02d",timePickerState.hour)}:${String.format("%02d",timePickerState.minute)}:00"
                             newValue(Pair(true,""),result)
                             showDialog.value = false
                         }) {
