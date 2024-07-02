@@ -63,9 +63,16 @@ data class ComposeFieldModule(
             maxValue = getMaxValue(customField, customField.type.fieldType()),
             sortNumber = customField.field_sort_number,
             sectionSortNumber = sortNumber,
-            hidden = customField.visible?.toString()?.CHOICE() ?: ComposeFieldYesNo.YES,
-            hideInitial = customField.visible.toString()?.CHOICE() ?: ComposeFieldYesNo.YES
+            hidden = getHiddenValue(customField.visible),
+            hideInitial = getHiddenValue(customField.visible)
         )
+    }
+
+    private fun getHiddenValue(field:Int):ComposeFieldYesNo{
+        return if(field==0)
+            ComposeFieldYesNo.YES
+        else
+            ComposeFieldYesNo.NO
     }
 
     private fun getInitialValue(customField: CustomFields, selectedValue: String): String {
