@@ -33,7 +33,7 @@ data class ComposeFieldModule(
     val autoFocusable: ComposeFieldYesNo = ComposeFieldYesNo.YES,
     val pattern: String = "",
     val patternMessage: String = "",
-    val hidden: ComposeFieldYesNo = if (hideInitial==ComposeFieldYesNo.YES) ComposeFieldYesNo.YES else ComposeFieldYesNo.NO
+    val hidden: ComposeFieldYesNo = if (hideInitial == ComposeFieldYesNo.YES) ComposeFieldYesNo.YES else ComposeFieldYesNo.NO
 ) {
 
     fun parseCustomField(
@@ -68,8 +68,8 @@ data class ComposeFieldModule(
         )
     }
 
-    private fun getHiddenValue(field:Int):ComposeFieldYesNo{
-        return if(field==0)
+    private fun getHiddenValue(field: Int): ComposeFieldYesNo {
+        return if (field == 0)
             ComposeFieldYesNo.YES
         else
             ComposeFieldYesNo.NO
@@ -134,9 +134,21 @@ data class ComposeFieldModule(
 
             ComposeFieldType.SWITCH,
             ComposeFieldType.DROP_DOWN,
-            ComposeFieldType.CHECK_BOX,
             ComposeFieldType.RADIO_BUTTON -> {
                 this.defaultValues.find { x -> x.id == value }?.text ?: ""
+            }
+
+            ComposeFieldType.CHECK_BOX -> {
+                val finalStr = buildString {
+                    value.split("::").forEach { newVal ->
+                        if (newVal.isNotEmpty()) {
+                         val text =   this@ComposeFieldModule.defaultValues.find { x -> x.id == newVal }?.text
+                                ?: ""
+                            append(text)
+                        }
+                    }
+                }
+                finalStr
             }
         }
     }
