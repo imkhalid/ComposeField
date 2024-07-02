@@ -34,6 +34,7 @@ import com.imkhalid.composefield.composeField.model.ChildValueModel
 import com.imkhalid.composefield.composeField.model.ComposeSectionModule
 import com.imkhalid.composefield.composeField.rememberFieldState
 import com.imkhalid.composefield.model.DefaultValues
+import com.imkhalid.composefield.theme.ComposeFieldTheme
 import com.imkhalid.composefieldproject.composeField.fields.ComposeFieldBuilder
 import com.ozonedDigital.jhk.ui.common.responsiveHeight
 import com.ozonedDigital.jhk.ui.common.responsiveSize
@@ -58,6 +59,7 @@ open class Sections(
     fun Build(
         modifier: Modifier = Modifier,
         sections: List<ComposeSectionModule>,
+        showTitle:Boolean=false,
         preState: HashMap<String, List<ComposeFieldStateHolder>>? = null,
         button: (@Composable ColumnScope.(onClick: () -> Unit) -> Unit)? = null,
         onValueChange: ((name: String, newValue: String) -> Unit)? = null,
@@ -87,6 +89,7 @@ open class Sections(
             SectionType.Simple -> SimpleSections(
                 nav = nav,
                 sections = sections,
+                showTitle=showTitle,
                 valueChangeForChild = valueChangeForChild,
                 button = button,
                 onLastPageReach = onLastPageReach,
@@ -96,6 +99,7 @@ open class Sections(
             SectionType.SIMPLE_VERTICAL -> SimpleVertical(
                 nav = nav,
                 sections = sections,
+                showTitle=showTitle,
                 valueChangeForChild = valueChangeForChild,
                 button = button,
                 onLastPageReach = onLastPageReach,
@@ -129,6 +133,7 @@ open class Sections(
     private fun SimpleSections(
         nav: NavHostController,
         sections: List<ComposeSectionModule>,
+        showTitle: Boolean,
         valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
         button: (@Composable ColumnScope.(onClick: () -> Unit) -> Unit)?,
         onLastPageReach: ((Sections) -> Unit)? = null,
@@ -153,6 +158,7 @@ open class Sections(
                             } else {
                                 buildInnerSection(
                                     section = section,
+                                    showSectionName = showTitle,
                                     valueChangeForChild = valueChangeForChild,
                                     onValueChange = onValueChange
                                 )
@@ -181,6 +187,7 @@ open class Sections(
     private fun SimpleVertical(
         nav: NavHostController,
         sections: List<ComposeSectionModule>,
+        showTitle: Boolean,
         valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
         button: (@Composable ColumnScope.(onClick: () -> Unit) -> Unit)?,
         onLastPageReach: ((Sections) -> Unit)? = null,
@@ -193,7 +200,7 @@ open class Sections(
                         section.subSections.forEachIndexed { itemindex, item ->
                             buildInnerSection(
                                 section = item,
-                                showSectionName = true,
+                                showSectionName = showTitle,
                                 valueChangeForChild = valueChangeForChild,
                                 onValueChange = onValueChange
                             )
@@ -201,7 +208,7 @@ open class Sections(
                     } else {
                         buildInnerSection(
                             section = section,
-                            showSectionName = true,
+                            showSectionName = showTitle,
                             valueChangeForChild = valueChangeForChild,
                             onValueChange = onValueChange
                         )
