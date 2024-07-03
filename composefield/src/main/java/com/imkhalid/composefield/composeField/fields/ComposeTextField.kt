@@ -478,10 +478,7 @@ class ComposeTextField : ComposeField() {
                 if (!Pattern.matches(pattern.first(), valueToBeUsed)) {
                     bool = false
                     message = "ID No must 8 Character Long"
-                } else if (!Pattern.matches(pattern[1], valueToBeUsed)) {
-                    bool = false
-                    message = "Provide Valid ID NO"
-                } else {
+                }else {
                     message = ""
                 }
             }
