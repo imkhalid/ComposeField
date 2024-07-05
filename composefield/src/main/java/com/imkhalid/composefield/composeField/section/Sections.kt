@@ -2,8 +2,11 @@ package com.imkhalid.composefield.composeField.section
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -59,9 +62,9 @@ open class Sections(
     fun Build(
         modifier: Modifier = Modifier,
         sections: List<ComposeSectionModule>,
-        showTitle:Boolean=false,
+        showTitle: Boolean = false,
         preState: HashMap<String, List<ComposeFieldStateHolder>>? = null,
-        button: (@Composable ColumnScope.(onClick: () -> Unit) -> Unit)? = null,
+        button: (@Composable BoxScope.(onClick: () -> Unit) -> Unit)? = null,
         onValueChange: ((name: String, newValue: String) -> Unit)? = null,
         valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
         onLastPageReach: ((Sections) -> Unit)? = null,
@@ -89,7 +92,7 @@ open class Sections(
             SectionType.Simple -> SimpleSections(
                 nav = nav,
                 sections = sections,
-                showTitle=showTitle,
+                showTitle = showTitle,
                 valueChangeForChild = valueChangeForChild,
                 button = button,
                 onLastPageReach = onLastPageReach,
@@ -99,7 +102,7 @@ open class Sections(
             SectionType.SIMPLE_VERTICAL -> SimpleVertical(
                 nav = nav,
                 sections = sections,
-                showTitle=showTitle,
+                showTitle = showTitle,
                 valueChangeForChild = valueChangeForChild,
                 button = button,
                 onLastPageReach = onLastPageReach,
@@ -135,12 +138,15 @@ open class Sections(
         sections: List<ComposeSectionModule>,
         showTitle: Boolean,
         valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
-        button: (@Composable ColumnScope.(onClick: () -> Unit) -> Unit)?,
+        button: (@Composable BoxScope.(onClick: () -> Unit) -> Unit)?,
         onLastPageReach: ((Sections) -> Unit)? = null,
         onValueChange: ((name: String, newValue: String) -> Unit)?
     ) {
-        Column {
+        Box(modifier = Modifier.fillMaxSize()) {
             NavHost(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = responsiveHeight(size = 60)),
                 navController = nav,
                 startDestination = sections.firstOrNull()?.name ?: ""
             ) {
@@ -189,12 +195,16 @@ open class Sections(
         sections: List<ComposeSectionModule>,
         showTitle: Boolean,
         valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
-        button: (@Composable ColumnScope.(onClick: () -> Unit) -> Unit)?,
+        button: (@Composable BoxScope.(onClick: () -> Unit) -> Unit)?,
         onLastPageReach: ((Sections) -> Unit)? = null,
         onValueChange: ((name: String, newValue: String) -> Unit)?
     ) {
-        Column {
-            LazyColumn {
+        Box(modifier = Modifier.fillMaxSize()) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = responsiveHeight(size = 60)),
+            ) {
                 sections.forEach { section ->
                     if (section.subSections.isNotEmpty()) {
                         section.subSections.forEachIndexed { itemindex, item ->
@@ -238,35 +248,41 @@ open class Sections(
         nav: NavHostController,
         sections: List<ComposeSectionModule>,
         valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
-        button: (@Composable ColumnScope.(onClick: () -> Unit) -> Unit)?,
+        button: (@Composable BoxScope.(onClick: () -> Unit) -> Unit)?,
         onLastPageReach: ((Sections) -> Unit)? = null
     ) {
         var currentSection by remember {
             mutableStateOf(sections[currentSectionIndex].name ?: "")
         }
-        Column {
-            Tabs(currentSection) {
-
-            }
-            NavHost(
-                navController = nav,
-                startDestination = sections.firstOrNull()?.name ?: ""
+        Box(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = responsiveHeight(size = 60)),
             ) {
-                sections.forEach { section ->
-                    composable(section.name) {
-                        LazyColumn {
-                            if (section.subSections.isNotEmpty()) {
-                                section.subSections.forEachIndexed { itemindex, item ->
-                                    this.buildInnerSection(
-                                        section = item,
+                Tabs(currentSection) {
+
+                }
+                NavHost(
+                    navController = nav,
+                    startDestination = sections.firstOrNull()?.name ?: ""
+                ) {
+                    sections.forEach { section ->
+                        composable(section.name) {
+                            LazyColumn {
+                                if (section.subSections.isNotEmpty()) {
+                                    section.subSections.forEachIndexed { itemindex, item ->
+                                        this.buildInnerSection(
+                                            section = item,
+                                            valueChangeForChild = valueChangeForChild
+                                        )
+                                    }
+                                } else {
+                                    buildInnerSection(
+                                        section = section,
                                         valueChangeForChild = valueChangeForChild
                                     )
                                 }
-                            } else {
-                                buildInnerSection(
-                                    section = section,
-                                    valueChangeForChild = valueChangeForChild
-                                )
                             }
                         }
                     }
