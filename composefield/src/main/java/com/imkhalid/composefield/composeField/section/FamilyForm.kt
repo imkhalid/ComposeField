@@ -76,7 +76,7 @@ fun LazyListScope.FamilyForm(
                     modifier = Modifier.weight(1f)
                 )
                 if (shouldShowAddButton) {
-                    familyData.AddButton.invoke{
+                    familyData.AddButton?.invoke{
                         showAddPopup = true
                     }
                 }
@@ -173,7 +173,7 @@ private fun FamilyItem(map: Map<String, String>, onEdit: () -> Unit, onDelete: (
 fun FamilyPopup(
     parentNav: NavHostController,
     modifier: Modifier = Modifier,
-    GradientButton:@Composable (()->Unit)->Unit,
+    GradientButton:(@Composable (()->Unit)->Unit)?=null,
     section: List<ComposeSectionModule>?,
     onDismiss: () -> Unit,
     onDone: (Map<String, String>) -> Unit,
@@ -193,7 +193,7 @@ fun FamilyPopup(
                 sectionB?.Build(
                     sections = section,
                     button = {
-                        GradientButton.invoke {
+                        GradientButton?.invoke {
                             if (sectionB?.sectionState?.validate() == true) {
                                 val map = HashMap<String, String>()
                                 sectionB?.sectionState?.forEach { s, composeFieldStateHolders ->
