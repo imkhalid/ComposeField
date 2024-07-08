@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -35,9 +34,9 @@ import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
 import com.imkhalid.composefield.composeField.fieldTypes.SectionType
 import com.imkhalid.composefield.composeField.model.ChildValueModel
 import com.imkhalid.composefield.composeField.model.ComposeSectionModule
+import com.imkhalid.composefield.composeField.model.FamilyData
 import com.imkhalid.composefield.composeField.rememberFieldState
 import com.imkhalid.composefield.model.DefaultValues
-import com.imkhalid.composefield.theme.ComposeFieldTheme
 import com.imkhalid.composefieldproject.composeField.fields.ComposeFieldBuilder
 import com.ozonedDigital.jhk.ui.common.responsiveHeight
 import com.ozonedDigital.jhk.ui.common.responsiveSize
@@ -57,11 +56,14 @@ open class Sections(
 
     /** here we are expecting section that can have sub section and sub section will be show in column
     we will receive single section and look for sub sections and draw them on a screen,
-    a section can have either sub sections or fields that is what we are assuming*/
+    a section can have either sub sections or fields that is what we are assuming
+     FamilyData-> Family Data only Support if Type is Simple Vertical*/
+
     @Composable
     fun Build(
         modifier: Modifier = Modifier,
         sections: List<ComposeSectionModule>,
+        familyData: FamilyData? = null,
         showTitle: Boolean = false,
         preState: HashMap<String, List<ComposeFieldStateHolder>>? = null,
         button: (@Composable BoxScope.(onClick: () -> Unit) -> Unit)? = null,
@@ -103,6 +105,7 @@ open class Sections(
                 nav = nav,
                 sections = sections,
                 showTitle = showTitle,
+                familyData = familyData,
                 valueChangeForChild = valueChangeForChild,
                 button = button,
                 onLastPageReach = onLastPageReach,
@@ -194,6 +197,7 @@ open class Sections(
         nav: NavHostController,
         sections: List<ComposeSectionModule>,
         showTitle: Boolean,
+        familyData: FamilyData? = null,
         valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
         button: (@Composable BoxScope.(onClick: () -> Unit) -> Unit)?,
         onLastPageReach: ((Sections) -> Unit)? = null,
@@ -223,6 +227,14 @@ open class Sections(
                             onValueChange = onValueChange
                         )
 
+                    }
+                }
+                if (familyData != null) {
+                    item {
+                        this@LazyColumn.FamilyForm(
+                            parentNav = parentNav,
+                            familyData = familyData
+                        )
                     }
                 }
 
