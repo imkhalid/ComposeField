@@ -102,7 +102,7 @@ fun LazyListScope.FamilyForm(
                     parentNav=parentNav,
                     section = familyData.familySetup?.getComposeSection(familyData.snapshotStateList),
                     onDismiss = { showAddPopup=false },
-                    GradientButton = familyData.PupupButton,
+                    GradientButton = familyData.PopupButton,
                     onDone = {
                         showAddPopup=false
                         familyData.snapshotStateList.add(it)
