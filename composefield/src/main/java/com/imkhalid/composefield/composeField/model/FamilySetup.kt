@@ -8,8 +8,8 @@ import com.imkhalid.composefield.model.DefaultValues
 data class FamilyData(
     val familySetup: FamilySetup,
     val snapshotStateList: SnapshotStateList<Map<String, String>>,
-    val AddButton:@Composable (onClick:()->Unit)->Unit,
-    val PupupButton: @Composable (onClick:()->Unit)->Unit,
+    val AddButton:(@Composable (onClick:()->Unit)->Unit)?=null,
+    val PopupButton: (@Composable (onClick:()->Unit)->Unit)?=null,
 )
 
 
