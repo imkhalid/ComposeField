@@ -174,6 +174,15 @@ class ComposeDatePickerField :ComposeField(){
                         .align(Alignment.CenterEnd)
                         .padding(horizontal = 10.dp))
             }
+            if (state.field.helperText.isNotEmpty())
+                Text(
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(start = 20.dp, top = 7.dp),
+                    color = ComposeFieldTheme.unfocusedLabelColor,
+                    text = state.field.helperText,
+                    fontWeight =  FontWeight.Normal,
+                    fontSize = responsiveTextSize(size = 11).sp
+                )
         }
 
     }
@@ -216,22 +225,21 @@ class ComposeDatePickerField :ComposeField(){
         }
     }
 
-
-    fun changeDateFormat(from:String="yyyy-MM-dd",to:String="dd-MMM-yyyy",date: String):String{
-        val date1 = parseToDate(from,date)
-        return date1?.let {
-            SimpleDateFormat(to,Locale.getDefault()).format(it)
-        }?:run {
-            date
-        }
-
+}
+fun changeDateFormat(from:String="yyyy-MM-dd",to:String="dd-MMM-yyyy",date: String):String{
+    val date1 = parseToDate(from,date)
+    return date1?.let {
+        SimpleDateFormat(to,Locale.getDefault()).format(it)
+    }?:run {
+        date
     }
 
-    fun parseToDate(to:String,date: String): Date? {
-        return try {
-            SimpleDateFormat(to, Locale.getDefault()).parse(date)
-        }catch (e:Exception){
-            null
-        }
+}
+
+fun parseToDate(to:String,date: String): Date? {
+    return try {
+        SimpleDateFormat(to, Locale.getDefault()).parse(date)
+    }catch (e:Exception){
+        null
     }
 }
