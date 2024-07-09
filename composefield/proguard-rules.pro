@@ -21,3 +21,5 @@
 #-renamesourcefileattribute SourceFile
 
 -keep class io.michaelrocks.libphonenumber.android.** { *; }
+-keep class com.imkhalid.composefield.composeField.model.** { *; }
+-keep class androidx.compose.** { *; }
