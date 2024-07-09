@@ -57,7 +57,7 @@ open class Sections(
     /** here we are expecting section that can have sub section and sub section will be show in column
     we will receive single section and look for sub sections and draw them on a screen,
     a section can have either sub sections or fields that is what we are assuming
-     FamilyData-> Family Data only Support if Type is Simple Vertical*/
+    FamilyData-> Family Data only Support if Type is Simple Vertical*/
 
     @Composable
     fun Build(
@@ -206,7 +206,7 @@ open class Sections(
         Box(modifier = Modifier.fillMaxSize()) {
             LazyColumn(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .fillMaxWidth()
                     .padding(bottom = responsiveHeight(size = 60)),
             ) {
                 sections.forEach { section ->
@@ -230,12 +230,10 @@ open class Sections(
                     }
                 }
                 if (familyData != null) {
-                    item {
-                        this@LazyColumn.FamilyForm(
-                            parentNav = parentNav,
-                            familyData = familyData
-                        )
-                    }
+                    FamilyForm(
+                        parentNav = nav,
+                        familyData = familyData
+                    )
                 }
 
             }
@@ -567,6 +565,14 @@ fun getFieldByFieldName(
         if (foundState != null) {
             return foundState
         }
+    }
+    return null
+}
+
+fun List<ComposeFieldStateHolder>.getFieldByFieldName(name: String): ComposeFieldStateHolder? {
+    for (i in 0 until this.size) {
+        if (this[i].state.field.name == name)
+            return this[i]
     }
     return null
 }
