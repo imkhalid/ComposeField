@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -26,7 +27,15 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldType
+import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardType
+import com.imkhalid.composefield.composeField.fieldTypes.SectionType
+import com.imkhalid.composefield.composeField.model.ComposeFieldModule
 import com.imkhalid.composefield.composeField.model.ComposeSectionModule
+import com.imkhalid.composefield.composeField.model.FamilyData
+import com.imkhalid.composefield.composeField.model.FamilyField
+import com.imkhalid.composefield.composeField.model.FamilySetup
+import com.imkhalid.composefield.composeField.section.Sections
 import com.imkhalid.composefieldproject.ui.MainViewModel
 import com.imkhalid.composefieldproject.ui.theme.ComposeFieldProjectTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -83,6 +92,7 @@ fun Greeting(
     if (state.loadingModel.shouldCallApi)
         viewModel.getSections()
 
+
     if (state.loadingModel.isLoading)
         Box {
             CircularProgressIndicator(
@@ -90,13 +100,74 @@ fun Greeting(
             )
         }
 
-    if (state.loadingModel.isLoading.not() && state.section!=null)
-        viewModel.sections
-            .setParentNav(navHostController)
-            .setLasPageCallback { }
-            .Build(sections = state.section?.data?.risk_sections?.map {
-                ComposeSectionModule().parseSectionToComposeSec(it)
-            }?: emptyList()
+    if (state.loadingModel.isLoading.not() && state.section != null)
+//        viewModel.sections
+//            .setParentNav(navHostController)
+//            .setLasPageCallback { }
+//            .Build(sections = emptyList(),
+//
+//            )
+        Sections(
+            navHostController,
+            rememberNavController(),
+            sectionType = SectionType.SIMPLE_VERTICAL
+        )
+            .Build(
+                sections = state.section?.data?.risk_sections?.map {
+                    ComposeSectionModule().parseSectionToComposeSec(it)
+                } ?: emptyList(),
+                familyData = FamilyData(
+                    familySetup = FamilySetup(
+                        hasSpouse = true,
+                        spouseMinDate = "1995-01-01",
+                        spouseMaxDate = "2001-01-01",
+                        hasChild = true,
+                        childMinDate = "2001-01-02",
+                        childMaxDate = "2024-01-03",
+                        hasParent = true,
+                        parentMinDate = "",
+                        parentMaxDate = "",
+                        minNoOfParent = 0,
+                        minNoOfChild = 0,
+                        minNoOfSpouse = 0,
+                        maxNoOfParent = 1,
+                        maxNoOfChild = 1,
+                        maxNoOfSpouse = 1,
+                        fields = arrayListOf(
+                            FamilyField(
+                                familySetupId = "1",
+                                familyDetailField = "relation",
+                                required = true,
+                                visible = true
+                            ),
+                            FamilyField(
+                                familySetupId = "1",
+                                familyDetailField = "gender",
+                                required = true,
+                                visible = true
+                            ),
+                            FamilyField(
+                                familySetupId = "1",
+                                familyDetailField = "dob",
+                                required = true,
+                                visible = true
+                            ),
+                        )
+                    ),
+                    AddButton = {
+                        Button(onClick = { it.invoke() }) {
+                            Text(text = "Add Button")
+                        }
+                    },
+                    PopupButton = {
+                        Button(modifier = Modifier.align(Alignment.BottomCenter),
+                            onClick = { it.invoke() }) {
+                            Text(text = "Done")
+                        }
+                    },
+                    snapshotStateList = SnapshotStateList()
+
+                )
             )
 }
 
