@@ -23,10 +23,10 @@ import java.util.HashMap
 @Deprecated(
     message = "This class is Deprecated, Use Sections Class Instead"
 )
-class ComposeSectionBuilder(preStateList:ArrayList<MutableStateFlow<ComposeFieldState>>?=null) {
-    var list: ArrayList<MutableStateFlow<ComposeFieldState>> = preStateList?:arrayListOf()
-    var isLocked:Boolean=false
-    var sectionName:String = ""
+class ComposeSectionBuilder(preStateList: ArrayList<MutableStateFlow<ComposeFieldState>>? = null) {
+    var list: ArrayList<MutableStateFlow<ComposeFieldState>> = preStateList ?: arrayListOf()
+    var isLocked: Boolean = false
+    var sectionName: String = ""
 
 
     fun addField(field: ComposeFieldModule) = apply {
@@ -45,7 +45,7 @@ class ComposeSectionBuilder(preStateList:ArrayList<MutableStateFlow<ComposeField
         }
     }
 
-    fun addSection(fields:List<ComposeFieldModule>) = apply {
+    fun addSection(fields: List<ComposeFieldModule>) = apply {
         if (isLocked.not()) {
             fields.mapTo(list) { fieldMo ->
                 val _fieldState: MutableStateFlow<ComposeFieldState> = MutableStateFlow(
@@ -63,18 +63,21 @@ class ComposeSectionBuilder(preStateList:ArrayList<MutableStateFlow<ComposeField
             lock()
         }
     }
-    fun setCallback() = apply{
+
+    fun setCallback() = apply {
 
     }
-    fun lock()=apply {
-        isLocked=true
+
+    fun lock() = apply {
+        isLocked = true
     }
+
     fun unLock() = apply {
-        isLocked=false
+        isLocked = false
     }
 
     @Composable
-    fun build(modifier: Modifier =Modifier)=apply {
+    fun build(modifier: Modifier = Modifier) = apply {
         LazyColumn(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
@@ -82,8 +85,8 @@ class ComposeSectionBuilder(preStateList:ArrayList<MutableStateFlow<ComposeField
             items(list.size) {
                 ComposeFieldBuilder()
                     .setFieldModule(list[it])
-                    .setFocusCallback { b, s ->  }
-                    .build(modifier =modifier)
+                    .setFocusCallback { b, s -> }
+                    .build(modifier = modifier)
             }
         }
     }
@@ -93,11 +96,11 @@ class ComposeSectionBuilder(preStateList:ArrayList<MutableStateFlow<ComposeField
 @Deprecated(
     message = "This class is Deprecated, Use Sections Class Instead"
 )
-class ComposeSections(){
-    val mSections:ArrayList<ComposeSectionBuilder> = arrayListOf()
-    var isLocked:Boolean=false
-    var currentSectionIndex=0
-    lateinit var lastPage:()->Unit
+class ComposeSections() {
+    val mSections: ArrayList<ComposeSectionBuilder> = arrayListOf()
+    var isLocked: Boolean = false
+    var currentSectionIndex = 0
+    lateinit var lastPage: () -> Unit
     lateinit var navController: NavHostController
     lateinit var parentNavController: NavHostController
 
@@ -105,19 +108,20 @@ class ComposeSections(){
         parentNavController = navHostController
     }
 
-    fun setLasPageCallback(callback:()->Unit) = apply {
+    fun setLasPageCallback(callback: () -> Unit) = apply {
         lastPage = callback
     }
 
-    fun lock()=apply {
-        isLocked=true
+    fun lock() = apply {
+        isLocked = true
     }
+
     fun unLock() = apply {
-        isLocked=false
+        isLocked = false
     }
 
     @Composable
-    fun Build(sections: List<ComposeSectionModule>):ComposeSections {
+    fun Build(sections: List<ComposeSectionModule>): ComposeSections {
         if (isLocked.not()) {
             navController = rememberNavController()
             sections.forEach {
@@ -130,7 +134,10 @@ class ComposeSections(){
             lock()
         }
         Column {
-            NavHost(navController = navController, startDestination = mSections.firstOrNull()?.sectionName?:"") {
+            NavHost(
+                navController = navController,
+                startDestination = mSections.firstOrNull()?.sectionName ?: ""
+            ) {
                 mSections.forEachIndexed { index, composeSectionModule ->
                     composable(composeSectionModule.sectionName) {
                         composeSectionModule.build()
@@ -144,10 +151,10 @@ class ComposeSections(){
             }
 
             BackHandler {
-                if (currentSectionIndex!=0) {
+                if (currentSectionIndex != 0) {
                     --currentSectionIndex
                     navController.popBackStack()
-                }else
+                } else
                     parentNavController.popBackStack()
             }
         }
@@ -155,19 +162,19 @@ class ComposeSections(){
     }
 
     private fun navigateToNext() {
-        if (currentSectionIndex<mSections.lastIndex){
+        if (currentSectionIndex < mSections.lastIndex) {
             navController.navigate(mSections[++currentSectionIndex].sectionName)
-        }else{
+        } else {
             lastPage.invoke()
         }
     }
 }
 
-fun ArrayList<MutableStateFlow<ComposeFieldState>>.validateSection():Boolean{
-    return this.all { x->
-        val state= x.value
+fun ArrayList<MutableStateFlow<ComposeFieldState>>.validateSection(): Boolean {
+    return this.all { x ->
+        val state = x.value
         (
-                state.field.required== ComposeFieldYesNo.YES &&
+                state.field.required == ComposeFieldYesNo.YES &&
                         (state.text.isNotEmpty() &&
                                 state.hasError.not())
                 ) ||
@@ -177,13 +184,24 @@ fun ArrayList<MutableStateFlow<ComposeFieldState>>.validateSection():Boolean{
     }
 }
 
-fun HashMap<String,List<ComposeFieldStateHolder>>.validate():Boolean{
-    return this.all { x->
+fun HashMap<String, List<ComposeFieldStateHolder>>.validate(): Boolean {
+    return this.all { x ->
         x.value.all {
             it.state.field.required == ComposeFieldYesNo.YES && (it.state.text.isNotEmpty() &&
                     it.state.hasError.not()) ||
                     (it.state.field.required == ComposeFieldYesNo.NO &&
-                    it.state.hasError.not())
+                            it.state.hasError.not())
         }
     }
 }
+
+
+fun List<ComposeFieldStateHolder>.validate(): Boolean {
+    return this.all {
+        it.state.field.required == ComposeFieldYesNo.YES && (it.state.text.isNotEmpty() &&
+                it.state.hasError.not()) ||
+                (it.state.field.required == ComposeFieldYesNo.NO &&
+                        it.state.hasError.not())
+    }
+}
+

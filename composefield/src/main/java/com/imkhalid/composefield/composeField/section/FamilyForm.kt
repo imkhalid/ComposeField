@@ -1,6 +1,5 @@
 package com.imkhalid.composefield.composeField.section
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -8,17 +7,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,29 +21,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.imkhalid.composefield.R
-import com.imkhalid.composefield.composeField.ComposeFieldBuilder
 import com.imkhalid.composefield.composeField.ComposeFieldStateHolder
-import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldType
-import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
-import com.imkhalid.composefield.composeField.fieldTypes.SectionType
 import com.imkhalid.composefield.composeField.fields.changeDateFormat
-import com.imkhalid.composefield.composeField.model.ComposeSectionModule
 import com.imkhalid.composefield.composeField.model.FamilyData
-import com.imkhalid.composefield.composeField.model.FamilySetup
 import com.imkhalid.composefield.composeField.validate
-import com.imkhalid.composefieldproject.composeField.fields.ComposeField
 import com.ozonedDigital.jhk.ui.common.responsiveHeight
 import com.ozonedDigital.jhk.ui.common.responsiveSize
 import com.ozonedDigital.jhk.ui.common.responsiveTextSize
@@ -59,7 +44,6 @@ val textColor = Color(0xFF5B6770)
 
 @Preview(widthDp = 720)
 fun LazyListScope.FamilyForm(
-    parentNav: NavHostController,
     modifier: Modifier = Modifier,
     familyData: FamilyData
 ) {
@@ -115,10 +99,7 @@ fun LazyListScope.FamilyForm(
 
             if (showAddPopup) {
                 FamilyPopup(
-                    parentNav = parentNav,
-//                    familySetup = familyData.familySetup,
                     data = familyData.snapshotStateList.getOrNull(editDataInd ?: -1),
-//                    section = familyData.familySetup.getComposeSection(familyData.snapshotStateList),
                     familyData = familyData,
                     onDismiss = { showAddPopup = false },
                     GradientButton = familyData.PopupButton,
@@ -194,10 +175,9 @@ private fun FamilyItem(map: Map<String, String>, onEdit: () -> Unit, onDelete: (
 
 @Composable
 fun FamilyPopup(
-    parentNav: NavHostController,
     modifier: Modifier = Modifier,
     familyData: FamilyData,
-    GradientButton: (@Composable BoxScope.(() -> Unit) -> Unit)? = null,
+    GradientButton: @Composable() (BoxScope.(() -> Unit) -> Unit)? = null,
     data: Map<String, String>? = null,
     onDismiss: () -> Unit,
     onDone: (Map<String, String>) -> Unit,
@@ -311,103 +291,5 @@ fun FamilyPopup(
             }
         }
     }
-
-
-//    var sectionB: Sections? by remember {
-//        mutableStateOf(null)
-//    }
-//    section?.let {
-//        Dialog(onDismissRequest = onDismiss,) {
-//            Column (modifier= Modifier
-//                .heightIn(max = responsiveHeight(size = 450))
-//                .background(
-//                    color = Color.White,
-//                    shape = RoundedCornerShape(responsiveSize(size = 12))
-//                )
-//                .padding(responsiveSize(size = 15))
-//            ){
-//                Row {
-//                    Row(
-//                        modifier = Modifier,
-//                        horizontalArrangement = Arrangement.SpaceBetween
-//                    ) {
-//                        Text(
-//                            text = if (data==null) "Add Family" else "Edit Family",
-//                            fontSize = responsiveTextSize(size = 20).sp,
-//                            color = titleColor,
-//                            modifier = Modifier.weight(1f)
-//                        )
-//
-//                        Image(
-//                            painter = painterResource(id = android.R.drawable.ic_menu_close_clear_cancel),
-//                            contentDescription = null,
-//                            modifier=Modifier.clickable {
-//                                onDismiss.invoke()
-//                            }
-//                        )
-//                    }
-//                }
-//                Spacer(modifier = Modifier.height(responsiveHeight(size = 15)))
-//                if (sectionB == null)
-//                    sectionB = Sections(
-//                        parentNav = parentNav,
-//                        nav = rememberNavController(),
-//                        sectionType = SectionType.Simple,
-//                    )
-//                sectionB?.Build(
-//                    sections = if (data != null)
-//                        section.onEach {
-//                            it.fields = it.fields.map { composeFieldModule ->
-//                                composeFieldModule.copy(
-//                                    value = data.getOrDefault(composeFieldModule.name, ""),
-//                                    isEditable = if (composeFieldModule.name.contains(
-//                                            "relation",
-//                                            true
-//                                        )
-//                                    ) ComposeFieldYesNo.NO else composeFieldModule.isEditable,
-//                                    type = if (composeFieldModule.name.contains("relation",true))
-//                                        ComposeFieldType.TEXT_BOX
-//                                    else composeFieldModule.type
-//
-//                                )
-//                            }
-//                        }
-//                    else section,
-//                    button = {
-//                        GradientButton?.invoke(this) {
-//                            if (sectionB?.sectionState?.validate() == true) {
-//                                val map = HashMap<String, String>()
-//                                sectionB?.sectionState?.forEach { s, composeFieldStateHolders ->
-//                                    composeFieldStateHolders?.forEach {
-//                                        map.put(it.state.field.name, it.state.text)
-//                                    }
-//                                }
-//                                onDone(map)
-//                            }
-//                        }
-//
-//                    },
-//                    onValueChange = {name,value->
-//                        if (name.contains("relation",true)){
-//                            getFieldByFieldName("dob",sectionB?.sectionState?:HashMap())?.also {
-//                                it.updatedField(it.state.field.copy(
-//                                    minValue = when(value.lowercase()){
-//                                        "child"->familySetup.childMinDate
-//                                        "parent"-> familySetup.parentMinDate
-//                                        else -> familySetup.spouseMinDate
-//                                    },
-//                                    maxValue = when(value.lowercase()){
-//                                        "child"->familySetup.childMaxDate
-//                                        "parent"-> familySetup.parentMaxDate
-//                                        else -> familySetup.spouseMaxDate
-//                                    }
-//                                ))
-//                            }
-//                        }
-//                    }
-//                )
-//            }
-//        }
-//    } ?: run { onDismiss.invoke() }
 
 }

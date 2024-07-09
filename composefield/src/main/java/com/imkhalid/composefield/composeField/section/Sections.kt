@@ -231,7 +231,6 @@ open class Sections(
                 }
                 if (familyData != null) {
                     FamilyForm(
-                        parentNav = nav,
                         familyData = familyData
                     )
                 }
