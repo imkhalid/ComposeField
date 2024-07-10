@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -284,8 +283,7 @@ class TableSection(
             Column(
                 Modifier
                     .background(color = Color.White, shape = RoundedCornerShape(12))
-                    .padding(responsiveSize(size = 10))
-                    .heightIn(max=responsiveHeight(size = 450)),
+                    .padding(responsiveSize(size = 10)),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 sectionNames.clear()
