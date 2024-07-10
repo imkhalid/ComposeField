@@ -94,6 +94,7 @@ open class Sections(
         when (sectionType) {
             SectionType.Simple -> SimpleSections(
                 nav = nav,
+                modifier=modifier,
                 sections = sections,
                 showTitle = showTitle,
                 valueChangeForChild = valueChangeForChild,
@@ -104,6 +105,7 @@ open class Sections(
 
             SectionType.SIMPLE_VERTICAL -> SimpleVertical(
                 nav = nav,
+                modifier=modifier,
                 sections = sections,
                 showTitle = showTitle,
                 familyData = familyData,
@@ -139,6 +141,7 @@ open class Sections(
     @Composable
     private fun SimpleSections(
         nav: NavHostController,
+        modifier: Modifier,
         sections: List<ComposeSectionModule>,
         showTitle: Boolean,
         valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
@@ -146,7 +149,7 @@ open class Sections(
         onLastPageReach: ((Sections) -> Unit)? = null,
         onValueChange: ((name: String, newValue: String) -> Unit)?
     ) {
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = modifier.fillMaxSize()) {
             NavHost(
                 modifier = Modifier
                     .fillMaxSize()
@@ -196,6 +199,7 @@ open class Sections(
     @Composable
     private fun SimpleVertical(
         nav: NavHostController,
+        modifier: Modifier,
         sections: List<ComposeSectionModule>,
         showTitle: Boolean,
         familyData: FamilyData? = null,
@@ -204,7 +208,7 @@ open class Sections(
         onLastPageReach: ((Sections) -> Unit)? = null,
         onValueChange: ((name: String, newValue: String) -> Unit)?
     ) {
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = modifier.fillMaxSize()) {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
