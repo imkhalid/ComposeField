@@ -151,7 +151,7 @@ open class Sections(
         onLastPageReach: ((Sections) -> Unit)? = null,
         onValueChange: ((name: String, newValue: String) -> Unit)?
     ) {
-        Box(modifier = modifier.fillMaxSize()) {
+        Box(modifier = modifier) {
             NavHost(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -210,7 +210,7 @@ open class Sections(
         onLastPageReach: ((Sections) -> Unit)? = null,
         onValueChange: ((name: String, newValue: String) -> Unit)?
     ) {
-        Box(modifier = modifier.fillMaxSize()) {
+        Box(modifier = modifier) {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
