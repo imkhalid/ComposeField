@@ -7,10 +7,12 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.imkhalid.composefield.composeField.ComposeFieldStateHolder
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldType
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
+import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardType
 import com.imkhalid.composefield.composeField.rememberFieldState
 import com.imkhalid.composefield.model.DefaultValues
 
 data class FamilyData(
+    val isEditView:Boolean=false,
     val familySetup: FamilySetup,
     val snapshotStateList: SnapshotStateList<Map<String, String>>,
     var AddButton: (@Composable (onClick: () -> Unit) -> Unit) = {},
@@ -126,6 +128,12 @@ data class FamilySetup(
                     else -> {
                         ComposeFieldType.TEXT_BOX
                     }
+                },
+                keyboardType = when(it.familyDetailField){
+                    "email"->ComposeKeyboardType.EMAIL
+                    "mobile_no","phone_no"->ComposeKeyboardType.MOBILE_NO
+                    "id_no","cnic"->ComposeKeyboardType.CNIC
+                    else -> ComposeKeyboardType.TEXT
                 },
                 isEditable = if (data != null && it.familyDetailField.equals("relation"))
                     ComposeFieldYesNo.NO

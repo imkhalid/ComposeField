@@ -117,6 +117,7 @@ fun Greeting(
                     ComposeSectionModule().parseSectionToComposeSec(it)
                 } ?: emptyList(),
                 familyData = FamilyData(
+                    isEditView = true,
                     familySetup = FamilySetup(
                         hasSpouse = true,
                         spouseMinDate = "1995-01-01",
@@ -136,19 +137,19 @@ fun Greeting(
                         fields = arrayListOf(
                             FamilyField(
                                 familySetupId = "1",
-                                familyDetailField = "relation",
+                                familyDetailField = "first_name",
                                 required = true,
                                 visible = true
                             ),
                             FamilyField(
                                 familySetupId = "1",
-                                familyDetailField = "gender",
+                                familyDetailField = "last_name",
                                 required = true,
                                 visible = true
                             ),
                             FamilyField(
                                 familySetupId = "1",
-                                familyDetailField = "dob",
+                                familyDetailField = "email",
                                 required = true,
                                 visible = true
                             ),
@@ -165,7 +166,12 @@ fun Greeting(
                             Text(text = "Done")
                         }
                     },
-                    snapshotStateList = SnapshotStateList()
+                    snapshotStateList = SnapshotStateList<Map<String, String>>().apply {
+                        add(HashMap<String,String>().apply {
+                            put("relation","Spouse")
+                            put("isValidated","0")
+                        })
+                    }
 
                 )
             )

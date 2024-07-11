@@ -58,8 +58,8 @@ open class Sections(
     /** here we are expecting section that can have sub section and sub section will be show in column
     we will receive single section and look for sub sections and draw them on a screen,
     a section can have either sub sections or fields that is what we are assuming
-    FamilyData-> Family Data only Support if Type is Simple Vertical
-
+    FamilyData-> Family Data only Support if Type is @{SectionType.SIMPLE_VERTICAL} Or @{SectionType.TAB}
+        in SectionType.TAB -> we add Family Detail as a section in Section Names for routing purpose
      */
 
     @Composable
@@ -82,6 +82,11 @@ open class Sections(
             sections.mapTo(sectionNames) {
                 it.name
             }
+            if (familyData != null) {
+                if (familyData.isEditView) {
+                    sectionNames.add("Family Details")
+                }
+            }
             sections.forEach {
                 sectionState[it.name] = it.fields.map { field ->
                     val preFieldState = preState?.getOrDefault(it.name, emptyList())
@@ -96,7 +101,7 @@ open class Sections(
         when (sectionType) {
             SectionType.Simple -> SimpleSections(
                 nav = nav,
-                modifier=modifier,
+                modifier = modifier,
                 sections = sections,
                 showTitle = showTitle,
                 valueChangeForChild = valueChangeForChild,
@@ -107,7 +112,7 @@ open class Sections(
 
             SectionType.SIMPLE_VERTICAL -> SimpleVertical(
                 nav = nav,
-                modifier=modifier,
+                modifier = modifier,
                 sections = sections,
                 showTitle = showTitle,
                 familyData = familyData,
@@ -120,6 +125,7 @@ open class Sections(
             SectionType.Tab -> TabSections(
                 nav = nav,
                 sections = sections,
+                familyData = familyData,
                 valueChangeForChild = valueChangeForChild,
                 button = button,
                 onLastPageReach = onLastPageReach
@@ -264,6 +270,7 @@ open class Sections(
     private fun TabSections(
         nav: NavHostController,
         sections: List<ComposeSectionModule>,
+        familyData: FamilyData?,
         valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
         button: (@Composable BoxScope.(onClick: () -> Unit) -> Unit)?,
         onLastPageReach: ((Sections) -> Unit)? = null
@@ -303,6 +310,14 @@ open class Sections(
                             }
                         }
                     }
+                    if (familyData != null)
+                        composable("Family Details") {
+                            LazyColumn {
+                                FamilyForm(
+                                    familyData = familyData
+                                )
+                            }
+                        }
                 }
             }
             button?.invoke(this) {
