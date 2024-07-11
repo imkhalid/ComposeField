@@ -112,7 +112,7 @@ data class FamilySetup(
         return fields.map {
             rememberFieldState(fieldModule = ComposeFieldModule(
                 name = it.familyDetailField,
-                label = it.familyDetailField.capitalize(),
+                label = it.familyDetailField.replace("_"," ").capitalize(),
                 type = when (it.familyDetailField) {
                     "gender", "relation" -> {
                         if (data != null && it.familyDetailField == "relation") {
