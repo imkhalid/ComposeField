@@ -82,7 +82,7 @@ open class Sections(
             sections.mapTo(sectionNames) {
                 it.name
             }
-            if (familyData != null) {
+            if (familyData != null && familyData.snapshotStateList.isNotEmpty()) {
                 if (familyData.isEditView) {
                     sectionNames.add("Family Details")
                 }
@@ -276,7 +276,7 @@ open class Sections(
         onLastPageReach: ((Sections) -> Unit)? = null
     ) {
         var currentSection by remember {
-            mutableStateOf(sections[currentSectionIndex].name ?: "")
+            mutableStateOf(sectionNames[currentSectionIndex] ?: "")
         }
         Box(modifier = Modifier.fillMaxSize()) {
             Column(
@@ -310,7 +310,7 @@ open class Sections(
                             }
                         }
                     }
-                    if (familyData != null)
+                    if (familyData != null && familyData.snapshotStateList.isNotEmpty())
                         composable("Family Details") {
                             LazyColumn {
                                 FamilyForm(
@@ -351,7 +351,7 @@ open class Sections(
             items(sectionNames.size) {
                 tabContentItem?.invoke(
                     this@items,
-                    sectionNames[it],
+                    sectionNames[it].replace("_"," "),
                     sectionNames[it] == currentSection,
                     clickCallback
                 )
