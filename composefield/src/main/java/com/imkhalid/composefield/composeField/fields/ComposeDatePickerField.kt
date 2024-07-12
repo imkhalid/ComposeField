@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -52,7 +53,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-class ComposeDatePickerField :ComposeField(){
+class ComposeDatePickerField : ComposeField() {
 
 
     @Composable
@@ -66,18 +67,37 @@ class ComposeDatePickerField :ComposeField(){
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    private fun MyBuild(state: ComposeFieldState, newValue: (Pair<Boolean,String>, String) -> Unit,modifier: Modifier=Modifier) {
+    private fun MyBuild(
+        state: ComposeFieldState,
+        newValue: (Pair<Boolean, String>, String) -> Unit,
+        modifier: Modifier = Modifier
+    ) {
 
-        val minMil:Long? = parseToDate(to="yyyy-MM-dd",date = state.field.minValue?:"")?.let {
+        val minDate = parseToDate(to = "yyyy-MM-dd", date = state.field.minValue ?: "")
+        val maxDate = parseToDate(to = "yyyy-MM-dd", date = state.field.maxValue ?: "")
+        val minMil: Long? = minDate?.let {
             Calendar.getInstance().apply {
-                time= it
+                time = it
             }.timeInMillis
         }
-        val maxMil:Long? = parseToDate(to="yyyy-MM-dd",date = state.field.maxValue?:"")?.let {
+        val maxMil: Long? = maxDate?.let {
             Calendar.getInstance().apply {
-                time= it
+                time = it
             }.timeInMillis
         }
+
+        val yearRange = if (minDate != null && maxDate != null) {
+            val minYear = Calendar.getInstance().apply { time = minDate }.get(Calendar.YEAR)
+            val maxYear = Calendar.getInstance().apply { time = maxDate }.get(Calendar.YEAR)
+            IntRange(minYear, maxYear)
+        } else if (minDate != null) {
+            val minYear = Calendar.getInstance().apply { time = minDate }.get(Calendar.YEAR)
+            IntRange(minYear, DatePickerDefaults.YearRange.last)
+        } else if (maxDate != null) {
+            val maxYear = Calendar.getInstance().apply { time = maxDate }.get(Calendar.YEAR)
+            IntRange(DatePickerDefaults.YearRange.first, maxYear)
+        } else
+            DatePickerDefaults.YearRange
 
         val label = buildAnnotatedString {
             withStyle(
@@ -88,7 +108,7 @@ class ComposeDatePickerField :ComposeField(){
             ) {
                 append(state.field.label)
             }
-            if (state.field.required== ComposeFieldYesNo.YES){
+            if (state.field.required == ComposeFieldYesNo.YES) {
                 withStyle(
                     style = SpanStyle(
                         fontSize = responsiveTextSize(size = 13).sp,
@@ -104,15 +124,17 @@ class ComposeDatePickerField :ComposeField(){
         val dropDownText = if (state.text.isEmpty())
             "Choose an Date"
         else {
-            changeDateFormat(date=state.text)
+            changeDateFormat(date = state.text)
         }
 
 
         val datePickerState = rememberDatePickerState(
-            selectableDates = object :SelectableDates{
+            initialSelectedDateMillis = if (maxMil != null && maxMil < calendar.timeInMillis) maxMil else calendar.timeInMillis,
+            yearRange = yearRange,
+            selectableDates = object : SelectableDates {
                 override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-                    return (minMil==null || (minMil<utcTimeMillis) ) &&
-                            (maxMil==null ||(maxMil>utcTimeMillis))
+                    return (minMil == null || (minMil < utcTimeMillis)) &&
+                            (maxMil == null || (maxMil > utcTimeMillis))
                 }
             }
         )
@@ -125,8 +147,11 @@ class ComposeDatePickerField :ComposeField(){
                         showDialog.value = false
                         datePickerState.selectedDateMillis?.let {
                             calendar.timeInMillis = it
-                            val result = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
-                            newValue(Pair(true,""),result)
+                            val result = SimpleDateFormat(
+                                "yyyy-MM-dd",
+                                Locale.getDefault()
+                            ).format(calendar.time)
+                            newValue(Pair(true, ""), result)
                         }
                     }) {
                         Text("Ok")
@@ -144,15 +169,16 @@ class ComposeDatePickerField :ComposeField(){
             }
         }
 
-        Column(modifier=modifier) {
-            Spacer(modifier = Modifier.padding(top=8.dp))
-            Box (modifier=Modifier.fillMaxWidth()){
+        Column(modifier = modifier) {
+            Spacer(modifier = Modifier.padding(top = 8.dp))
+            Box(modifier = Modifier.fillMaxWidth()) {
                 DatePickerField(
                     modifier = Modifier.fillMaxWidth(),
-                    onClick = {showDialog.value=true},
+                    onClick = { showDialog.value = true },
                 ) {
                     Text(
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
                             .padding(start = 20.dp, top = 7.dp)
                             .align(Alignment.CenterStart),
                         color = if (state.text.isEmpty()) ComposeFieldTheme.unfocusedLabelColor else ComposeFieldTheme.textColor,
@@ -164,23 +190,32 @@ class ComposeDatePickerField :ComposeField(){
                         text = label,
                         color = ComposeFieldTheme.hintColor,
                         fontSize = responsiveTextSize(size = 13).sp,
-                        modifier=Modifier.padding(start = 20.dp, top = 7.dp)
+                        modifier = Modifier.padding(start = 20.dp, top = 7.dp)
                     )
                 }
                 Image(
                     painter = painterResource(id = R.drawable.ic_calendar),
                     contentDescription = "",
-                    modifier= Modifier
+                    modifier = Modifier
                         .align(Alignment.CenterEnd)
-                        .padding(horizontal = 10.dp))
+                        .padding(horizontal = 10.dp)
+                )
             }
-            if (state.field.helperText.isNotEmpty())
+            if (state.hasError) {
                 Text(
-                    modifier = Modifier.fillMaxWidth()
+                    text = state.errorMessage,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.labelSmall,
+                    modifier = Modifier.padding(start = 16.dp)
+                )
+            } else if (state.field.helperText.isNotEmpty())
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
                         .padding(start = 20.dp, top = 7.dp),
                     color = ComposeFieldTheme.unfocusedLabelColor,
                     text = state.field.helperText,
-                    fontWeight =  FontWeight.Normal,
+                    fontWeight = FontWeight.Normal,
                     fontSize = responsiveTextSize(size = 11).sp
                 )
         }
@@ -190,10 +225,10 @@ class ComposeDatePickerField :ComposeField(){
     @Composable
     private fun DatePickerField(
         modifier: Modifier,
-        onClick:()->Unit,
+        onClick: () -> Unit,
         content: @Composable (BoxScope.() -> Unit)? = null
-    ){
-        when(ComposeFieldTheme.fieldStyle){
+    ) {
+        when (ComposeFieldTheme.fieldStyle) {
             ComposeFieldTheme.FieldStyle.OUTLINE -> Box(
                 modifier = Modifier
                     .border(
@@ -207,8 +242,9 @@ class ComposeDatePickerField :ComposeField(){
             ) {
                 content?.invoke(this)
             }
-            ComposeFieldTheme.FieldStyle.CONTAINER ,
-            ComposeFieldTheme.FieldStyle.NORMAL ->Box(
+
+            ComposeFieldTheme.FieldStyle.CONTAINER,
+            ComposeFieldTheme.FieldStyle.NORMAL -> Box(
                 modifier = Modifier
                     .padding(5.dp)
                     .fillMaxWidth()
@@ -226,20 +262,25 @@ class ComposeDatePickerField :ComposeField(){
     }
 
 }
-fun changeDateFormat(from:String="yyyy-MM-dd",to:String="dd-MMM-yyyy",date: String):String{
-    val date1 = parseToDate(from,date)
+
+fun changeDateFormat(
+    from: String = "yyyy-MM-dd",
+    to: String = "dd-MMM-yyyy",
+    date: String
+): String {
+    val date1 = parseToDate(from, date)
     return date1?.let {
-        SimpleDateFormat(to,Locale.getDefault()).format(it)
-    }?:run {
+        SimpleDateFormat(to, Locale.getDefault()).format(it)
+    } ?: run {
         date
     }
 
 }
 
-fun parseToDate(to:String,date: String): Date? {
+fun parseToDate(to: String, date: String): Date? {
     return try {
         SimpleDateFormat(to, Locale.getDefault()).parse(date)
-    }catch (e:Exception){
+    } catch (e: Exception) {
         null
     }
 }
