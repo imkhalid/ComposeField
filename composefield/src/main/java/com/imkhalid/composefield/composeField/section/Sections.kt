@@ -37,6 +37,7 @@ import com.imkhalid.composefield.composeField.model.ChildValueModel
 import com.imkhalid.composefield.composeField.model.ComposeSectionModule
 import com.imkhalid.composefield.composeField.model.FamilyData
 import com.imkhalid.composefield.composeField.rememberFieldState
+import com.imkhalid.composefield.composeField.validate
 import com.imkhalid.composefield.model.DefaultValues
 import com.imkhalid.composefieldproject.composeField.fields.ComposeFieldBuilder
 import com.ozonedDigital.jhk.ui.common.responsiveHeight
@@ -321,8 +322,10 @@ open class Sections(
                 }
             }
             button?.invoke(this) {
-                navigateToNext(nav, onLastPageReach)
-                currentSection = sectionNames[currentSectionIndex]
+                if (sectionState.getOrDefault((sectionNames.getOrNull(currentSectionIndex)?:""), emptyList()).validate(showError = true)) {
+                    navigateToNext(nav, onLastPageReach)
+                    currentSection = sectionNames[currentSectionIndex]
+                }
             }
 
             BackHandler {
