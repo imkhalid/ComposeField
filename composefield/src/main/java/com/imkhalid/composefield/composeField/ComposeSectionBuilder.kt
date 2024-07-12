@@ -196,12 +196,27 @@ fun HashMap<String, List<ComposeFieldStateHolder>>.validate(): Boolean {
 }
 
 
-fun List<ComposeFieldStateHolder>.validate(): Boolean {
-    return this.all {
+fun List<ComposeFieldStateHolder>.validate(showError: Boolean = false): Boolean {
+    val res = this.all {
         it.state.field.required == ComposeFieldYesNo.YES && (it.state.text.isNotEmpty() &&
                 it.state.hasError.not()) ||
                 (it.state.field.required == ComposeFieldYesNo.NO &&
                         it.state.hasError.not())
     }
+    if (res.not() && showError) {
+        this.first {
+            it.state.field.required == ComposeFieldYesNo.YES && (it.state.text.isNotEmpty() &&
+                    it.state.hasError.not()) ||
+                    (it.state.field.required == ComposeFieldYesNo.NO &&
+                            it.state.hasError.not())
+        }.let { err ->
+            val message = if (err.state.errorMessage.isEmpty()) {
+                "Required"
+            } else err.state.errorMessage
+            err.updateValidation(Pair(false, message))
+        }
+    }
+
+    return res
 }
 
