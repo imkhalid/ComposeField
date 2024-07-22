@@ -227,8 +227,27 @@ class ComposeTextField : ComposeField() {
             keyboardOptions = getKeyboardOptions(state.field),
             isError = state.hasError,
             label = {
+                val label =buildAnnotatedString {
+                    withStyle(
+                        style = SpanStyle(
+                            fontSize = responsiveTextSize(size = 13).sp
+                        )
+                    ) {
+                        append(state.field.label)
+                    }
+                    if (state.field.required==ComposeFieldYesNo.YES){
+                        withStyle(
+                            style = SpanStyle(
+                                fontSize = responsiveTextSize(size = 13).sp,
+                                color = Color.Red
+                            )
+                        ) {
+                            append("*")
+                        }
+                    }
+                }
                 Text(
-                    state.field.label,
+                    label,
                     fontSize = responsiveTextSize(size = 13).sp
                 )
             },
