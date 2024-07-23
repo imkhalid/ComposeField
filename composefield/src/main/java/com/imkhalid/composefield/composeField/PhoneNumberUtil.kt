@@ -8,6 +8,7 @@ class PhoneNumberUtil {
 
     var prefix = "92"
     var currentCountryCode = "pk"
+    var currentCountryFlag = "\uD83C\uDDF5\uD83C\uDDF0 "
     var length = 15
 
     data class CountryModel(

@@ -217,7 +217,7 @@ class ComposeMobileField : ComposeField() {
                 prefix = {
                     if (state.field.keyboardType == ComposeKeyboardType.MOBILE_NO)
                         Text(
-                            text = "+${phoneNumberUtil.prefix}",
+                            text = "${phoneNumberUtil.currentCountryFlag} +${phoneNumberUtil.prefix}",
                             modifier = Modifier.clickable {
                                 toggleDropdown()
                             },
