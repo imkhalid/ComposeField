@@ -155,6 +155,7 @@ open class Sections(
                 valueChangeForChild = valueChangeForChild,
                 button = button,
                 tablePopupButton = null,
+                tableAddButton = null,
                 onLastPageReach = onLastPageReach
             )
 
@@ -179,8 +180,10 @@ open class Sections(
         sections: List<ComposeSectionModule>,
         familyData: FamilyData? = null,
         button: @Composable (BoxScope.(onClick: () -> Unit) -> Unit)?,
+        tableAddButton:@Composable (BoxScope.(onClick: () -> Unit) -> Unit)?,
         tablePopupButton: @Composable (BoxScope.(onClick: () -> Unit) -> Unit)?,
-        valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null
+        valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
+        onLastPageReach: ((Sections) -> Unit)? = null,
     ) {
         if (sectionNames.isEmpty()) {
             sections.mapTo(sectionNames) {
@@ -210,7 +213,9 @@ open class Sections(
             familyData = familyData,
             valueChangeForChild = valueChangeForChild,
             button = button,
+            tableAddButton=tableAddButton,
             tablePopupButton = tablePopupButton,
+            onLastPageReach=onLastPageReach
         )
     }
 
@@ -577,6 +582,7 @@ private fun Sections.TabSections(
     familyData: FamilyData?,
     valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
     button: (@Composable BoxScope.(onClick: () -> Unit) -> Unit)?,
+    tableAddButton: (@Composable BoxScope.(onClick: () -> Unit) -> Unit)?,
     tablePopupButton: (@Composable BoxScope.(onClick: () -> Unit) -> Unit)?,
     onLastPageReach: ((Sections) -> Unit)? = null
 ) {
@@ -637,7 +643,7 @@ private fun Sections.TabSections(
                                 },
                                 valueChangeForChild = valueChangeForChild,
                                 AddButton = { onClick ->
-                                    button?.invoke(this@Box, onClick)
+                                    tableAddButton?.invoke(this@Box, onClick)
                                 },
                                 DoneButton = { onDone ->
                                     tablePopupButton?.invoke(this@Box, onDone)
