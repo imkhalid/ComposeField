@@ -37,6 +37,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
 import com.imkhalid.composefield.composeField.ComposeFieldState
 import com.imkhalid.composefield.composeField.PhoneNumberUtil
@@ -113,7 +114,7 @@ class ComposeMobileField : ComposeField() {
                 value = state.text.removePrefix(phoneNumberUtil.prefix),
                 enabled = state.field.isEditable.value,
                 onValueChange = { curVal ->
-                    if (curVal.length <= phoneNumberUtil.length) {
+                    if ( curVal.length <= phoneNumberUtil.maxLength) {
                         builtinValidations(curVal, phoneNumberUtil) { validated, newVal ->
                             newValue.invoke(validated, phoneNumberUtil.prefix.plus(newVal))
                         }
@@ -123,7 +124,7 @@ class ComposeMobileField : ComposeField() {
                 prefix = {
                     if (state.field.keyboardType == ComposeKeyboardType.MOBILE_NO)
                         Text(
-                            text = "+${phoneNumberUtil.prefix}",
+                            text = "${phoneNumberUtil.currentCountryFlag} +${phoneNumberUtil.prefix}",
                             modifier = Modifier.clickable {
                                 toggleDropdown()
                             },
@@ -180,10 +181,14 @@ class ComposeMobileField : ComposeField() {
             if (expanded) {
                 CountryPickerDialog(onDone = {
                     toggleDropdown()
-                }, onOptionSelected = { iosCode: String, code: String,flag:String ->
-                    phoneNumberUtil.currentCountryCode = iosCode
-                    phoneNumberUtil.currentCountryFlag = flag
-                    phoneNumberUtil.prefix = code
+                }, onOptionSelected = { countryModel ->
+                    phoneNumberUtil.apply {
+                        minLength = countryModel.length
+                        maxLength = countryModel.maxLength
+                        currentCountryFlag = countryModel.emoji
+                        currentCountryCode = countryModel.code
+                        prefix = countryModel.dialCode
+                    }
                     newValue.invoke(Pair(true, ""), "")
                     toggleDropdown()
                 })
@@ -208,7 +213,7 @@ class ComposeMobileField : ComposeField() {
                 value = state.text.removePrefix(phoneNumberUtil.prefix),
                 enabled = state.field.isEditable.value,
                 onValueChange = { curVal ->
-                    if (curVal.length <= phoneNumberUtil.length) {
+                    if (curVal.length <= phoneNumberUtil.maxLength) {
                         builtinValidations(curVal, phoneNumberUtil) { validated, newVal ->
                             newValue.invoke(validated, phoneNumberUtil.prefix.plus(newVal))
                         }
@@ -309,10 +314,14 @@ class ComposeMobileField : ComposeField() {
             if (expanded) {
                 CountryPickerDialog(onDone = {
                     toggleDropdown()
-                }, onOptionSelected = { iosCode: String, code: String,flag:String ->
-                    phoneNumberUtil.currentCountryCode = iosCode
-                    phoneNumberUtil.prefix = code
-                    phoneNumberUtil.currentCountryFlag = flag
+                }, onOptionSelected = { countryModel ->
+                    phoneNumberUtil.apply {
+                        minLength = countryModel.length
+                        maxLength = countryModel.maxLength
+                        currentCountryFlag = countryModel.emoji
+                        currentCountryCode = countryModel.code
+                        prefix = countryModel.dialCode
+                    }
                     newValue.invoke(Pair(true, ""), "")
                     toggleDropdown()
                 })
@@ -334,7 +343,7 @@ class ComposeMobileField : ComposeField() {
                 value = state.text.removePrefix(phoneNumberUtil.prefix),
                 enabled = state.field.isEditable.value,
                 onValueChange = { curVal ->
-                    if (curVal.length <= phoneNumberUtil.length) {
+                    if (curVal.length <= phoneNumberUtil.maxLength) {
                         builtinValidations(curVal, phoneNumberUtil) { validated, newVal ->
                             newValue.invoke(validated, phoneNumberUtil.prefix.plus(newVal))
                         }
@@ -343,7 +352,7 @@ class ComposeMobileField : ComposeField() {
                 },
                 prefix = {
                     if (state.field.keyboardType == ComposeKeyboardType.MOBILE_NO)
-                        Text(text = "+${phoneNumberUtil.prefix}", modifier = Modifier.clickable {
+                        Text(text = "${phoneNumberUtil.currentCountryFlag} +${phoneNumberUtil.prefix}", modifier = Modifier.clickable {
                             toggleDropdown()
                         })
                     else null
@@ -387,10 +396,14 @@ class ComposeMobileField : ComposeField() {
             if (expanded) {
                 CountryPickerDialog(onDone = {
                     toggleDropdown()
-                }, onOptionSelected = { iosCode: String, code: String,flag:String ->
-                    phoneNumberUtil.currentCountryCode = iosCode
-                    phoneNumberUtil.currentCountryFlag = flag
-                    phoneNumberUtil.prefix = code
+                }, onOptionSelected = {countryModel ->
+                    phoneNumberUtil.apply {
+                        minLength = countryModel.length
+                        maxLength = countryModel.maxLength
+                        currentCountryFlag = countryModel.emoji
+                        currentCountryCode = countryModel.code
+                        prefix = countryModel.dialCode
+                    }
                     newValue.invoke(Pair(true, ""), "")
                     toggleDropdown()
                 })
@@ -408,10 +421,6 @@ class ComposeMobileField : ComposeField() {
         var message = ""
         bool = phoneNumberUtil.validateNumbers(curVal)
         message = "Please enter valid Phone Number"
-        if (bool)
-            phoneNumberUtil.length = curVal.length
-        else
-            phoneNumberUtil.length = 15
         newValue.invoke(Pair(bool, message), curVal)
     }
 
@@ -419,7 +428,7 @@ class ComposeMobileField : ComposeField() {
     @Composable
     private fun CountryPickerDialog(
         onDone: () -> Unit,
-        onOptionSelected: (IOSCode: String, code: String,flag:String) -> Unit
+        onOptionSelected: (PhoneNumberUtil.CountryModel) -> Unit
     ) {
 
         val countries = PhoneNumberUtil.numbers
@@ -450,7 +459,7 @@ class ComposeMobileField : ComposeField() {
                         items(filteredOptions.size) { index ->
                             val item = filteredOptions[index]
                             TextButton(onClick = {
-                                onOptionSelected(item.code, item.dialCode,item.emoji)
+                                onOptionSelected(item)
                             }) {
                                 Text(item.emoji + " " + item.dialCode + " " + item.name)
                             }

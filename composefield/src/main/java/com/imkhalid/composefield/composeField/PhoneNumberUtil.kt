@@ -9,30 +9,37 @@ class PhoneNumberUtil {
     var prefix = "92"
     var currentCountryCode = "pk"
     var currentCountryFlag = "\uD83C\uDDF5\uD83C\uDDF0 "
-    var length = 15
+    var minLength = 10
+    var maxLength =10
 
     data class CountryModel(
         val code: String,
         val dialCode: String,
         val name: String,
         var emoji: String,
-        var length:Int = -1
+        var length:Int = -1,
+        var maxLength:Int = -1
     )
 
     fun validateNumbers(number:String):Boolean{
         var bool = false
-         numbers.find { x->x.code==currentCountryCode }?.let {
-            bool = number.length==it.length
+         numbers.find { x->x.dialCode==prefix }?.let {
+             val isSameMinMax = it.length==it.maxLength
+            bool = if (isSameMinMax)
+                number.length==it.length
+            else
+                number.length>=it.length && number.length<=it.maxLength
         }
         return bool
     }
     companion object {
         val DEFAULT_FLAG_RES = ""
         val numbers = arrayOf(
-            CountryModel("ke", "254", "Kenya", "🇰🇪",9),
-            CountryModel("tz", "255", "Tanzania", "🇹🇿",9),
-            CountryModel("ug", "256", "Uganda", "🇺🇬",9),
-            CountryModel("pk", "92", "Pakistan", "🇵🇰",10)
+            CountryModel("ke", "07", "Kenya", "🇰🇪",8,8),
+            CountryModel("ke", "254", "Kenya", "🇰🇪",9,9),
+            CountryModel("tz", "255", "Tanzania", "🇹🇿",9,10),
+            CountryModel("ug", "256", "Uganda", "🇺🇬",9,9),
+            CountryModel("pk", "92", "Pakistan", "🇵🇰",10,10)
         )
 
         /**
