@@ -1,18 +1,28 @@
 package com.imkhalid.composefield.composeField.section
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -21,15 +31,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.imkhalid.composefield.R
 import com.imkhalid.composefield.composeField.ComposeFieldStateHolder
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
 import com.imkhalid.composefield.composeField.fieldTypes.SectionType
@@ -39,13 +54,17 @@ import com.imkhalid.composefield.composeField.model.FamilyData
 import com.imkhalid.composefield.composeField.rememberFieldState
 import com.imkhalid.composefield.composeField.validate
 import com.imkhalid.composefield.model.DefaultValues
+import com.imkhalid.composefield.model.section
+import com.imkhalid.composefield.theme.ComposeFieldTheme
+import com.imkhalid.composefield.theme.dashedBorder
 import com.imkhalid.composefieldproject.composeField.fields.ComposeFieldBuilder
 import com.ozonedDigital.jhk.ui.common.responsiveHeight
 import com.ozonedDigital.jhk.ui.common.responsiveSize
 import com.ozonedDigital.jhk.ui.common.responsiveTextSize
+import com.ozonedDigital.jhk.ui.common.responsiveWidth
 
 open class Sections(
-    private val parentNav: NavHostController,
+    internal val parentNav: NavHostController,
     private val nav: NavHostController,
     private val sectionType: SectionType,
     private val stepSectionContentItem: (@Composable LazyItemScope.(name: String, clickCallback: (sectionName: String) -> Unit) -> Unit)? = null,
@@ -53,6 +72,8 @@ open class Sections(
 
     ) {
     val sectionState: HashMap<String, List<ComposeFieldStateHolder>> = HashMap()
+    val tableData: HashMap<String, SnapshotStateList<HashMap<String, List<ComposeFieldStateHolder>>>> =
+        HashMap()
     val sectionNames: ArrayList<String> = arrayListOf()
     var currentSectionIndex = 0
 
@@ -60,7 +81,7 @@ open class Sections(
     we will receive single section and look for sub sections and draw them on a screen,
     a section can have either sub sections or fields that is what we are assuming
     FamilyData-> Family Data only Support if Type is @{SectionType.SIMPLE_VERTICAL} Or @{SectionType.TAB}
-        in SectionType.TAB -> we add Family Detail as a section in Section Names for routing purpose
+    in SectionType.TAB -> we add Family Detail as a section in Section Names for routing purpose
      */
 
     @Composable
@@ -89,13 +110,17 @@ open class Sections(
                 }
             }
             sections.forEach {
-                sectionState[it.name] = it.fields.map { field ->
-                    val preFieldState = preState?.getOrDefault(it.name, emptyList())
-                        ?.find { x -> x.state.field.name == field.name }
-                    rememberFieldState(
-                        fieldModule = field,
-                        stateHolder = preFieldState
-                    )
+                if (it.isTable) {
+                    tableData[it.name] = SnapshotStateList()
+                } else {
+                    sectionState[it.name] = it.fields.map { field ->
+                        val preFieldState = preState?.getOrDefault(it.name, emptyList())
+                            ?.find { x -> x.state.field.name == field.name }
+                        rememberFieldState(
+                            fieldModule = field,
+                            stateHolder = preFieldState
+                        )
+                    }
                 }
             }
         }
@@ -129,6 +154,7 @@ open class Sections(
                 familyData = familyData,
                 valueChangeForChild = valueChangeForChild,
                 button = button,
+                tablePopupButton = null,
                 onLastPageReach = onLastPageReach
             )
 
@@ -145,6 +171,47 @@ open class Sections(
             )
         }
 
+    }
+
+
+    @Composable
+    fun TabBuild(
+        sections: List<ComposeSectionModule>,
+        familyData: FamilyData? = null,
+        button: @Composable (BoxScope.(onClick: () -> Unit) -> Unit)?,
+        tablePopupButton: @Composable (BoxScope.(onClick: () -> Unit) -> Unit)?,
+        valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null
+    ) {
+        if (sectionNames.isEmpty()) {
+            sections.mapTo(sectionNames) {
+                it.name
+            }
+            if (familyData != null && familyData.snapshotStateList.isNotEmpty()) {
+                if (familyData.isEditView) {
+                    sectionNames.add("Family Details")
+                }
+            }
+            sections.forEach {
+                if (it.isTable) {
+                    tableData[it.name] = SnapshotStateList()
+                } else {
+                    sectionState[it.name] = it.fields.map { field ->
+                        rememberFieldState(
+                            fieldModule = field,
+                            stateHolder = null
+                        )
+                    }
+                }
+            }
+        }
+        TabSections(
+            nav = nav,
+            sections = sections,
+            familyData = familyData,
+            valueChangeForChild = valueChangeForChild,
+            button = button,
+            tablePopupButton = tablePopupButton,
+        )
     }
 
     @Composable
@@ -267,81 +334,7 @@ open class Sections(
         }
     }
 
-    @Composable
-    private fun TabSections(
-        nav: NavHostController,
-        sections: List<ComposeSectionModule>,
-        familyData: FamilyData?,
-        valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
-        button: (@Composable BoxScope.(onClick: () -> Unit) -> Unit)?,
-        onLastPageReach: ((Sections) -> Unit)? = null
-    ) {
-        var currentSection by remember {
-            mutableStateOf(sectionNames[currentSectionIndex] ?: "")
-        }
-        Box(modifier = Modifier.fillMaxSize()) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(bottom = responsiveHeight(size = 60)),
-            ) {
-                Tabs(currentSection) {
-
-                }
-                NavHost(
-                    navController = nav,
-                    startDestination = sections.firstOrNull()?.name ?: ""
-                ) {
-                    sections.forEach { section ->
-                        composable(section.name) {
-                            LazyColumn {
-                                if (section.subSections.isNotEmpty()) {
-                                    section.subSections.forEachIndexed { itemindex, item ->
-                                        this.buildInnerSection(
-                                            section = item,
-                                            valueChangeForChild = valueChangeForChild
-                                        )
-                                    }
-                                } else {
-                                    buildInnerSection(
-                                        section = section,
-                                        valueChangeForChild = valueChangeForChild
-                                    )
-                                }
-                            }
-                        }
-                    }
-                    if (familyData != null && familyData.snapshotStateList.isNotEmpty())
-                        composable("Family Details") {
-                            LazyColumn {
-                                FamilyForm(
-                                    familyData = familyData
-                                )
-                            }
-                        }
-                }
-            }
-            button?.invoke(this) {
-                if (sectionState.getOrDefault((sectionNames.getOrNull(currentSectionIndex)?:""), emptyList()).validate(showError = true)) {
-                    navigateToNext(nav, onLastPageReach)
-                    currentSection = sectionNames[currentSectionIndex]
-                }
-            }
-
-            BackHandler {
-                if (currentSectionIndex != 0) {
-                    --currentSectionIndex
-                    nav.popBackStack()
-                    currentSection = sectionNames[currentSectionIndex]
-                } else {
-                    parentNav.popBackStack()
-                }
-
-            }
-        }
-    }
-
-    private @Composable
+    internal @Composable
     fun Tabs(currentSection: String, clickCallback: (() -> Unit)?) {
         LazyRow(
             modifier = Modifier
@@ -354,7 +347,7 @@ open class Sections(
             items(sectionNames.size) {
                 tabContentItem?.invoke(
                     this@items,
-                    sectionNames[it].replace("_"," "),
+                    sectionNames[it].replace("_", " "),
                     sectionNames[it] == currentSection,
                     clickCallback
                 )
@@ -377,7 +370,7 @@ open class Sections(
         }
     }
 
-    private fun navigateToNext(
+    internal fun navigateToNext(
         navController: NavHostController,
         lastPage: ((Sections) -> Unit)? = null
     ) {
@@ -388,7 +381,7 @@ open class Sections(
         }
     }
 
-    private fun LazyListScope.buildInnerSection(
+    internal fun LazyListScope.buildInnerSection(
         modifier: Modifier = Modifier,
         section: ComposeSectionModule,
         showButton: Boolean = false,
@@ -410,10 +403,7 @@ open class Sections(
                 val selectedState =
                     this@Sections.sectionState[section.name]?.find { x -> x.state.field.name == field.name }
 
-//                val state = rememberFieldState(
-//                    fieldModule = field,
-//                    stateHolder = selectedState
-//                )
+
                 val state = sectionState[section.name]
                     ?.find { x -> x.state.field.name == field.name }
                     ?: rememberFieldState(
@@ -580,6 +570,154 @@ open class Sections(
 
 }
 
+@Composable
+private fun Sections.TabSections(
+    nav: NavHostController,
+    sections: List<ComposeSectionModule>,
+    familyData: FamilyData?,
+    valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
+    button: (@Composable BoxScope.(onClick: () -> Unit) -> Unit)?,
+    tablePopupButton: (@Composable BoxScope.(onClick: () -> Unit) -> Unit)?,
+    onLastPageReach: ((Sections) -> Unit)? = null
+) {
+    var currentSection by remember {
+        mutableStateOf(sectionNames[currentSectionIndex] ?: "")
+    }
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = responsiveHeight(size = 60)),
+        ) {
+            Tabs(currentSection) {
+
+            }
+            NavHost(
+                navController = nav,
+                startDestination = sections.firstOrNull()?.name ?: ""
+            ) {
+                sections.forEach { section ->
+                    composable(section.name) {
+                        if (section.isTable) {
+
+                            TableSection(
+                                parentNav = nav,
+                                nav = rememberNavController(),
+                                sectionType = SectionType.SIMPLE_VERTICAL,
+                                min = section.min,
+                                max = section.max
+                            ).TableBuild(
+                                modifier = Modifier,
+                                sections = listOf(section),
+                                tableName = section.name.replace("_"," "),
+                                description = "",
+                                tableDataList = tableData.getOrDefault(
+                                    section.name,
+                                    SnapshotStateList()
+                                ),
+                                preState = null,
+                                onItemAdded = {
+                                    tableData.getOrDefault(section.name, SnapshotStateList())
+                                        .apply {
+                                            add(it)
+                                        }
+                                },
+                                onDeleteItem = {
+                                    tableData.getOrDefault(section.name, SnapshotStateList())
+                                        .apply {
+                                            removeAt(it)
+                                        }
+                                },
+                                onItemEdited = { hashMap: HashMap<String, List<ComposeFieldStateHolder>>, i: Int ->
+                                    tableData.getOrDefault(section.name, SnapshotStateList())
+                                        .apply {
+                                            removeAt(i)
+                                            add(i, hashMap)
+                                        }
+                                },
+                                valueChangeForChild = valueChangeForChild,
+                                AddButton = { onClick ->
+                                    button?.invoke(this@Box, onClick)
+                                },
+                                DoneButton = { onDone ->
+                                    tablePopupButton?.invoke(this@Box, onDone)
+                                },
+                                SingleItemHeader = { onEditClick,
+                                                     onDeleteClick,
+                                                     onExpandClick,
+                                                     textTitle ->
+                                    TableItemHeader(
+                                        onEditClick = onEditClick,
+                                        onDeleteClick = onDeleteClick,
+                                        onExpandClick = onExpandClick,
+                                        textTitle = textTitle
+                                    )
+                                },
+                            )
+
+                        } else {
+                            LazyColumn {
+                                if (section.subSections.isNotEmpty()) {
+                                    section.subSections.forEachIndexed { itemindex, item ->
+                                        this.buildInnerSection(
+                                            section = item,
+                                            valueChangeForChild = valueChangeForChild
+                                        )
+                                    }
+                                } else {
+                                    buildInnerSection(
+                                        section = section,
+                                        valueChangeForChild = valueChangeForChild
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+                if (familyData != null && familyData.snapshotStateList.isNotEmpty())
+                    composable("Family Details") {
+                        LazyColumn {
+                            FamilyForm(
+                                familyData = familyData
+                            )
+                        }
+                    }
+            }
+        }
+        button?.invoke(this) {
+            val currentSectionOf = sections.getOrNull(currentSectionIndex)
+            if (currentSectionOf?.isTable==true){
+                val sectionName = sectionNames[currentSectionIndex]
+                val dataList = tableData.getOrDefault(sectionName, SnapshotStateList())
+                if ((dataList.size)>= currentSectionOf.min && dataList.size<=currentSectionOf.max){
+                    navigateToNext(nav, onLastPageReach)
+                    currentSection = sectionNames[currentSectionIndex]
+                }
+            }else {
+                if (sectionState.getOrDefault(
+                        (sectionNames.getOrNull(currentSectionIndex) ?: ""),
+                        emptyList()
+                    ).validate(showError = true)
+                ) {
+                    navigateToNext(nav, onLastPageReach)
+                    currentSection = sectionNames[currentSectionIndex]
+                }
+            }
+        }
+
+        BackHandler {
+            if (currentSectionIndex != 0) {
+                --currentSectionIndex
+                nav.popBackStack()
+                currentSection = sectionNames[currentSectionIndex]
+            } else {
+                parentNav.popBackStack()
+            }
+
+        }
+    }
+}
+
 fun getFieldByFieldName(
     name: String,
     state: HashMap<String, List<ComposeFieldStateHolder>>
@@ -600,6 +738,80 @@ fun List<ComposeFieldStateHolder>.getFieldByFieldName(name: String): ComposeFiel
             return this[i]
     }
     return null
+}
+
+
+@Composable
+fun TableItemHeader(
+    onEditClick: () -> Unit,
+    onDeleteClick: () -> Unit,
+    onExpandClick: () -> Unit,
+    textTitle: String,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier =
+        Modifier
+            .fillMaxWidth()
+            .height(responsiveHeight(size = 60))
+            .dashedBorder(
+                1.dp,
+                ComposeFieldTheme.focusedLabelColor,
+                RoundedCornerShape(responsiveSize(size = 12)),
+                5.dp,
+                5.dp
+            )
+            .background(
+                color = ComposeFieldTheme.focusedLabelColor,
+                shape =
+                RoundedCornerShape(
+                    responsiveSize(size = 12)
+                )
+            )
+            .clickable { onExpandClick.invoke() }
+            .padding(responsiveSize(size = 15)),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.Top
+    ) {
+        Text(
+            text = textTitle,
+            color = ComposeFieldTheme.focusedBorderColor,
+            fontSize = responsiveTextSize(size = 15).sp
+        )
+
+        Row {
+            Image(
+                painter =
+                painterResource(id = R.drawable.ic_edit_table),
+                contentDescription = "",
+                modifier =
+                Modifier.clickable { onEditClick.invoke() }
+            )
+            Spacer(
+                modifier =
+                Modifier.width(responsiveWidth(size = 10))
+            )
+            Image(
+                painter =
+                painterResource(
+                    id = R.drawable.ic_delete_table
+                ),
+                contentDescription = "",
+                modifier =
+                Modifier.clickable { onDeleteClick.invoke() }
+            )
+            Spacer(
+                modifier =
+                Modifier.width(responsiveWidth(size = 10))
+            )
+            Image(
+                imageVector = Icons.Default.KeyboardArrowDown,
+                contentDescription = "",
+                colorFilter = ColorFilter.tint(ComposeFieldTheme.focusedLabelColor),
+            )
+        }
+    }
+
 }
 
 

@@ -11,7 +11,10 @@ data class ComposeSectionModule(
     var sectionStates:ArrayList<MutableStateFlow<ComposeFieldState>> = arrayListOf(),
     var name:String ="",
     var isDone:Boolean=false,
-    var subSections:List<ComposeSectionModule> = emptyList()
+    var subSections:List<ComposeSectionModule> = emptyList(),
+    var isTable:Boolean=false,
+    var min:Int = 0,
+    var max:Int = 0
 ){
     fun parseSectionToComposeSec(entry:Map.Entry<String, section>) =apply{
         name = entry.key

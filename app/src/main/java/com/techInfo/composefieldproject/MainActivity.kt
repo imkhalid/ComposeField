@@ -53,29 +53,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        NavHost(navController = navController, startDestination = "Step1") {
-                            composable("Step1") {
-                                Greeting(navController, viewModel)
-                            }
-                            composable("Step2") {
-
-                            }
-                        }
-                        Button(
-                            modifier = Modifier
-                                .align(Alignment.BottomCenter)
-                                .width(150.dp)
-                                .height(50.dp), onClick = {
-                                if (navController.currentDestination?.route == "Step2") {
-                                    printCurrentData(viewModel)
-                                } else {
-                                    navController.navigate("Step2")
-                                }
-                            }) {
-                            Text(text = "Next")
-                        }
-                    }
+                    Greeting(navController, viewModel)
                 }
             }
         }
@@ -110,70 +88,30 @@ fun Greeting(
         Sections(
             navHostController,
             rememberNavController(),
-            sectionType = SectionType.SIMPLE_VERTICAL
+            sectionType = SectionType.Tab
         )
-            .Build(
-                sections = state.section?.data?.risk_sections?.map {
-                    ComposeSectionModule().parseSectionToComposeSec(it)
-                } ?: emptyList(),
-                familyData = FamilyData(
-                    isEditView = true,
-                    familySetup = FamilySetup(
-                        hasSpouse = true,
-                        spouseMinDate = "1995-01-01",
-                        spouseMaxDate = "2001-01-01",
-                        hasChild = true,
-                        childMinDate = "2001-01-02",
-                        childMaxDate = "2024-01-03",
-                        hasParent = true,
-                        parentMinDate = "",
-                        parentMaxDate = "",
-                        minNoOfParent = 0,
-                        minNoOfChild = 0,
-                        minNoOfSpouse = 0,
-                        maxNoOfParent = 1,
-                        maxNoOfChild = 1,
-                        maxNoOfSpouse = 1,
-                        fields = arrayListOf(
-                            FamilyField(
-                                familySetupId = "1",
-                                familyDetailField = "first_name",
-                                required = true,
-                                visible = true
-                            ),
-                            FamilyField(
-                                familySetupId = "1",
-                                familyDetailField = "last_name",
-                                required = true,
-                                visible = true
-                            ),
-                            FamilyField(
-                                familySetupId = "1",
-                                familyDetailField = "email",
-                                required = true,
-                                visible = true
-                            ),
+            .TabBuild(
+                sections = ArrayList(state.section?.data?.risk_sections?.map {
+                    ComposeSectionModule(isTable = true, max = 5).parseSectionToComposeSec(it)
+                } ?: emptyList()).apply {
+                    add(
+                        this.elementAt(0).copy(
+                            isTable = false,
+                            name = "Khalid" + "2",
+                            sortNumber = 5,
                         )
-                    ),
-                    AddButton = {
-                        Button(onClick = { it.invoke() }) {
-                            Text(text = "Add Button")
-                        }
-                    },
-                    PopupButton = {
-                        Button(modifier = Modifier.align(Alignment.BottomCenter),
-                            onClick = { it.invoke() }) {
-                            Text(text = "Done")
-                        }
-                    },
-                    snapshotStateList = SnapshotStateList<Map<String, String>>().apply {
-                        add(HashMap<String,String>().apply {
-                            put("relation","Spouse")
-                            put("isValidated","0")
-                        })
+                    )
+                },
+                button = {
+                    Button(onClick = { it.invoke() }) {
+                        Text(text = "Add")
                     }
-
-                )
+                },
+                tablePopupButton = {
+                    Button(onClick = { it.invoke() }) {
+                        Text(text = "+ Add")
+                    }
+                }
             )
 }
 

@@ -109,6 +109,17 @@ class TableSection(
                 text = tableName,
                 fontSize = responsiveTextSize(size = 16).sp
             )
+            Text(
+                text = if (min ==max && min>0)
+                    "Add at least $min Item(s)"
+                else if (min==0 && max>0)
+                    "Max $max Item(s) can be Added"
+                else
+                    "Item(s) should be between $min to $max",
+                fontSize = responsiveTextSize(size = 12).sp,
+                color = Color.Gray.copy(alpha = 0.5f)
+            )
+
             Spacer(modifier = Modifier.height(responsiveHeight(size = 10)))
             Text(
                 text = description,
@@ -149,7 +160,7 @@ class TableSection(
                                 }, onExpandClick = {
                                     expandedItem = it
                                 },
-                                textTitle = "${it.plus(1)}. $tableName"
+                                textTitle = "${it.plus(1)}. ${tableName.replace("_"," ")}"
                             )
                         },
                         expandedItem
@@ -203,7 +214,7 @@ class TableSection(
                             color = Color.White,
                             shape = RoundedCornerShape(responsiveSize(size = 12))
                         )
-                        .padding(top = responsiveHeight(size = 35))
+                        .padding(top = responsiveHeight(size = 60))
                         .padding(responsiveSize(size = 15))
                 ) {
                     item.forEach {
