@@ -180,8 +180,9 @@ class ComposeMobileField : ComposeField() {
             if (expanded) {
                 CountryPickerDialog(onDone = {
                     toggleDropdown()
-                }, onOptionSelected = { iosCode: String, code: String ->
+                }, onOptionSelected = { iosCode: String, code: String,flag:String ->
                     phoneNumberUtil.currentCountryCode = iosCode
+                    phoneNumberUtil.currentCountryFlag = flag
                     phoneNumberUtil.prefix = code
                     newValue.invoke(Pair(true, ""), "")
                     toggleDropdown()
@@ -308,9 +309,10 @@ class ComposeMobileField : ComposeField() {
             if (expanded) {
                 CountryPickerDialog(onDone = {
                     toggleDropdown()
-                }, onOptionSelected = { iosCode: String, code: String ->
+                }, onOptionSelected = { iosCode: String, code: String,flag:String ->
                     phoneNumberUtil.currentCountryCode = iosCode
                     phoneNumberUtil.prefix = code
+                    phoneNumberUtil.currentCountryFlag = flag
                     newValue.invoke(Pair(true, ""), "")
                     toggleDropdown()
                 })
@@ -385,8 +387,9 @@ class ComposeMobileField : ComposeField() {
             if (expanded) {
                 CountryPickerDialog(onDone = {
                     toggleDropdown()
-                }, onOptionSelected = { iosCode: String, code: String ->
+                }, onOptionSelected = { iosCode: String, code: String,flag:String ->
                     phoneNumberUtil.currentCountryCode = iosCode
+                    phoneNumberUtil.currentCountryFlag = flag
                     phoneNumberUtil.prefix = code
                     newValue.invoke(Pair(true, ""), "")
                     toggleDropdown()
@@ -416,7 +419,7 @@ class ComposeMobileField : ComposeField() {
     @Composable
     private fun CountryPickerDialog(
         onDone: () -> Unit,
-        onOptionSelected: (IOSCode: String, code: String) -> Unit
+        onOptionSelected: (IOSCode: String, code: String,flag:String) -> Unit
     ) {
 
         val countries = PhoneNumberUtil.numbers
@@ -447,7 +450,7 @@ class ComposeMobileField : ComposeField() {
                         items(filteredOptions.size) { index ->
                             val item = filteredOptions[index]
                             TextButton(onClick = {
-                                onOptionSelected(item.code, item.dialCode)
+                                onOptionSelected(item.code, item.dialCode,item.emoji)
                             }) {
                                 Text(item.emoji + " " + item.dialCode + " " + item.name)
                             }
