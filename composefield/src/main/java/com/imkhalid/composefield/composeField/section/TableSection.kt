@@ -115,7 +115,7 @@ class TableSection(
                 else if (min==0 && max>0)
                     "Max $max Item(s) can be Added"
                 else
-                    "Item(s) should be between $min to $max",
+                    "Items should be between $min to $max",
                 fontSize = responsiveTextSize(size = 12).sp,
                 color = Color.Gray.copy(alpha = 0.5f)
             )
