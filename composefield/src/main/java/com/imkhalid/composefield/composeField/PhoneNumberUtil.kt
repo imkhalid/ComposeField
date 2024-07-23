@@ -8,7 +8,7 @@ class PhoneNumberUtil {
 
     var prefix = "92"
     var currentCountryCode = "pk"
-    var currentCountryFlag = "\uD83C\uDDF5\uD83C\uDDF0 "
+    var currentCountryFlag = "\uD83C\uDDF5\uD83C\uDDF0  +"
     var minLength = 10
     var maxLength =10
 
@@ -35,11 +35,11 @@ class PhoneNumberUtil {
     companion object {
         val DEFAULT_FLAG_RES = ""
         val numbers = arrayOf(
-            CountryModel("ke", "07", "Kenya", "🇰🇪",8,8),
-            CountryModel("ke", "254", "Kenya", "🇰🇪",9,9),
-            CountryModel("tz", "255", "Tanzania", "🇹🇿",9,10),
-            CountryModel("ug", "256", "Uganda", "🇺🇬",9,9),
-            CountryModel("pk", "92", "Pakistan", "🇵🇰",10,10)
+            CountryModel("ke", "07", "Kenya", "🇰🇪 ",8,8),
+            CountryModel("ke", "254", "Kenya", "🇰🇪 +",9,9),
+            CountryModel("tz", "255", "Tanzania", "🇹🇿 +",9,10),
+            CountryModel("ug", "256", "Uganda", "🇺🇬 +",9,9),
+            CountryModel("pk", "92", "Pakistan", "🇵🇰 +",10,10)
         )
 
         /**

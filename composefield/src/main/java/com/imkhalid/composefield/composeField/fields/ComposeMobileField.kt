@@ -124,7 +124,7 @@ class ComposeMobileField : ComposeField() {
                 prefix = {
                     if (state.field.keyboardType == ComposeKeyboardType.MOBILE_NO)
                         Text(
-                            text = "${phoneNumberUtil.currentCountryFlag} +${phoneNumberUtil.prefix}",
+                            text = "${phoneNumberUtil.currentCountryFlag}${phoneNumberUtil.prefix}",
                             modifier = Modifier.clickable {
                                 toggleDropdown()
                             },
@@ -223,7 +223,7 @@ class ComposeMobileField : ComposeField() {
                 prefix = {
                     if (state.field.keyboardType == ComposeKeyboardType.MOBILE_NO)
                         Text(
-                            text = "${phoneNumberUtil.currentCountryFlag} +${phoneNumberUtil.prefix}",
+                            text = "${phoneNumberUtil.currentCountryFlag}${phoneNumberUtil.prefix}",
                             modifier = Modifier.clickable {
                                 toggleDropdown()
                             },
@@ -352,7 +352,7 @@ class ComposeMobileField : ComposeField() {
                 },
                 prefix = {
                     if (state.field.keyboardType == ComposeKeyboardType.MOBILE_NO)
-                        Text(text = "${phoneNumberUtil.currentCountryFlag} +${phoneNumberUtil.prefix}", modifier = Modifier.clickable {
+                        Text(text = "${phoneNumberUtil.currentCountryFlag}${phoneNumberUtil.prefix}", modifier = Modifier.clickable {
                             toggleDropdown()
                         })
                     else null
@@ -461,7 +461,7 @@ class ComposeMobileField : ComposeField() {
                             TextButton(onClick = {
                                 onOptionSelected(item)
                             }) {
-                                Text(item.emoji + " " + item.dialCode + " " + item.name)
+                                Text(item.emoji  + item.dialCode + " " + item.name)
                             }
                         }
                     }
