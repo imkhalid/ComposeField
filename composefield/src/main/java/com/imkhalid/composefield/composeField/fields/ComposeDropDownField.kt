@@ -76,7 +76,7 @@ class ComposeDropDownField : ComposeField() {
         val options = state.field.defaultValues.map { it.text }
         val values = state.field.defaultValues.map { it.id }
         val dropDownText = if (state.text.isEmpty())
-            "Choose an Option"
+            ComposeFieldTheme.dropDownHint
         else {
             values.indexOf(state.text).takeIf { it != -1 }?.let {
                 options[it]

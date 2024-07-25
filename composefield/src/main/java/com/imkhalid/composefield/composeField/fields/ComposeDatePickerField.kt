@@ -15,9 +15,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CalendarLocale
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -86,18 +88,16 @@ class ComposeDatePickerField : ComposeField() {
             }.timeInMillis
         }
 
-        val yearRange = if (minDate != null && maxDate != null) {
-            val minYear = Calendar.getInstance().apply { time = minDate }.get(Calendar.YEAR)
-            val maxYear = Calendar.getInstance().apply { time = maxDate }.get(Calendar.YEAR)
-            IntRange(minYear, maxYear)
-        } else if (minDate != null) {
-            val minYear = Calendar.getInstance().apply { time = minDate }.get(Calendar.YEAR)
-            IntRange(minYear, DatePickerDefaults.YearRange.last)
-        } else if (maxDate != null) {
-            val maxYear = Calendar.getInstance().apply { time = maxDate }.get(Calendar.YEAR)
-            IntRange(DatePickerDefaults.YearRange.first, maxYear)
-        } else
-            DatePickerDefaults.YearRange
+        val rangeMin = if (minDate!=null){
+            Calendar.getInstance().apply { time = minDate }.get(Calendar.YEAR)
+        }else{
+            DatePickerDefaults.YearRange.first
+        }
+        val rangeMax = if (maxDate!=null){
+            Calendar.getInstance().apply { time = maxDate }.get(Calendar.YEAR)
+        }else{
+            DatePickerDefaults.YearRange.last
+        }
 
         val label = buildAnnotatedString {
             withStyle(
@@ -122,15 +122,16 @@ class ComposeDatePickerField : ComposeField() {
 
         val calendar = Calendar.getInstance()
         val dropDownText = if (state.text.isEmpty())
-            "Choose an Date"
+            ComposeFieldTheme.datePickerHint
         else {
             changeDateFormat(date = state.text)
         }
 
 
-        val datePickerState = rememberDatePickerState(
+        val datePickerState = DatePickerState(
+            locale = CalendarLocale.getDefault(),
             initialSelectedDateMillis = if (maxMil != null && maxMil < calendar.timeInMillis) maxMil else calendar.timeInMillis,
-            yearRange = yearRange,
+            yearRange = rangeMin..rangeMax,
             selectableDates = object : SelectableDates {
                 override fun isSelectableDate(utcTimeMillis: Long): Boolean {
                     return (minMil == null || (minMil < utcTimeMillis)) &&

@@ -75,7 +75,7 @@ class ComposeTimePickerField : ComposeField(){
     private fun MyBuild(state: ComposeFieldState, newValue: (Pair<Boolean,String>, String) -> Unit, modifier: Modifier = Modifier) {
 
         val dropDownText = if (state.text.isEmpty())
-            "Choose Time"
+            ComposeFieldTheme.timePickerHint
         else {
             changeDateFormat(date=state.text)
         }

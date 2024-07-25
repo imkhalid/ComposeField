@@ -13,6 +13,9 @@ object ComposeFieldTheme {
     var unfocusedLabelColor = Color.Gray
     var focusedLabelColor = Color.Gray
     var fieldStyle =FieldStyle.NORMAL
+    var datePickerHint = "Choose Date"
+    var dropDownHint = "Choose an Option"
+    var timePickerHint = "Choose Time"
 
     enum class FieldStyle {
         OUTLINE,
