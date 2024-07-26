@@ -146,7 +146,7 @@ data class ComposeFieldModule(
                             val text =
                                 this@ComposeFieldModule.defaultValues.find { x -> x.id == newVal }?.text
                                     ?: ""
-                            append(text + " ")
+                            append(text + ", ")
                         }
                     }
                 }

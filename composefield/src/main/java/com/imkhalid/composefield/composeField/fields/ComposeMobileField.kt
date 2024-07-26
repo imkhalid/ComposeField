@@ -57,7 +57,9 @@ class ComposeMobileField : ComposeField() {
         newValue: (Pair<Boolean, String>, String) -> Unit
     ) {
         val phoneNumberUtil: MutableState<PhoneNumberUtil> = remember {
-            mutableStateOf(PhoneNumberUtil())
+            mutableStateOf(PhoneNumberUtil().apply {
+                setCountryOfSelectedText(state.text,this)
+            })
         }
 
         MyBuild(
@@ -232,7 +234,7 @@ class ComposeMobileField : ComposeField() {
                     else null
                 },
                 keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Phone,
+                    keyboardType = KeyboardType.NumberPassword,
                     autoCorrect = false,
                     imeAction = ImeAction.Next
                 ),
@@ -325,6 +327,16 @@ class ComposeMobileField : ComposeField() {
                     newValue.invoke(Pair(true, ""), "")
                     toggleDropdown()
                 })
+            }
+        }
+    }
+
+    private fun setCountryOfSelectedText(text: String,phoneNumberUtil: PhoneNumberUtil) {
+        PhoneNumberUtil.numbers.find { x->text.startsWith(x.dialCode) }?.let {
+            phoneNumberUtil.apply {
+                prefix = it.dialCode
+                currentCountryCode = it.code
+                currentCountryFlag = it.emoji
             }
         }
     }

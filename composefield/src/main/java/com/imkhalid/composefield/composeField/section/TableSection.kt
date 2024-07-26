@@ -3,6 +3,7 @@ package com.imkhalid.composefield.composeField.section
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,6 +32,8 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -50,8 +53,8 @@ class TableSection(
     parentNav: NavHostController,
     nav: NavHostController,
     sectionType: SectionType,
-    var min:Int=0,
-    var max:Int = 1,
+    var min: Int = 0,
+    var max: Int = 1,
 ) : Sections(parentNav, nav, sectionType) {
 
     @Composable
@@ -64,7 +67,7 @@ class TableSection(
         preState: HashMap<String, List<ComposeFieldStateHolder>>? = null,
         onItemAdded: (HashMap<String, List<ComposeFieldStateHolder>>) -> Unit,
         onDeleteItem: (index: Int) -> Unit,
-        onItemEdited: (HashMap<String, List<ComposeFieldStateHolder>>,index:Int) -> Unit,
+        onItemEdited: (HashMap<String, List<ComposeFieldStateHolder>>, index: Int) -> Unit,
         onValueChange: ((name: String, newValue: String) -> Unit)? = null,
         valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
         AddButton: (@Composable ColumnScope.(onClick: () -> Unit) -> Unit)? = null,
@@ -110,9 +113,9 @@ class TableSection(
                 fontSize = responsiveTextSize(size = 16).sp
             )
             Text(
-                text = if (min ==max && min>0)
+                text = if (min == max && min > 0)
                     "Add at least $min Item(s)"
-                else if (min==0 && max>0)
+                else if (min == 0 && max > 0)
                     "Max $max Item(s) can be Added"
                 else
                     "Items should be between $min to $max",
@@ -127,7 +130,7 @@ class TableSection(
                 color = ComposeFieldTheme.textColor,
                 minLines = 2
             )
-            if (tableDataList.size<max) {
+            if (tableDataList.size < max) {
                 AddButton?.invoke(this) {
                     showDialog = true
                 }
@@ -143,7 +146,13 @@ class TableSection(
                     val item = HashMap<String, Pair<String, String>>().apply {
                         tableDataList[it].forEach { x ->
                             x.value.forEach { y ->
-                                put(y.state.field.name, Pair(y.state.field.label, y.state.field.getTextFromValue(y.state.text)))
+                                put(
+                                    y.state.field.name,
+                                    Pair(
+                                        y.state.field.label,
+                                        y.state.field.getTextFromValue(y.state.text)
+                                    )
+                                )
                             }
                         }
                     }
@@ -158,9 +167,12 @@ class TableSection(
                                 }, onDeleteClick = {
                                     onDeleteItem.invoke(it)
                                 }, onExpandClick = {
-                                    expandedItem = it
+                                    if (expandedItem == it) {
+                                        expandedItem = -1
+                                    } else
+                                        expandedItem = it
                                 },
-                                textTitle = "${it.plus(1)}. ${tableName.replace("_"," ")}"
+                                textTitle = "${it.plus(1)}. ${tableName.replace("_", " ")}"
                             )
                         },
                         expandedItem
@@ -170,16 +182,20 @@ class TableSection(
         }
         if (showDialog || editItem != -1) {
             TableItemDialog(
+                name = tableName,
                 preState = tableDataList.getOrNull(editItem),
                 sections = sections,
                 valueChangeForChild = valueChangeForChild,
                 onValueChange = onValueChange,
                 DoneButton = DoneButton ?: AddButton,
-                onDismiss = { showDialog = false },
+                onDismiss = {
+                    showDialog = false
+                    editItem = -1
+                },
                 onDone = {
                     if (editItem != -1) {
-                        onItemEdited(it,editItem)
-                        editItem=-1
+                        onItemEdited(it, editItem)
+                        editItem = -1
                     } else {
                         onItemAdded(it)
                     }
@@ -281,6 +297,7 @@ class TableSection(
 
     @Composable
     fun TableItemDialog(
+        name: String,
         modifier: Modifier = Modifier,
         preState: HashMap<String, List<ComposeFieldStateHolder>>?,
         onValueChange: ((name: String, newValue: String) -> Unit)? = null,
@@ -293,13 +310,38 @@ class TableSection(
         Dialog(onDismissRequest = onDismiss) {
             Column(
                 Modifier
-                    .background(color = Color.White, shape = RoundedCornerShape(12))
+                    .background(
+                        color = Color(0xFFF5F5F5),
+                        shape = RoundedCornerShape(responsiveSize(12))
+                    )
                     .padding(responsiveSize(size = 10)),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 sectionNames.clear()
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(responsiveSize(size = 20))
+                ) {
+                    Text(
+                        text = name,
+                        fontSize = responsiveTextSize(size = 18).sp,
+                        fontWeight = FontWeight.Medium,
+                        color = ComposeFieldTheme.focusedLabelColor,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                    Image(
+                        painter = painterResource(android.R.drawable.ic_menu_close_clear_cancel),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .clickable {
+                                onDismiss.invoke()
+                            }
+                    )
+                }
                 Build(
-                    modifier = modifier.weight(1f),
+                    modifier = modifier,
                     sections = sections,
                     preState = preState,
                     onValueChange = onValueChange,
