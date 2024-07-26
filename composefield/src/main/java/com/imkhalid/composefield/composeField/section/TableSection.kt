@@ -143,7 +143,7 @@ class TableSection(
                     val item = HashMap<String, Pair<String, String>>().apply {
                         tableDataList[it].forEach { x ->
                             x.value.forEach { y ->
-                                put(y.state.field.name, Pair(y.state.field.label, y.state.text))
+                                put(y.state.field.name, Pair(y.state.field.label, y.state.field.getTextFromValue(y.state.text)))
                             }
                         }
                     }

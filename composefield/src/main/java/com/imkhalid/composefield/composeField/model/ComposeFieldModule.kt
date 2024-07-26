@@ -34,7 +34,7 @@ data class ComposeFieldModule(
     val pattern: String = "",
     val patternMessage: String = "",
     val hidden: ComposeFieldYesNo = if (hideInitial == ComposeFieldYesNo.YES) ComposeFieldYesNo.YES else ComposeFieldYesNo.NO,
-    val helperText:String = ""
+    val helperText: String = ""
 ) {
 
     fun parseCustomField(
@@ -143,9 +143,10 @@ data class ComposeFieldModule(
                 val finalStr = buildString {
                     value.split("::").forEach { newVal ->
                         if (newVal.isNotEmpty()) {
-                         val text =   this@ComposeFieldModule.defaultValues.find { x -> x.id == newVal }?.text
-                                ?: ""
-                            append(text+" ")
+                            val text =
+                                this@ComposeFieldModule.defaultValues.find { x -> x.id == newVal }?.text
+                                    ?: ""
+                            append(text + " ")
                         }
                     }
                 }
