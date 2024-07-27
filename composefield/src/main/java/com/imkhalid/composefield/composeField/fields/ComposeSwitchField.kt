@@ -26,8 +26,7 @@ import com.imkhalid.composefield.theme.ComposeFieldTheme
 import com.imkhalid.composefieldproject.composeField.fields.ComposeField
 import com.ozonedDigital.jhk.ui.common.responsiveTextSize
 
-class ComposeSwitchField:ComposeField() {
-
+class ComposeSwitchField : ComposeField() {
 
     @Composable
     override fun Build(
@@ -39,31 +38,42 @@ class ComposeSwitchField:ComposeField() {
     }
 
     @Composable
-    private fun MyBuild(state: ComposeFieldState, newValue: (Pair<Boolean,String>, String) -> Unit,modifier: Modifier=Modifier) {
-        val trueValue = state.field.defaultValues.find { x->x.text.contains("yes",true) ||
-                x.text.contains("true",true) ||
-                x.text.contains("male",true)
-        }?.id
-        val falseValue = state.field.defaultValues.find { x->x.text.contains("no",true) ||
-                x.text.contains("false",true) ||
-                x.text.contains("female",true)
-        }?.id
+    private fun MyBuild(
+        state: ComposeFieldState,
+        newValue: (Pair<Boolean, String>, String) -> Unit,
+        modifier: Modifier = Modifier
+    ) {
+        val trueValue =
+            state.field.defaultValues
+                .find { x ->
+                    x.text.contains("yes", true) ||
+                        x.text.contains("true", true) ||
+                        x.text.contains("male", true)
+                }
+                ?.id
+        val falseValue =
+            state.field.defaultValues
+                .find { x ->
+                    x.text.contains("no", true) ||
+                        x.text.contains("false", true) ||
+                        x.text.contains("female", true)
+                }
+                ?.id
 
         val label = buildAnnotatedString {
             withStyle(
-                style = SpanStyle(
-                    fontSize = responsiveTextSize(size = 13).sp,
-                    color = ComposeFieldTheme.focusedLabelColor,
-                )
+                style =
+                    SpanStyle(
+                        fontSize = responsiveTextSize(size = 13).sp,
+                        color = ComposeFieldTheme.focusedLabelColor,
+                    )
             ) {
                 append(state.field.label)
             }
-            if (state.field.required== ComposeFieldYesNo.YES){
+            if (state.field.required == ComposeFieldYesNo.YES) {
                 withStyle(
-                    style = SpanStyle(
-                        fontSize = responsiveTextSize(size = 13).sp,
-                        color = Color.Red
-                    )
+                    style =
+                        SpanStyle(fontSize = responsiveTextSize(size = 13).sp, color = Color.Red)
                 ) {
                     append("*")
                 }
@@ -71,42 +81,39 @@ class ComposeSwitchField:ComposeField() {
         }
 
         Row(
-            modifier= Modifier
-                .defaultMinSize(
-                    minWidth = OutlinedTextFieldDefaults.MinWidth,
-                    minHeight = OutlinedTextFieldDefaults.MinHeight
-                )
-                .clickable {
-                    if (state.text == falseValue) {
-                        newValue.invoke(Pair(true, ""), trueValue ?: "")
-                    } else {
-                        newValue.invoke(Pair(true, ""), falseValue ?: "")
-                    }
-                },
+            modifier =
+                Modifier.defaultMinSize(
+                        minWidth = OutlinedTextFieldDefaults.MinWidth,
+                        minHeight = OutlinedTextFieldDefaults.MinHeight
+                    )
+                    .clickable {
+                        if (state.text == falseValue) {
+                            newValue.invoke(Pair(true, ""), trueValue ?: "")
+                        } else {
+                            newValue.invoke(Pair(true, ""), falseValue ?: "")
+                        }
+                    },
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = label,
-                fontWeight = FontWeight.Medium
-            )
+            Text(text = label, fontWeight = FontWeight.Medium)
             Spacer(modifier = Modifier.padding(start = 10.dp))
             Switch(
-                checked =state.text==trueValue ,
+                checked = state.text == trueValue,
                 onCheckedChange = null,
-                colors = SwitchDefaults.colors(
-                    checkedBorderColor = ComposeFieldTheme.focusedBorderColor,
-                    checkedIconColor =  ComposeFieldTheme.focusedBorderColor,
-                    uncheckedBorderColor = ComposeFieldTheme.unfocusedBorderColor,
-                    uncheckedIconColor = ComposeFieldTheme.unfocusedBorderColor,
-                    checkedTrackColor = ComposeFieldTheme.focusedBorderColor.copy(alpha = 0.4f),
-                    uncheckedTrackColor = ComposeFieldTheme.unfocusedBorderColor.copy(alpha = 0.4f),
-                    checkedThumbColor = ComposeFieldTheme.focusedBorderColor,
-                    uncheckedThumbColor = ComposeFieldTheme.unfocusedBorderColor,
-                )
+                colors =
+                    SwitchDefaults.colors(
+                        checkedBorderColor = ComposeFieldTheme.focusedBorderColor,
+                        checkedIconColor = ComposeFieldTheme.focusedBorderColor,
+                        uncheckedBorderColor = ComposeFieldTheme.unfocusedBorderColor,
+                        uncheckedIconColor = ComposeFieldTheme.unfocusedBorderColor,
+                        checkedTrackColor = ComposeFieldTheme.focusedBorderColor.copy(alpha = 0.4f),
+                        uncheckedTrackColor =
+                            ComposeFieldTheme.unfocusedBorderColor.copy(alpha = 0.4f),
+                        checkedThumbColor = ComposeFieldTheme.focusedBorderColor,
+                        uncheckedThumbColor = ComposeFieldTheme.unfocusedBorderColor,
+                    )
             )
         }
     }
-
-
 }

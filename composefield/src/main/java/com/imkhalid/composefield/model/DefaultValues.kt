@@ -3,22 +3,22 @@ package com.imkhalid.composefield.model
 import android.os.Parcel
 import android.os.Parcelable
 
-
 data class DefaultValues(
     val id: String,
     val text: String,
     val code: String? = null,
     val form_fields_id: String? = null,
     var isChecked: Boolean = false
-):Parcelable {
-    constructor(parcel: Parcel) : this(
-        parcel.readString()?:"",
-        parcel.readString()?:"",
+) : Parcelable {
+    constructor(
+        parcel: Parcel
+    ) : this(
+        parcel.readString() ?: "",
+        parcel.readString() ?: "",
         parcel.readString(),
         parcel.readString(),
         parcel.readByte() != 0.toByte()
-    ) {
-    }
+    ) {}
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(id)

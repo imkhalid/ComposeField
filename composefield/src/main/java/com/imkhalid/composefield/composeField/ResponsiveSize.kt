@@ -29,7 +29,6 @@ fun responsiveSize(size: Int): Dp {
     return responsiveWidth(size = size)
 }
 
-
 @Composable
 fun responsiveTextSize(size: Int): Float {
     val screenSize = screenSize()
@@ -46,11 +45,8 @@ fun responsiveHeight(size: Int): Dp {
     return (screenSize.height * heightFactor).dp
 }
 
-@Composable
-fun responsiveWidth(size: Int): Dp = responsiveTextSize(size).dp
+@Composable fun responsiveWidth(size: Int): Dp = responsiveTextSize(size).dp
 
-@Composable
-fun responsiveHPaddings(size: Int): Dp = responsiveWidth(size)
+@Composable fun responsiveHPaddings(size: Int): Dp = responsiveWidth(size)
 
-@Composable
-fun responsiveVPaddings(size: Int): Dp = responsiveHeight(size)
+@Composable fun responsiveVPaddings(size: Int): Dp = responsiveHeight(size)

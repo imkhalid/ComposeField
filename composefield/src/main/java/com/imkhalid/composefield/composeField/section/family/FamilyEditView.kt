@@ -24,8 +24,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableFloatState
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -46,10 +44,7 @@ import com.ozonedDigital.jhk.ui.common.responsiveHeight
 import com.ozonedDigital.jhk.ui.common.responsiveSize
 import com.ozonedDigital.jhk.ui.common.responsiveTextSize
 
-internal fun LazyListScope.FamilyEditView(
-    modifier: Modifier,
-    familyData: FamilyData
-) {
+internal fun LazyListScope.FamilyEditView(modifier: Modifier, familyData: FamilyData) {
 
     var expandedItem by mutableStateOf(-1)
     itemsIndexed(familyData.snapshotStateList) { index, item ->
@@ -69,9 +64,7 @@ internal fun LazyListScope.FamilyEditView(
                 if (form.validate()) {
                     val map = HashMap(item)
                     map["isValidated"] = "1"
-                    form.forEach {
-                        map[it.state.field.name] = it.state.text
-                    }
+                    form.forEach { map[it.state.field.name] = it.state.text }
                     familyData.snapshotStateList.apply {
                         removeAt(index)
                         add(index, map)
@@ -85,8 +78,7 @@ internal fun LazyListScope.FamilyEditView(
     }
 }
 
-private @Composable
-fun FamilyItem(
+private @Composable fun FamilyItem(
     modifier: Modifier = Modifier,
     familyData: FamilyData,
     index: Int,
@@ -99,47 +91,49 @@ fun FamilyItem(
     Box(modifier = Modifier.padding(top = responsiveHeight(size = 5))) {
         AnimatedVisibility(
             visible = expanded,
-            enter = fadeIn()+ expandVertically(),
+            enter = fadeIn() + expandVertically(),
             exit = shrinkVertically() + fadeOut()
-            ) {
+        ) {
             Column(
-                modifier = Modifier
-                    .border(
-                        width = 1.dp,
-                        shape = RoundedCornerShape(responsiveSize(size = 12)),
-                        color = Color.Gray
-                    )
-                    .padding(top = responsiveHeight(size = 75))
-                    .padding(horizontal = responsiveSize(size = 10))
-                    .padding(bottom = responsiveHeight(size = 10))
+                modifier =
+                    Modifier.border(
+                            width = 1.dp,
+                            shape = RoundedCornerShape(responsiveSize(size = 12)),
+                            color = Color.Gray
+                        )
+                        .padding(top = responsiveHeight(size = 75))
+                        .padding(horizontal = responsiveSize(size = 10))
+                        .padding(bottom = responsiveHeight(size = 10))
             ) {
                 form.forEach { field ->
-                    ComposeFieldBuilder().Build(
-                        stateHolder = field,
-                    )
+                    ComposeFieldBuilder()
+                        .Build(
+                            stateHolder = field,
+                        )
                 }
                 Spacer(modifier = Modifier.height(responsiveHeight(size = 10)))
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                    familyData.AddButton.invoke {
-                        onAddClick.invoke(form)
-                    }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    familyData.AddButton.invoke { onAddClick.invoke(form) }
                 }
-
             }
         }
         Row(
-            modifier = Modifier
-                .height(responsiveHeight(size = 60))
-                .background(
-                    color = Color.White,
-                    shape = RoundedCornerShape(responsiveSize(size = 12))
-                )
-                .clickable { onClick.invoke() }
-                .padding(responsiveSize(size = 10)),
+            modifier =
+                Modifier.height(responsiveHeight(size = 60))
+                    .background(
+                        color = Color.White,
+                        shape = RoundedCornerShape(responsiveSize(size = 12))
+                    )
+                    .clickable { onClick.invoke() }
+                    .padding(responsiveSize(size = 10)),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val title = item.getOrDefault("name", "").takeIf { x -> x.isNotEmpty() }
-                ?: item.getOrDefault("relation", "")
+            val title =
+                item.getOrDefault("name", "").takeIf { x -> x.isNotEmpty() }
+                    ?: item.getOrDefault("relation", "")
             Text(
                 text = title,
                 color = Color.Black,
@@ -148,13 +142,11 @@ fun FamilyItem(
                 modifier = Modifier.weight(1f)
             )
             Image(
-                painter = if (expanded)
-                    painterResource(id = R.drawable.arrow_up_float)
-                else
-                    painterResource(id = R.drawable.arrow_down_float),
+                painter =
+                    if (expanded) painterResource(id = R.drawable.arrow_up_float)
+                    else painterResource(id = R.drawable.arrow_down_float),
                 contentDescription = ""
             )
         }
     }
-
 }

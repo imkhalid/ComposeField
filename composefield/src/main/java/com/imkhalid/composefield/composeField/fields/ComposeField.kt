@@ -32,14 +32,11 @@ abstract class ComposeField {
     ) {
         if (field.keyboardType == ComposeKeyboardType.PASSWORD) {
             Image(
-                painter = if (passwordVisible)
-                    painterResource(id = R.drawable.ic_open_password)
-                else
-                    painterResource(id = R.drawable.ic_close_password),
+                painter =
+                    if (passwordVisible) painterResource(id = R.drawable.ic_open_password)
+                    else painterResource(id = R.drawable.ic_close_password),
                 contentDescription = "Toggle password visibility",
-                modifier = Modifier.clickable {
-                    onClick?.invoke()
-                }
+                modifier = Modifier.clickable { onClick?.invoke() }
             )
         }
     }
@@ -50,7 +47,6 @@ abstract class ComposeField {
         state: ComposeFieldState,
         newValue: (Pair<Boolean, String>, String) -> Unit,
     )
-
 }
 
 class ComposeFieldBuilder {
@@ -63,35 +59,24 @@ class ComposeFieldBuilder {
         onValueChange: ((name: String, value: String) -> Unit)? = null
     ) {
         val state = stateHolder.state
-        val field = when (state.field.type) {
-            ComposeFieldType.TEXT_BOX,
-            ComposeFieldType.TEXT_AREA -> {
-                if (state.field.keyboardType == ComposeKeyboardType.MOBILE_NO) {
-                    ComposeMobileField()
-                } else {
-                    ComposeTextField()
-                        .setFocusCallback(focusCallback)
+        val field =
+            when (state.field.type) {
+                ComposeFieldType.TEXT_BOX,
+                ComposeFieldType.TEXT_AREA -> {
+                    if (state.field.keyboardType == ComposeKeyboardType.MOBILE_NO) {
+                        ComposeMobileField()
+                    } else {
+                        ComposeTextField().setFocusCallback(focusCallback)
+                    }
                 }
+                ComposeFieldType.DROP_DOWN -> ComposeDropDownField()
+                ComposeFieldType.DATE_PICKER -> ComposeDatePickerField()
+                ComposeFieldType.TIME_PICKER -> ComposeTimePickerField()
+                ComposeFieldType.DATE_TIME_PICKER -> ComposeDatePickerField()
+                ComposeFieldType.SWITCH -> ComposeSwitchField()
+                ComposeFieldType.CHECK_BOX -> ComposeCheckBoxField()
+                ComposeFieldType.RADIO_BUTTON -> ComposeRadioGroupField()
             }
-
-            ComposeFieldType.DROP_DOWN -> ComposeDropDownField()
-
-
-            ComposeFieldType.DATE_PICKER -> ComposeDatePickerField()
-
-
-            ComposeFieldType.TIME_PICKER -> ComposeTimePickerField()
-
-
-            ComposeFieldType.DATE_TIME_PICKER -> ComposeDatePickerField()
-
-            ComposeFieldType.SWITCH -> ComposeSwitchField()
-            ComposeFieldType.CHECK_BOX -> ComposeCheckBoxField()
-
-
-            ComposeFieldType.RADIO_BUTTON -> ComposeRadioGroupField()
-
-        }
 
         if (state.field.hidden == ComposeFieldYesNo.NO)
             field.Build(
@@ -112,5 +97,4 @@ class ComposeFieldBuilder {
     ) {
         stateHolder.updatedState(error, text, onValueChangeForChild)
     }
-
 }

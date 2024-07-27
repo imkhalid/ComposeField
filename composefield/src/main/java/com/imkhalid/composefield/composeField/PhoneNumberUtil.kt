@@ -1,46 +1,45 @@
 package com.imkhalid.composefield.composeField
 
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import com.imkhalid.composefield.composeField.fields.ComposeMobileField
-
 class PhoneNumberUtil {
 
-    var prefix = "92"
-    var currentCountryCode = "pk"
-    var currentCountryFlag = "\uD83C\uDDF5\uD83C\uDDF0  +"
-    var minLength = 10
-    var maxLength =10
+    var prefix = "254"
+    var currentCountryCode = "ke"
+    var currentCountryFlag = "\uD83C\uDDF0\uD83C\uDDEA +"
+    var minLength = 9
+    var maxLength = 9
 
     data class CountryModel(
         val code: String,
         val dialCode: String,
         val name: String,
         var emoji: String,
-        var length:Int = -1,
-        var maxLength:Int = -1
+        var length: Int = -1,
+        var maxLength: Int = -1
     )
 
-    fun validateNumbers(number:String):Boolean{
+    fun validateNumbers(number: String): Boolean {
         var bool = false
-         numbers.find { x->x.dialCode==prefix }?.let {
-             val isSameMinMax = it.length==it.maxLength
-            bool = if (isSameMinMax)
-                number.length==it.length
-            else
-                number.length>=it.length && number.length<=it.maxLength
-        }
+        numbers
+            .find { x -> x.dialCode == prefix }
+            ?.let {
+                val isSameMinMax = it.length == it.maxLength
+                bool =
+                    if (isSameMinMax) number.length == it.length
+                    else number.length >= it.length && number.length <= it.maxLength
+            }
         return bool
     }
+
     companion object {
         val DEFAULT_FLAG_RES = ""
-        val numbers = arrayOf(
-            CountryModel("ke", "07", "Kenya", "🇰🇪 ",8,8),
-            CountryModel("ke", "254", "Kenya", "🇰🇪 +",9,9),
-            CountryModel("tz", "255", "Tanzania", "🇹🇿 +",9,10),
-            CountryModel("ug", "256", "Uganda", "🇺🇬 +",9,9),
-            CountryModel("pk", "92", "Pakistan", "🇵🇰 +",10,10)
-        )
+        val numbers =
+            arrayOf(
+                CountryModel("ke", "07", "Kenya", "🇰🇪 ", 8, 8),
+                CountryModel("ke", "254", "Kenya", "🇰🇪 +", 9, 9),
+                CountryModel("tz", "255", "Tanzania", "🇹🇿 +", 9, 10),
+                CountryModel("ug", "256", "Uganda", "🇺🇬 +", 9, 9),
+//                CountryModel("pk", "92", "Pakistan", "🇵🇰 +", 10, 10)
+            )
 
         /**
          * Returns image res based on country name code
@@ -335,12 +334,7 @@ class PhoneNumberUtil {
             countries.add(CountryModel("bm", "1", "Bermuda", DEFAULT_FLAG_RES))
             countries.add(CountryModel("bn", "673", "Brunei Darussalam", DEFAULT_FLAG_RES))
             countries.add(
-                CountryModel(
-                    "bo",
-                    "591",
-                    "Bolivia, Plurinational State Of",
-                    DEFAULT_FLAG_RES
-                )
+                CountryModel("bo", "591", "Bolivia, Plurinational State Of", DEFAULT_FLAG_RES)
             )
             countries.add(CountryModel("br", "55", "Brazil", DEFAULT_FLAG_RES))
             countries.add(CountryModel("bs", "1", "Bahamas", DEFAULT_FLAG_RES))
@@ -351,12 +345,7 @@ class PhoneNumberUtil {
             countries.add(CountryModel("ca", "1", "Canada", DEFAULT_FLAG_RES))
             countries.add(CountryModel("cc", "61", "Cocos (keeling) Islands", DEFAULT_FLAG_RES))
             countries.add(
-                CountryModel(
-                    "cd",
-                    "243",
-                    "Congo, The Democratic Republic Of The",
-                    DEFAULT_FLAG_RES
-                )
+                CountryModel("cd", "243", "Congo, The Democratic Republic Of The", DEFAULT_FLAG_RES)
             )
             countries.add(CountryModel("cf", "236", "Central African Republic", DEFAULT_FLAG_RES))
             countries.add(CountryModel("cg", "242", "Congo", DEFAULT_FLAG_RES))
@@ -388,14 +377,11 @@ class PhoneNumberUtil {
             countries.add(CountryModel("et", "251", "Ethiopia", DEFAULT_FLAG_RES))
             countries.add(CountryModel("fi", "358", "Finland", DEFAULT_FLAG_RES))
             countries.add(CountryModel("fj", "679", "Fiji", DEFAULT_FLAG_RES))
-            countries.add(CountryModel("fk", "500", "Falkland Islands (malvinas)", DEFAULT_FLAG_RES))
             countries.add(
-                CountryModel(
-                    "fm",
-                    "691",
-                    "Micronesia, Federated States Of",
-                    DEFAULT_FLAG_RES
-                )
+                CountryModel("fk", "500", "Falkland Islands (malvinas)", DEFAULT_FLAG_RES)
+            )
+            countries.add(
+                CountryModel("fm", "691", "Micronesia, Federated States Of", DEFAULT_FLAG_RES)
             )
             countries.add(CountryModel("fo", "298", "Faroe Islands", DEFAULT_FLAG_RES))
             countries.add(CountryModel("fr", "33", "France", DEFAULT_FLAG_RES))
@@ -427,7 +413,9 @@ class PhoneNumberUtil {
             countries.add(CountryModel("im", "44", "Isle Of Man", DEFAULT_FLAG_RES))
             countries.add(CountryModel("is", "354", "Iceland", DEFAULT_FLAG_RES))
             countries.add(CountryModel("in", "91", "India", DEFAULT_FLAG_RES))
-            countries.add(CountryModel("io", "246", "British Indian Ocean Territory", DEFAULT_FLAG_RES))
+            countries.add(
+                CountryModel("io", "246", "British Indian Ocean Territory", DEFAULT_FLAG_RES)
+            )
             countries.add(CountryModel("iq", "964", "Iraq", DEFAULT_FLAG_RES))
             countries.add(CountryModel("ir", "98", "Iran, Islamic Republic Of", DEFAULT_FLAG_RES))
             countries.add(CountryModel("it", "39", "Italy", DEFAULT_FLAG_RES))
@@ -447,12 +435,7 @@ class PhoneNumberUtil {
             countries.add(CountryModel("ky", "1", "Cayman Islands", DEFAULT_FLAG_RES))
             countries.add(CountryModel("kz", "7", "Kazakhstan", DEFAULT_FLAG_RES))
             countries.add(
-                CountryModel(
-                    "la",
-                    "856",
-                    "Lao People's Democratic Republic",
-                    DEFAULT_FLAG_RES
-                )
+                CountryModel("la", "856", "Lao People's Democratic Republic", DEFAULT_FLAG_RES)
             )
             countries.add(CountryModel("lb", "961", "Lebanon", DEFAULT_FLAG_RES))
             countries.add(CountryModel("lc", "1", "Saint Lucia", DEFAULT_FLAG_RES))
@@ -561,28 +544,22 @@ class PhoneNumberUtil {
             countries.add(CountryModel("tt", "1", "Trinidad &amp; Tobago", DEFAULT_FLAG_RES))
             countries.add(CountryModel("tv", "688", "Tuvalu", DEFAULT_FLAG_RES))
             countries.add(CountryModel("tw", "886", "Taiwan", DEFAULT_FLAG_RES))
-            countries.add(CountryModel("tz", "255", "Tanzania, United Republic Of", DEFAULT_FLAG_RES))
+            countries.add(
+                CountryModel("tz", "255", "Tanzania, United Republic Of", DEFAULT_FLAG_RES)
+            )
             countries.add(CountryModel("ua", "380", "Ukraine", DEFAULT_FLAG_RES))
             countries.add(CountryModel("ug", "256", "Uganda", DEFAULT_FLAG_RES))
             countries.add(CountryModel("us", "1", "United States", DEFAULT_FLAG_RES))
             countries.add(CountryModel("uy", "598", "Uruguay", DEFAULT_FLAG_RES))
             countries.add(CountryModel("uz", "998", "Uzbekistan", DEFAULT_FLAG_RES))
-            countries.add(CountryModel("va", "379", "Holy See (vatican City State)", DEFAULT_FLAG_RES))
             countries.add(
-                CountryModel(
-                    "vc",
-                    "1",
-                    "Saint Vincent &amp; The Grenadines",
-                    DEFAULT_FLAG_RES
-                )
+                CountryModel("va", "379", "Holy See (vatican City State)", DEFAULT_FLAG_RES)
             )
             countries.add(
-                CountryModel(
-                    "ve",
-                    "58",
-                    "Venezuela, Bolivarian Republic Of",
-                    DEFAULT_FLAG_RES
-                )
+                CountryModel("vc", "1", "Saint Vincent &amp; The Grenadines", DEFAULT_FLAG_RES)
+            )
+            countries.add(
+                CountryModel("ve", "58", "Venezuela, Bolivarian Republic Of", DEFAULT_FLAG_RES)
             )
             countries.add(CountryModel("vg", "1", "British Virgin Islands", DEFAULT_FLAG_RES))
             countries.add(CountryModel("vi", "1", "US Virgin Islands", DEFAULT_FLAG_RES))

@@ -12,6 +12,7 @@ enum class ComposeFieldType {
     RADIO_BUTTON,
 }
 
-enum class ComposeFieldYesNo(val value:Boolean){
-    YES(true),NO(false)
+enum class ComposeFieldYesNo(val value: Boolean) {
+    YES(true),
+    NO(false)
 }

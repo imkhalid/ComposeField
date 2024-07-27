@@ -12,7 +12,7 @@ object ComposeFieldTheme {
     var textColor = Color.Black
     var unfocusedLabelColor = Color.Gray
     var focusedLabelColor = Color.Gray
-    var fieldStyle =FieldStyle.NORMAL
+    var fieldStyle = FieldStyle.NORMAL
     var datePickerHint = "Choose Date"
     var dropDownHint = "Choose an Option"
     var timePickerHint = "Choose Time"

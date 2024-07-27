@@ -29,7 +29,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -47,7 +46,6 @@ import com.imkhalid.composefield.theme.ComposeFieldTheme
 import com.imkhalid.composefieldproject.composeField.fields.ComposeField
 import com.ozonedDigital.jhk.ui.common.responsiveTextSize
 
-
 class ComposeMobileField : ComposeField() {
 
     @Composable
@@ -57,9 +55,7 @@ class ComposeMobileField : ComposeField() {
         newValue: (Pair<Boolean, String>, String) -> Unit
     ) {
         val phoneNumberUtil: MutableState<PhoneNumberUtil> = remember {
-            mutableStateOf(PhoneNumberUtil().apply {
-                setCountryOfSelectedText(state.text,this)
-            })
+            mutableStateOf(PhoneNumberUtil().apply { setCountryOfSelectedText(state.text, this) })
         }
 
         MyBuild(
@@ -78,28 +74,28 @@ class ComposeMobileField : ComposeField() {
         phoneNumberUtil: PhoneNumberUtil
     ) {
         when (ComposeFieldTheme.fieldStyle) {
-            ComposeFieldTheme.FieldStyle.OUTLINE -> OutlineField(
-                modifier = modifier,
-                state = state,
-                newValue = newValue,
-                phoneNumberUtil = phoneNumberUtil
-            )
-
-            ComposeFieldTheme.FieldStyle.CONTAINER -> ContainerField(
-                modifier = modifier,
-                state = state,
-                newValue = newValue,
-                phoneNumberUtil = phoneNumberUtil
-            )
-
-            ComposeFieldTheme.FieldStyle.NORMAL -> NormalField(
-                modifier = modifier,
-                state = state,
-                newValue = newValue,
-                phoneNumberUtil = phoneNumberUtil
-            )
+            ComposeFieldTheme.FieldStyle.OUTLINE ->
+                OutlineField(
+                    modifier = modifier,
+                    state = state,
+                    newValue = newValue,
+                    phoneNumberUtil = phoneNumberUtil
+                )
+            ComposeFieldTheme.FieldStyle.CONTAINER ->
+                ContainerField(
+                    modifier = modifier,
+                    state = state,
+                    newValue = newValue,
+                    phoneNumberUtil = phoneNumberUtil
+                )
+            ComposeFieldTheme.FieldStyle.NORMAL ->
+                NormalField(
+                    modifier = modifier,
+                    state = state,
+                    newValue = newValue,
+                    phoneNumberUtil = phoneNumberUtil
+                )
         }
-
     }
 
     @Composable
@@ -116,59 +112,53 @@ class ComposeMobileField : ComposeField() {
                 value = state.text.removePrefix(phoneNumberUtil.prefix),
                 enabled = state.field.isEditable.value,
                 onValueChange = { curVal ->
-                    if ( curVal.length <= phoneNumberUtil.maxLength) {
+                    if (curVal.length <= phoneNumberUtil.maxLength) {
                         builtinValidations(curVal, phoneNumberUtil) { validated, newVal ->
                             newValue.invoke(validated, phoneNumberUtil.prefix.plus(newVal))
                         }
                     }
-
                 },
                 prefix = {
                     if (state.field.keyboardType == ComposeKeyboardType.MOBILE_NO)
                         Text(
                             text = "${phoneNumberUtil.currentCountryFlag}${phoneNumberUtil.prefix}",
-                            modifier = Modifier.clickable {
-                                toggleDropdown()
-                            },
+                            modifier = Modifier.clickable { toggleDropdown() },
                             fontSize = responsiveTextSize(size = 15).sp
                         )
                     else null
                 },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Phone,
-                    autoCorrect = false,
-                    imeAction = ImeAction.Next
-                ),
+                keyboardOptions =
+                    KeyboardOptions(
+                        keyboardType = KeyboardType.Phone,
+                        autoCorrect = false,
+                        imeAction = ImeAction.Next
+                    ),
                 isError = state.hasError,
                 label = { Text(state.field.label) },
                 minLines = 1,
                 maxLines = 1,
-                textStyle = TextStyle.Default.copy(
-                    fontSize = responsiveTextSize(size = 15).sp
-                ),
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color.White,
-                    unfocusedContainerColor = Color.White,
-                    errorLabelColor = ComposeFieldTheme.errorColor,
-                    focusedLabelColor = ComposeFieldTheme.focusedBorderColor,
-                    unfocusedPlaceholderColor = ComposeFieldTheme.hintColor,
-                    focusedTextColor = ComposeFieldTheme.textColor,
-                    unfocusedTextColor = ComposeFieldTheme.textColor,
-                    focusedSupportingTextColor = ComposeFieldTheme.infoColor,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent
-                ),
-                shape = RoundedCornerShape(8.dp),
-                modifier = Modifier
-                    .then(modifier)
-                    .padding(5.dp)
-                    .shadow(
-                        elevation = 5.dp,
-                        shape = RoundedCornerShape(8.dp)
+                textStyle = TextStyle.Default.copy(fontSize = responsiveTextSize(size = 15).sp),
+                colors =
+                    TextFieldDefaults.colors(
+                        focusedContainerColor = Color.White,
+                        unfocusedContainerColor = Color.White,
+                        errorLabelColor = ComposeFieldTheme.errorColor,
+                        focusedLabelColor = ComposeFieldTheme.focusedBorderColor,
+                        unfocusedPlaceholderColor = ComposeFieldTheme.hintColor,
+                        focusedTextColor = ComposeFieldTheme.textColor,
+                        unfocusedTextColor = ComposeFieldTheme.textColor,
+                        focusedSupportingTextColor = ComposeFieldTheme.infoColor,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent
                     ),
+                shape = RoundedCornerShape(8.dp),
+                modifier =
+                    Modifier.then(modifier)
+                        .padding(5.dp)
+                        .shadow(elevation = 5.dp, shape = RoundedCornerShape(8.dp)),
                 trailingIcon = {
                     TrailingIcon(state.field, passwordVisible = false) {
-//                        passwordVisible = passwordVisible.not()
+                        //                        passwordVisible = passwordVisible.not()
                     }
                 }
             )
@@ -181,23 +171,23 @@ class ComposeMobileField : ComposeField() {
                 )
             }
             if (expanded) {
-                CountryPickerDialog(onDone = {
-                    toggleDropdown()
-                }, onOptionSelected = { countryModel ->
-                    phoneNumberUtil.apply {
-                        minLength = countryModel.length
-                        maxLength = countryModel.maxLength
-                        currentCountryFlag = countryModel.emoji
-                        currentCountryCode = countryModel.code
-                        prefix = countryModel.dialCode
+                CountryPickerDialog(
+                    onDone = { toggleDropdown() },
+                    onOptionSelected = { countryModel ->
+                        phoneNumberUtil.apply {
+                            minLength = countryModel.length
+                            maxLength = countryModel.maxLength
+                            currentCountryFlag = countryModel.emoji
+                            currentCountryCode = countryModel.code
+                            prefix = countryModel.dialCode
+                        }
+                        newValue.invoke(Pair(true, ""), "")
+                        toggleDropdown()
                     }
-                    newValue.invoke(Pair(true, ""), "")
-                    toggleDropdown()
-                })
+                )
             }
         }
     }
-
 
     @Composable
     private fun ContainerField(
@@ -220,88 +210,77 @@ class ComposeMobileField : ComposeField() {
                             newValue.invoke(validated, phoneNumberUtil.prefix.plus(newVal))
                         }
                     }
-
                 },
                 prefix = {
                     if (state.field.keyboardType == ComposeKeyboardType.MOBILE_NO)
                         Text(
                             text = "${phoneNumberUtil.currentCountryFlag}${phoneNumberUtil.prefix}",
-                            modifier = Modifier.clickable {
-                                toggleDropdown()
-                            },
+                            modifier = Modifier.clickable { toggleDropdown() },
                             fontSize = responsiveTextSize(size = 15).sp
                         )
                     else null
                 },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.NumberPassword,
-                    autoCorrect = false,
-                    imeAction = ImeAction.Next
-                ),
+                keyboardOptions =
+                    KeyboardOptions(
+                        keyboardType = KeyboardType.NumberPassword,
+                        autoCorrect = false,
+                        imeAction = ImeAction.Next
+                    ),
                 isError = state.hasError,
                 label = {
                     val label = buildAnnotatedString {
-                        withStyle(
-                            style = SpanStyle(
-                                fontSize = responsiveTextSize(size = 13).sp
-                            )
-                        ) {
+                        withStyle(style = SpanStyle(fontSize = responsiveTextSize(size = 13).sp)) {
                             append(state.field.label)
                         }
                         if (state.field.required == ComposeFieldYesNo.YES) {
                             withStyle(
-                                style = SpanStyle(
-                                    fontSize = responsiveTextSize(size = 13).sp,
-                                    color = Color.Red
-                                )
+                                style =
+                                    SpanStyle(
+                                        fontSize = responsiveTextSize(size = 13).sp,
+                                        color = Color.Red
+                                    )
                             ) {
                                 append("*")
                             }
                         }
                     }
-                    Text(
-                        label,
-                        fontSize = responsiveTextSize(size = 13).sp
-                    )
+                    Text(label, fontSize = responsiveTextSize(size = 13).sp)
                 },
-                textStyle = TextStyle.Default.copy(
-                    fontSize = responsiveTextSize(size = 15).sp
-                ),
+                textStyle = TextStyle.Default.copy(fontSize = responsiveTextSize(size = 15).sp),
                 minLines = 1,
                 maxLines = 1,
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color.White,
-                    unfocusedContainerColor = Color.White,
-                    errorLabelColor = ComposeFieldTheme.errorColor,
-                    focusedLabelColor = ComposeFieldTheme.focusedLabelColor,
-                    unfocusedLabelColor = ComposeFieldTheme.unfocusedLabelColor,
-                    unfocusedPlaceholderColor = ComposeFieldTheme.hintColor,
-                    focusedTextColor = ComposeFieldTheme.textColor,
-                    unfocusedTextColor = ComposeFieldTheme.textColor,
-                    focusedSupportingTextColor = ComposeFieldTheme.infoColor,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent
-                ),
-                shape = RoundedCornerShape(8.dp),
-                modifier = modifier
-                    .fillMaxWidth()
-                    .focusRequester(focusRequester)
-                    .onFocusChanged { s ->
-                        isFocused = s.isFocused
-                    }
-                    .padding(5.dp)
-                    .border(
-                        width = if (isFocused) 1.dp else 0.dp,
-                        color = if (isFocused) ComposeFieldTheme.focusedBorderColor else Color.Transparent,
-                        shape = RoundedCornerShape(8.dp)
-                    )
-                    .shadow(
-                        elevation = 5.dp,
-                        shape = RoundedCornerShape(8.dp)
+                colors =
+                    TextFieldDefaults.colors(
+                        focusedContainerColor = Color.White,
+                        unfocusedContainerColor = Color.White,
+                        errorLabelColor = ComposeFieldTheme.errorColor,
+                        focusedLabelColor = ComposeFieldTheme.focusedLabelColor,
+                        unfocusedLabelColor = ComposeFieldTheme.unfocusedLabelColor,
+                        unfocusedPlaceholderColor = ComposeFieldTheme.hintColor,
+                        focusedTextColor = ComposeFieldTheme.textColor,
+                        unfocusedTextColor = ComposeFieldTheme.textColor,
+                        focusedSupportingTextColor = ComposeFieldTheme.infoColor,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent
                     ),
+                shape = RoundedCornerShape(8.dp),
+                modifier =
+                    modifier
+                        .fillMaxWidth()
+                        .focusRequester(focusRequester)
+                        .onFocusChanged { s -> isFocused = s.isFocused }
+                        .padding(5.dp)
+                        .border(
+                            width = if (isFocused) 1.dp else 0.dp,
+                            color =
+                                if (isFocused) ComposeFieldTheme.focusedBorderColor
+                                else Color.Transparent,
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                        .shadow(elevation = 5.dp, shape = RoundedCornerShape(8.dp)),
                 trailingIcon = {
                     TrailingIcon(state.field, passwordVisible = false) {
-//                        passwordVisible = passwordVisible.not()
+                        //                        passwordVisible = passwordVisible.not()
                     }
                 }
             )
@@ -314,31 +293,34 @@ class ComposeMobileField : ComposeField() {
                 )
             }
             if (expanded) {
-                CountryPickerDialog(onDone = {
-                    toggleDropdown()
-                }, onOptionSelected = { countryModel ->
-                    phoneNumberUtil.apply {
-                        minLength = countryModel.length
-                        maxLength = countryModel.maxLength
-                        currentCountryFlag = countryModel.emoji
-                        currentCountryCode = countryModel.code
-                        prefix = countryModel.dialCode
+                CountryPickerDialog(
+                    onDone = { toggleDropdown() },
+                    onOptionSelected = { countryModel ->
+                        phoneNumberUtil.apply {
+                            minLength = countryModel.length
+                            maxLength = countryModel.maxLength
+                            currentCountryFlag = countryModel.emoji
+                            currentCountryCode = countryModel.code
+                            prefix = countryModel.dialCode
+                        }
+                        newValue.invoke(Pair(true, ""), "")
+                        toggleDropdown()
                     }
-                    newValue.invoke(Pair(true, ""), "")
-                    toggleDropdown()
-                })
+                )
             }
         }
     }
 
-    private fun setCountryOfSelectedText(text: String,phoneNumberUtil: PhoneNumberUtil) {
-        PhoneNumberUtil.numbers.find { x->text.startsWith(x.dialCode) }?.let {
-            phoneNumberUtil.apply {
-                prefix = it.dialCode
-                currentCountryCode = it.code
-                currentCountryFlag = it.emoji
+    private fun setCountryOfSelectedText(text: String, phoneNumberUtil: PhoneNumberUtil) {
+        PhoneNumberUtil.numbers
+            .find { x -> text.startsWith(x.dialCode) }
+            ?.let {
+                phoneNumberUtil.apply {
+                    prefix = it.dialCode
+                    currentCountryCode = it.code
+                    currentCountryFlag = it.emoji
+                }
             }
-        }
     }
 
     @Composable
@@ -360,40 +342,41 @@ class ComposeMobileField : ComposeField() {
                             newValue.invoke(validated, phoneNumberUtil.prefix.plus(newVal))
                         }
                     }
-
                 },
                 prefix = {
                     if (state.field.keyboardType == ComposeKeyboardType.MOBILE_NO)
-                        Text(text = "${phoneNumberUtil.currentCountryFlag}${phoneNumberUtil.prefix}", modifier = Modifier.clickable {
-                            toggleDropdown()
-                        })
+                        Text(
+                            text = "${phoneNumberUtil.currentCountryFlag}${phoneNumberUtil.prefix}",
+                            modifier = Modifier.clickable { toggleDropdown() }
+                        )
                     else null
                 },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Phone,
-                    autoCorrect = false,
-                    imeAction = ImeAction.Next
-                ),
+                keyboardOptions =
+                    KeyboardOptions(
+                        keyboardType = KeyboardType.Phone,
+                        autoCorrect = false,
+                        imeAction = ImeAction.Next
+                    ),
                 isError = state.hasError,
                 label = { Text(state.field.label) },
                 minLines = 1,
                 maxLines = 1,
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = ComposeFieldTheme.focusedBorderColor,
-                    unfocusedBorderColor = ComposeFieldTheme.unfocusedBorderColor,
-                    errorBorderColor = ComposeFieldTheme.errorColor,
-                    errorLabelColor = ComposeFieldTheme.errorColor,
-                    focusedLabelColor = ComposeFieldTheme.focusedBorderColor,
-                    unfocusedPlaceholderColor = ComposeFieldTheme.hintColor,
-                    focusedTextColor = ComposeFieldTheme.textColor,
-                    unfocusedTextColor = ComposeFieldTheme.textColor,
-                    focusedSupportingTextColor = ComposeFieldTheme.infoColor
-                ),
-                modifier = Modifier
-                    .then(modifier),
+                colors =
+                    OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = ComposeFieldTheme.focusedBorderColor,
+                        unfocusedBorderColor = ComposeFieldTheme.unfocusedBorderColor,
+                        errorBorderColor = ComposeFieldTheme.errorColor,
+                        errorLabelColor = ComposeFieldTheme.errorColor,
+                        focusedLabelColor = ComposeFieldTheme.focusedBorderColor,
+                        unfocusedPlaceholderColor = ComposeFieldTheme.hintColor,
+                        focusedTextColor = ComposeFieldTheme.textColor,
+                        unfocusedTextColor = ComposeFieldTheme.textColor,
+                        focusedSupportingTextColor = ComposeFieldTheme.infoColor
+                    ),
+                modifier = Modifier.then(modifier),
                 trailingIcon = {
                     TrailingIcon(field = state.field, passwordVisible = false) {
-//                        passwordVisible = passwordVisible.not()
+                        //                        passwordVisible = passwordVisible.not()
                     }
                 }
             )
@@ -406,23 +389,23 @@ class ComposeMobileField : ComposeField() {
                 )
             }
             if (expanded) {
-                CountryPickerDialog(onDone = {
-                    toggleDropdown()
-                }, onOptionSelected = {countryModel ->
-                    phoneNumberUtil.apply {
-                        minLength = countryModel.length
-                        maxLength = countryModel.maxLength
-                        currentCountryFlag = countryModel.emoji
-                        currentCountryCode = countryModel.code
-                        prefix = countryModel.dialCode
+                CountryPickerDialog(
+                    onDone = { toggleDropdown() },
+                    onOptionSelected = { countryModel ->
+                        phoneNumberUtil.apply {
+                            minLength = countryModel.length
+                            maxLength = countryModel.maxLength
+                            currentCountryFlag = countryModel.emoji
+                            currentCountryCode = countryModel.code
+                            prefix = countryModel.dialCode
+                        }
+                        newValue.invoke(Pair(true, ""), "")
+                        toggleDropdown()
                     }
-                    newValue.invoke(Pair(true, ""), "")
-                    toggleDropdown()
-                })
+                )
             }
         }
     }
-
 
     fun builtinValidations(
         curVal: String,
@@ -436,7 +419,6 @@ class ComposeMobileField : ComposeField() {
         newValue.invoke(Pair(bool, message), curVal)
     }
 
-
     @Composable
     private fun CountryPickerDialog(
         onDone: () -> Unit,
@@ -445,12 +427,10 @@ class ComposeMobileField : ComposeField() {
 
         val countries = PhoneNumberUtil.numbers
         var searchText by remember { mutableStateOf("") }
-        val filteredOptions = countries.filter {
-            it.name.contains(
-                searchText,
-                ignoreCase = true
-            ) || it.dialCode.contains(searchText)
-        }
+        val filteredOptions =
+            countries.filter {
+                it.name.contains(searchText, ignoreCase = true) || it.dialCode.contains(searchText)
+            }
 
         AlertDialog(
             onDismissRequest = {},
@@ -463,28 +443,17 @@ class ComposeMobileField : ComposeField() {
                         label = { Text("Search") },
                         modifier = Modifier.fillMaxWidth()
                     )
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .heightIn(max = 200.dp)
-                    ) {
+                    LazyColumn(modifier = Modifier.fillMaxWidth().heightIn(max = 200.dp)) {
                         items(filteredOptions.size) { index ->
                             val item = filteredOptions[index]
-                            TextButton(onClick = {
-                                onOptionSelected(item)
-                            }) {
-                                Text(item.emoji  + item.dialCode + " " + item.name)
+                            TextButton(onClick = { onOptionSelected(item) }) {
+                                Text(item.emoji + item.dialCode + " " + item.name)
                             }
                         }
                     }
                 }
             },
-            confirmButton = {
-                Text(text = "Done", Modifier.clickable {
-                    onDone()
-                })
-            }
+            confirmButton = { Text(text = "Done", Modifier.clickable { onDone() }) }
         )
     }
-
 }

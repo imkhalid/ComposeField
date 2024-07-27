@@ -24,7 +24,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -46,7 +45,7 @@ import com.imkhalid.composefield.theme.ComposeFieldTheme
 import com.imkhalid.composefieldproject.composeField.fields.ComposeField
 import com.ozonedDigital.jhk.ui.common.responsiveTextSize
 
-class ComposeRadioGroupField:ComposeField() {
+class ComposeRadioGroupField : ComposeField() {
 
     @Composable
     override fun Build(
@@ -58,59 +57,57 @@ class ComposeRadioGroupField:ComposeField() {
     }
 
     @Composable
-    private fun MyBuild(state: ComposeFieldState, newValue: (Pair<Boolean, String>, String) -> Unit,modifier: Modifier= Modifier) {
-        val twoOption = state.field.defaultValues.size == 2 && state.field.defaultValues.all { x -> x.text.length <= 10 }
-        RadioGroupField(modifier=modifier) {
+    private fun MyBuild(
+        state: ComposeFieldState,
+        newValue: (Pair<Boolean, String>, String) -> Unit,
+        modifier: Modifier = Modifier
+    ) {
+        val twoOption =
+            state.field.defaultValues.size == 2 &&
+                state.field.defaultValues.all { x -> x.text.length <= 10 }
+        RadioGroupField(modifier = modifier) {
             val label = buildAnnotatedString {
                 withStyle(
-                    style = SpanStyle(
-                        fontSize = responsiveTextSize(size = 13).sp,
-                        color = ComposeFieldTheme.focusedBorderColor,
-                    )
+                    style =
+                        SpanStyle(
+                            fontSize = responsiveTextSize(size = 13).sp,
+                            color = ComposeFieldTheme.focusedBorderColor,
+                        )
                 ) {
                     append(state.field.label)
                 }
-                if (state.field.required== ComposeFieldYesNo.YES){
+                if (state.field.required == ComposeFieldYesNo.YES) {
                     withStyle(
-                        style = SpanStyle(
-                            fontSize = responsiveTextSize(size = 13).sp,
-                            color = Color.Red
-                        )
+                        style =
+                            SpanStyle(
+                                fontSize = responsiveTextSize(size = 13).sp,
+                                color = Color.Red
+                            )
                     ) {
                         append("*")
                     }
                 }
             }
-            Text(
-                text = label,
-                modifier=Modifier.padding(start = 20.dp, end = 20.dp, top = 10.dp)
-            )
+            Text(text = label, modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 10.dp))
             Spacer(modifier = Modifier.padding(top = 5.dp))
             if (twoOption) {
-                Row(modifier = Modifier
-                    .padding(start = 20.dp)) {
+                Row(modifier = Modifier.padding(start = 20.dp)) {
                     state.field.defaultValues.forEach {
-
                         RoundedCornerRadiobox(
                             label = it.text,
                             checkedColor = ComposeFieldTheme.focusedBorderColor,
                             isChecked = state.text == it.id,
-                            onValueChange = { b ->
-                                newValue(Pair(true, ""), it.id)
-                            }
+                            onValueChange = { b -> newValue(Pair(true, ""), it.id) }
                         )
                     }
                 }
-            }
-            else {
+            } else {
                 state.field.defaultValues.forEach {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center,
-                        modifier = Modifier
-                            .clickable {
-                                newValue(Pair(true, ""), it.id)
-                            }) {
+                        modifier = Modifier.clickable { newValue(Pair(true, ""), it.id) }
+                    ) {
                         RadioButton(
                             modifier = Modifier.padding(8.dp),
                             selected = state.text == it.id,
@@ -121,7 +118,6 @@ class ComposeRadioGroupField:ComposeField() {
                             fontSize = responsiveTextSize(size = 15).sp,
                             color = MaterialTheme.colorScheme.onBackground
                         )
-
                     }
                 }
             }
@@ -130,44 +126,36 @@ class ComposeRadioGroupField:ComposeField() {
 }
 
 @Composable
-private fun RadioGroupField(
-    modifier: Modifier=Modifier,
-    content: @Composable () -> Unit
-){
-    when(ComposeFieldTheme.fieldStyle){
-        ComposeFieldTheme.FieldStyle.OUTLINE -> Column(
-            modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.Start,
-            content={content.invoke()}
-        )
+private fun RadioGroupField(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+    when (ComposeFieldTheme.fieldStyle) {
+        ComposeFieldTheme.FieldStyle.OUTLINE ->
+            Column(
+                modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.Start,
+                content = { content.invoke() }
+            )
         ComposeFieldTheme.FieldStyle.CONTAINER,
-        ComposeFieldTheme.FieldStyle.NORMAL -> Column(
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.Start,
-            modifier = modifier
-                .padding(5.dp)
-                .fillMaxWidth()
-                .border(
-                    width = 0.dp,
-                    color = Color.Transparent,
-                    shape = RoundedCornerShape(8.dp)
-                )
-                .shadow(
-                    elevation = 5.dp,
-                    shape = RoundedCornerShape(8.dp)
-                )
-                .background(
-                    color = Color.White,
-                    shape = RoundedCornerShape(8.dp)
-                )
-                .padding(5.dp)
-            ,
-            content={content.invoke()}
-        )
+        ComposeFieldTheme.FieldStyle.NORMAL ->
+            Column(
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.Start,
+                modifier =
+                    modifier
+                        .padding(5.dp)
+                        .fillMaxWidth()
+                        .border(
+                            width = 0.dp,
+                            color = Color.Transparent,
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                        .shadow(elevation = 5.dp, shape = RoundedCornerShape(8.dp))
+                        .background(color = Color.White, shape = RoundedCornerShape(8.dp))
+                        .padding(5.dp),
+                content = { content.invoke() }
+            )
     }
 }
-
 
 @Composable
 fun RoundedCornerRadiobox(
@@ -185,36 +173,35 @@ fun RoundedCornerRadiobox(
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .heightIn(40.dp) // height of 48dp to comply with minimum touch target size
-            .toggleable(
-                value = isChecked,
-                role = Role.Checkbox,
-                onValueChange = { onValueChange?.invoke(it) }
-            )
+        modifier =
+            modifier
+                .heightIn(40.dp) // height of 48dp to comply with minimum touch target size
+                .toggleable(
+                    value = isChecked,
+                    role = Role.Checkbox,
+                    onValueChange = { onValueChange?.invoke(it) }
+                )
     ) {
         Box(
-            modifier = Modifier
-                .size(size.dp)
-                .background(color = checkboxColor, shape = RoundedCornerShape(4.dp))
-                .border(width = 1.5.dp, color = checkedColor, shape = RoundedCornerShape(4.dp)),
+            modifier =
+                Modifier.size(size.dp)
+                    .background(color = checkboxColor, shape = RoundedCornerShape(4.dp))
+                    .border(width = 1.5.dp, color = checkedColor, shape = RoundedCornerShape(4.dp)),
             contentAlignment = Alignment.Center
         ) {
             androidx.compose.animation.AnimatedVisibility(
                 visible = isChecked,
-                enter = slideInHorizontally(animationSpec = tween(duration)) {
-                    with(density) { (size * -0.5).dp.roundToPx() }
-                } + expandHorizontally(
-                    expandFrom = Alignment.Start,
-                    animationSpec = tween(duration)
-                ),
+                enter =
+                    slideInHorizontally(animationSpec = tween(duration)) {
+                        with(density) { (size * -0.5).dp.roundToPx() }
+                    } +
+                        expandHorizontally(
+                            expandFrom = Alignment.Start,
+                            animationSpec = tween(duration)
+                        ),
                 exit = fadeOut()
             ) {
-                Icon(
-                    Icons.Default.Check,
-                    contentDescription = null,
-                    tint = uncheckedColor
-                )
+                Icon(Icons.Default.Check, contentDescription = null, tint = uncheckedColor)
             }
         }
         Text(

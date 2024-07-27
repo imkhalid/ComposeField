@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -63,7 +62,8 @@ class TableSection(
         sections: List<ComposeSectionModule>,
         tableName: String,
         description: String,
-        tableDataList: SnapshotStateList<HashMap<String, List<ComposeFieldStateHolder>>> = SnapshotStateList(),
+        tableDataList: SnapshotStateList<HashMap<String, List<ComposeFieldStateHolder>>> =
+            SnapshotStateList(),
         preState: HashMap<String, List<ComposeFieldStateHolder>>? = null,
         onItemAdded: (HashMap<String, List<ComposeFieldStateHolder>>) -> Unit,
         onDeleteItem: (index: Int) -> Unit,
@@ -72,53 +72,43 @@ class TableSection(
         valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
         AddButton: (@Composable ColumnScope.(onClick: () -> Unit) -> Unit)? = null,
         DoneButton: (@Composable ColumnScope.(onClick: () -> Unit) -> Unit)? = null,
-        SingleItemHeader: @Composable (onEditClick: () -> Unit, onDeleteClick: () -> Unit, onExpandClick: () -> Unit, textTitle: String) -> Unit,
-        errorDialog: (@Composable (
-            onClick: (positive: Boolean) -> Unit,
-            onDismiss: () -> Unit
-        ) -> Unit)? = null
+        SingleItemHeader:
+            @Composable
+            (
+                onEditClick: () -> Unit,
+                onDeleteClick: () -> Unit,
+                onExpandClick: () -> Unit,
+                textTitle: String
+            ) -> Unit,
+        errorDialog:
+            (@Composable
+            (onClick: (positive: Boolean) -> Unit, onDismiss: () -> Unit) -> Unit)? =
+            null
     ) {
         if (sectionNames.isEmpty()) {
-            sections.mapTo(sectionNames) {
-                it.name
-            }
+            sections.mapTo(sectionNames) { it.name }
             sections.forEach {
-                sectionState[it.name] = it.fields.map { field ->
-                    val preFieldState = preState?.getOrDefault(it.name, emptyList())
-                        ?.find { x -> x.state.field.name == field.name }
-                    rememberFieldState(
-                        fieldModule = field,
-                        stateHolder = preFieldState
-                    )
-                }
+                sectionState[it.name] =
+                    it.fields.map { field ->
+                        val preFieldState =
+                            preState?.getOrDefault(it.name, emptyList())?.find { x ->
+                                x.state.field.name == field.name
+                            }
+                        rememberFieldState(fieldModule = field, stateHolder = preFieldState)
+                    }
             }
         }
-        var showDialog by remember {
-            mutableStateOf(false)
-        }
+        var showDialog by remember { mutableStateOf(false) }
 
-        var editItem by remember {
-            mutableStateOf(-1)
-        }
-        var expandedItem by remember {
-            mutableStateOf(-1)
-        }
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(responsiveSize(size = 20))
-        ) {
+        var editItem by remember { mutableStateOf(-1) }
+        var expandedItem by remember { mutableStateOf(-1) }
+        Column(modifier = Modifier.fillMaxSize().padding(responsiveSize(size = 20))) {
+            Text(text = tableName, fontSize = responsiveTextSize(size = 16).sp)
             Text(
-                text = tableName,
-                fontSize = responsiveTextSize(size = 16).sp
-            )
-            Text(
-                text = if (min == max && min > 0)
-                    "Add at least $min Item(s)"
-                else if (min == 0 && max > 0)
-                    "Max $max Item(s) can be Added"
-                else
-                    "Items should be between $min to $max",
+                text =
+                    if (min == max && min > 0) "Add at least $min Item(s)"
+                    else if (min == 0 && max > 0) "Max $max Item(s) can be Added"
+                    else "Items should be between $min to $max",
                 fontSize = responsiveTextSize(size = 12).sp,
                 color = Color.Gray.copy(alpha = 0.5f)
             )
@@ -131,46 +121,39 @@ class TableSection(
                 minLines = 2
             )
             if (tableDataList.size < max) {
-                AddButton?.invoke(this) {
-                    showDialog = true
-                }
+                AddButton?.invoke(this) { showDialog = true }
             }
 
             Spacer(modifier = Modifier.height(responsiveHeight(size = 10)))
 
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-            ) {
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
                 items(tableDataList.size) {
-                    val item = HashMap<String, Pair<String, String>>().apply {
-                        tableDataList[it].forEach { x ->
-                            x.value.forEach { y ->
-                                put(
-                                    y.state.field.name,
-                                    Pair(
-                                        y.state.field.label,
-                                        y.state.field.getTextFromValue(y.state.text)
+                    val item =
+                        HashMap<String, Pair<String, String>>().apply {
+                            tableDataList[it].forEach { x ->
+                                x.value.forEach { y ->
+                                    put(
+                                        y.state.field.name,
+                                        Pair(
+                                            y.state.field.label,
+                                            y.state.field.getTextFromValue(y.state.text)
+                                        )
                                     )
-                                )
+                                }
                             }
                         }
-                    }
                     TableItem(
                         tableName,
                         it,
                         item,
                         SingleItemHeader = {
                             SingleItemHeader.invoke(
-                                onEditClick = {
-                                    editItem = it
-                                }, onDeleteClick = {
-                                    onDeleteItem.invoke(it)
-                                }, onExpandClick = {
+                                onEditClick = { editItem = it },
+                                onDeleteClick = { onDeleteItem.invoke(it) },
+                                onExpandClick = {
                                     if (expandedItem == it) {
                                         expandedItem = -1
-                                    } else
-                                        expandedItem = it
+                                    } else expandedItem = it
                                 },
                                 textTitle = "${it.plus(1)}. ${tableName.replace("_", " ")}"
                             )
@@ -200,38 +183,34 @@ class TableSection(
                         onItemAdded(it)
                     }
                     showDialog = false
-                })
+                }
+            )
         }
     }
 
-    private @Composable
-    fun TableItem(
+    private @Composable fun TableItem(
         tableName: String,
         index: Int,
         item: Map<String, Pair<String, String>>,
         SingleItemHeader: @Composable () -> Unit,
         expandedItem: Int
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = responsiveHeight(size = 10))
-        ) {
+        Box(modifier = Modifier.fillMaxWidth().padding(top = responsiveHeight(size = 10))) {
             if (expandedItem == index) {
                 Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .border(
-                            1.dp,
-                            Color.Gray,
-                            shape = RoundedCornerShape(responsiveSize(size = 12))
-                        )
-                        .background(
-                            color = Color.White,
-                            shape = RoundedCornerShape(responsiveSize(size = 12))
-                        )
-                        .padding(top = responsiveHeight(size = 60))
-                        .padding(responsiveSize(size = 15))
+                    modifier =
+                        Modifier.fillMaxWidth()
+                            .border(
+                                1.dp,
+                                Color.Gray,
+                                shape = RoundedCornerShape(responsiveSize(size = 12))
+                            )
+                            .background(
+                                color = Color.White,
+                                shape = RoundedCornerShape(responsiveSize(size = 12))
+                            )
+                            .padding(top = responsiveHeight(size = 60))
+                            .padding(responsiveSize(size = 15))
                 ) {
                     item.forEach {
                         DetailItem(
@@ -244,15 +223,13 @@ class TableSection(
             }
             if (SingleItemHeader == null) {
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(
-                            color = ComposeFieldTheme.focusedBorderColor.copy(alpha = 0.3f),
-                            shape = RoundedCornerShape(
-                                responsiveSize(size = 12)
+                    modifier =
+                        Modifier.fillMaxWidth()
+                            .background(
+                                color = ComposeFieldTheme.focusedBorderColor.copy(alpha = 0.3f),
+                                shape = RoundedCornerShape(responsiveSize(size = 12))
                             )
-                        )
-                        .padding(responsiveSize(size = 15)),
+                            .padding(responsiveSize(size = 15)),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.Top
                 ) {
@@ -309,8 +286,7 @@ class TableSection(
     ) {
         Dialog(onDismissRequest = onDismiss) {
             Column(
-                Modifier
-                    .background(
+                Modifier.background(
                         color = Color(0xFFF5F5F5),
                         shape = RoundedCornerShape(responsiveSize(12))
                     )
@@ -318,11 +294,7 @@ class TableSection(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 sectionNames.clear()
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(responsiveSize(size = 20))
-                ) {
+                Box(modifier = Modifier.fillMaxWidth().padding(responsiveSize(size = 20))) {
                     Text(
                         text = name,
                         fontSize = responsiveTextSize(size = 18).sp,
@@ -333,11 +305,8 @@ class TableSection(
                     Image(
                         painter = painterResource(android.R.drawable.ic_menu_close_clear_cancel),
                         contentDescription = null,
-                        modifier = Modifier
-                            .align(Alignment.CenterEnd)
-                            .clickable {
-                                onDismiss.invoke()
-                            }
+                        modifier =
+                            Modifier.align(Alignment.CenterEnd).clickable { onDismiss.invoke() }
                     )
                 }
                 Build(
@@ -347,11 +316,7 @@ class TableSection(
                     onValueChange = onValueChange,
                     valueChangeForChild = valueChangeForChild
                 )
-                DoneButton?.invoke(this) {
-                    onDone.invoke(
-                        sectionState
-                    )
-                }
+                DoneButton?.invoke(this) { onDone.invoke(sectionState) }
             }
         }
     }

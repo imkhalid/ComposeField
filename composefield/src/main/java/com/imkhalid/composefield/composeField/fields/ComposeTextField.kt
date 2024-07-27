@@ -60,7 +60,6 @@ import java.util.regex.Pattern
 
 class ComposeTextField : ComposeField() {
 
-
     fun setFocusCallback(callback: ((isValidated: Boolean, fieldName: String) -> Unit)?) = apply {
         focusCallback = callback
     }
@@ -74,42 +73,42 @@ class ComposeTextField : ComposeField() {
         MyBuild(state = state, newValue = newValue, modifier = modifier)
     }
 
-
     @Composable
     fun MyBuild(
         state: ComposeFieldState,
         newValue: (Pair<Boolean, String>, String) -> Unit,
         modifier: Modifier = Modifier,
     ) {
-        val toolbar = if (state.field.keyboardType == ComposeKeyboardType.SENSITIVE)
-            LocalTextToolbar provides EmptyTextToolbar
-        else LocalTextToolbar provides LocalTextToolbar.current
+        val toolbar =
+            if (state.field.keyboardType == ComposeKeyboardType.SENSITIVE)
+                LocalTextToolbar provides EmptyTextToolbar
+            else LocalTextToolbar provides LocalTextToolbar.current
 
-        Column(modifier=modifier) {
+        Column(modifier = modifier) {
             CompositionLocalProvider(toolbar) {
                 when (ComposeFieldTheme.fieldStyle) {
-                    ComposeFieldTheme.FieldStyle.OUTLINE -> OutlineField(
-                        modifier = Modifier.fillMaxWidth(),
-                        state = state,
-                        newValue = newValue
-                    )
-
-                    ComposeFieldTheme.FieldStyle.CONTAINER -> ContainerField(
-                        modifier = Modifier.fillMaxWidth(),
-                        state = state,
-                        newValue = newValue
-                    )
-
-                    ComposeFieldTheme.FieldStyle.NORMAL -> NormalField(
-                        modifier = Modifier.fillMaxWidth(),
-                        state = state,
-                        newValue = newValue
-                    )
+                    ComposeFieldTheme.FieldStyle.OUTLINE ->
+                        OutlineField(
+                            modifier = Modifier.fillMaxWidth(),
+                            state = state,
+                            newValue = newValue
+                        )
+                    ComposeFieldTheme.FieldStyle.CONTAINER ->
+                        ContainerField(
+                            modifier = Modifier.fillMaxWidth(),
+                            state = state,
+                            newValue = newValue
+                        )
+                    ComposeFieldTheme.FieldStyle.NORMAL ->
+                        NormalField(
+                            modifier = Modifier.fillMaxWidth(),
+                            state = state,
+                            newValue = newValue
+                        )
                 }
             }
         }
     }
-
 
     @Composable
     private fun NormalField(
@@ -137,13 +136,10 @@ class ComposeTextField : ComposeField() {
                         newValue.invoke(validated, newVal)
                     }
                 }
-
             },
             prefix = {
                 if (state.field.keyboardType == ComposeKeyboardType.MOBILE_NO)
-                    Text(text = "+1", modifier = Modifier.clickable {
-
-                    })
+                    Text(text = "+1", modifier = Modifier.clickable {})
                 else null
             },
             keyboardOptions = getKeyboardOptions(state.field),
@@ -152,24 +148,21 @@ class ComposeTextField : ComposeField() {
             minLines = getMinLine(state.field.type),
             maxLines = getMaxLine(state.field.type),
             visualTransformation = visualTransformation,
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color.White,
-                unfocusedContainerColor = Color.White,
-                errorLabelColor = ComposeFieldTheme.errorColor,
-                focusedLabelColor = ComposeFieldTheme.hintColor,
-                focusedTextColor = ComposeFieldTheme.textColor,
-                unfocusedTextColor = ComposeFieldTheme.textColor,
-                focusedSupportingTextColor = ComposeFieldTheme.infoColor,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
-            ),
-            shape = RoundedCornerShape(8.dp),
-            modifier = modifier
-                .padding(5.dp)
-                .shadow(
-                    elevation = 5.dp,
-                    shape = RoundedCornerShape(8.dp)
+            colors =
+                TextFieldDefaults.colors(
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White,
+                    errorLabelColor = ComposeFieldTheme.errorColor,
+                    focusedLabelColor = ComposeFieldTheme.hintColor,
+                    focusedTextColor = ComposeFieldTheme.textColor,
+                    unfocusedTextColor = ComposeFieldTheme.textColor,
+                    focusedSupportingTextColor = ComposeFieldTheme.infoColor,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent
                 ),
+            shape = RoundedCornerShape(8.dp),
+            modifier =
+                modifier.padding(5.dp).shadow(elevation = 5.dp, shape = RoundedCornerShape(8.dp)),
             trailingIcon = {
                 TrailingIcon(state.field, passwordVisible = passwordVisible) {
                     passwordVisible = passwordVisible.not()
@@ -199,7 +192,6 @@ class ComposeTextField : ComposeField() {
         val visualTransformation =
             getVisualTransformation(mask, state.field.keyboardType, passwordVisible)
 
-
         TextField(
             value = state.text,
             enabled = state.field.isEditable.value,
@@ -215,77 +207,65 @@ class ComposeTextField : ComposeField() {
                         newValue.invoke(validated, newVal)
                     }
                 }
-
             },
             prefix = {
                 if (state.field.keyboardType == ComposeKeyboardType.MOBILE_NO)
-                    Text(text = "+1", modifier = Modifier.clickable {
-
-                    })
+                    Text(text = "+1", modifier = Modifier.clickable {})
                 else null
             },
             keyboardOptions = getKeyboardOptions(state.field),
             isError = state.hasError,
             label = {
-                val label =buildAnnotatedString {
-                    withStyle(
-                        style = SpanStyle(
-                            fontSize = responsiveTextSize(size = 13).sp
-                        )
-                    ) {
+                val label = buildAnnotatedString {
+                    withStyle(style = SpanStyle(fontSize = responsiveTextSize(size = 13).sp)) {
                         append(state.field.label)
                     }
-                    if (state.field.required==ComposeFieldYesNo.YES){
+                    if (state.field.required == ComposeFieldYesNo.YES) {
                         withStyle(
-                            style = SpanStyle(
-                                fontSize = responsiveTextSize(size = 13).sp,
-                                color = Color.Red
-                            )
+                            style =
+                                SpanStyle(
+                                    fontSize = responsiveTextSize(size = 13).sp,
+                                    color = Color.Red
+                                )
                         ) {
                             append("*")
                         }
                     }
                 }
-                Text(
-                    label,
-                    fontSize = responsiveTextSize(size = 13).sp
-                )
+                Text(label, fontSize = responsiveTextSize(size = 13).sp)
             },
-            textStyle = TextStyle.Default.copy(
-                fontSize = responsiveTextSize(size = 15).sp
-            ),
+            textStyle = TextStyle.Default.copy(fontSize = responsiveTextSize(size = 15).sp),
             minLines = getMinLine(state.field.type),
             maxLines = getMaxLine(state.field.type),
             visualTransformation = visualTransformation,
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color.White,
-                unfocusedContainerColor = Color.White,
-                errorLabelColor = ComposeFieldTheme.errorColor,
-                focusedLabelColor = ComposeFieldTheme.focusedLabelColor,
-                unfocusedLabelColor = ComposeFieldTheme.unfocusedLabelColor,
-                unfocusedPlaceholderColor = ComposeFieldTheme.unfocusedLabelColor,
-                focusedTextColor = ComposeFieldTheme.textColor,
-                unfocusedTextColor = ComposeFieldTheme.textColor,
-                focusedSupportingTextColor = ComposeFieldTheme.infoColor,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
-            ),
-            shape = RoundedCornerShape(8.dp),
-            modifier = modifier
-                .focusRequester(focusRequester)
-                .onFocusChanged { s ->
-                    isFocused = s.isFocused
-                }
-                .padding(5.dp)
-                .border(
-                    width = if (isFocused) 1.dp else 0.dp,
-                    color = if (isFocused) ComposeFieldTheme.focusedBorderColor else Color.Transparent,
-                    shape = RoundedCornerShape(8.dp)
-                )
-                .shadow(
-                    elevation = 5.dp,
-                    shape = RoundedCornerShape(8.dp)
+            colors =
+                TextFieldDefaults.colors(
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White,
+                    errorLabelColor = ComposeFieldTheme.errorColor,
+                    focusedLabelColor = ComposeFieldTheme.focusedLabelColor,
+                    unfocusedLabelColor = ComposeFieldTheme.unfocusedLabelColor,
+                    unfocusedPlaceholderColor = ComposeFieldTheme.unfocusedLabelColor,
+                    focusedTextColor = ComposeFieldTheme.textColor,
+                    unfocusedTextColor = ComposeFieldTheme.textColor,
+                    focusedSupportingTextColor = ComposeFieldTheme.infoColor,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent
                 ),
+            shape = RoundedCornerShape(8.dp),
+            modifier =
+                modifier
+                    .focusRequester(focusRequester)
+                    .onFocusChanged { s -> isFocused = s.isFocused }
+                    .padding(5.dp)
+                    .border(
+                        width = if (isFocused) 1.dp else 0.dp,
+                        color =
+                            if (isFocused) ComposeFieldTheme.focusedBorderColor
+                            else Color.Transparent,
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    .shadow(elevation = 5.dp, shape = RoundedCornerShape(8.dp)),
             trailingIcon = {
                 TrailingIcon(state.field, passwordVisible = passwordVisible) {
                     passwordVisible = passwordVisible.not()
@@ -301,7 +281,6 @@ class ComposeTextField : ComposeField() {
             )
         }
     }
-
 
     @Composable
     private fun OutlineField(
@@ -329,59 +308,49 @@ class ComposeTextField : ComposeField() {
                         newValue.invoke(validated, newVal)
                     }
                 }
-
             },
             prefix = {
                 if (state.field.keyboardType == ComposeKeyboardType.MOBILE_NO)
-                    Text(text = "+1", modifier = Modifier.clickable {
-
-                    })
+                    Text(text = "+1", modifier = Modifier.clickable {})
                 else null
             },
             keyboardOptions = getKeyboardOptions(state.field),
             isError = state.hasError,
             label = {
-                val label =buildAnnotatedString {
-                    withStyle(
-                        style = SpanStyle(
-                            fontSize = responsiveTextSize(size = 13).sp
-                        )
-                    ) {
+                val label = buildAnnotatedString {
+                    withStyle(style = SpanStyle(fontSize = responsiveTextSize(size = 13).sp)) {
                         append(state.field.label)
                     }
-                    if (state.field.required==ComposeFieldYesNo.YES){
+                    if (state.field.required == ComposeFieldYesNo.YES) {
                         withStyle(
-                            style = SpanStyle(
-                                fontSize = responsiveTextSize(size = 13).sp,
-                                color = Color.Red
-                            )
+                            style =
+                                SpanStyle(
+                                    fontSize = responsiveTextSize(size = 13).sp,
+                                    color = Color.Red
+                                )
                         ) {
                             append("*")
                         }
                     }
                 }
-                Text(
-                    label,
-                    fontSize = responsiveTextSize(size = 13).sp
-                )
+                Text(label, fontSize = responsiveTextSize(size = 13).sp)
             },
-            textStyle = TextStyle.Default.copy(
-                fontSize = responsiveTextSize(size = 16).sp
-            ),
+            textStyle = TextStyle.Default.copy(fontSize = responsiveTextSize(size = 16).sp),
             minLines = getMinLine(state.field.type),
             maxLines = getMaxLine(state.field.type),
             visualTransformation = visualTransformation,
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = ComposeFieldTheme.focusedBorderColor,
-                unfocusedBorderColor = ComposeFieldTheme.unfocusedBorderColor,
-                errorBorderColor = ComposeFieldTheme.errorColor,
-                errorLabelColor = ComposeFieldTheme.errorColor,
-                focusedLabelColor = ComposeFieldTheme.focusedBorderColor,
-                unfocusedPlaceholderColor = ComposeFieldTheme.hintColor,
-                focusedTextColor = ComposeFieldTheme.textColor,
-                unfocusedTextColor = ComposeFieldTheme.textColor,
-                focusedSupportingTextColor = ComposeFieldTheme.infoColor,
-            ),
+            colors =
+                OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = ComposeFieldTheme.focusedBorderColor,
+                    unfocusedBorderColor = ComposeFieldTheme.unfocusedBorderColor,
+                    errorBorderColor = ComposeFieldTheme.errorColor,
+                    errorLabelColor = ComposeFieldTheme.errorColor,
+                    focusedLabelColor = ComposeFieldTheme.focusedBorderColor,
+                    unfocusedPlaceholderColor = ComposeFieldTheme.hintColor,
+                    focusedTextColor = ComposeFieldTheme.textColor,
+                    unfocusedTextColor = ComposeFieldTheme.textColor,
+                    focusedSupportingTextColor = ComposeFieldTheme.infoColor,
+                ),
             modifier = modifier,
             trailingIcon = {
                 TrailingIcon(field = state.field, passwordVisible = passwordVisible) {
@@ -398,7 +367,6 @@ class ComposeTextField : ComposeField() {
             )
         }
     }
-
 
     private fun getMinLine(type: ComposeFieldType): Int {
         return when (type) {
@@ -427,29 +395,23 @@ class ComposeTextField : ComposeField() {
             onPasteRequested: (() -> Unit)?,
             onCutRequested: (() -> Unit)?,
             onSelectAllRequested: (() -> Unit)?,
-        ) {
-        }
+        ) {}
     }
 
     private fun getKeyboardOptions(fieldState: ComposeFieldModule): KeyboardOptions {
-        val type = when (fieldState.keyboardType) {
-            ComposeKeyboardType.CNIC,
-            ComposeKeyboardType.ID_NO,
-            ComposeKeyboardType.MOBILE_NO,
-            ComposeKeyboardType.NUMBER -> KeyboardType.Number
-
-            ComposeKeyboardType.EMAIL -> KeyboardType.Email
-            ComposeKeyboardType.TEXT,
-            ComposeKeyboardType.SENSITIVE,
-            ComposeKeyboardType.NONE -> KeyboardType.Text
-
-            ComposeKeyboardType.PASSWORD -> KeyboardType.Password
-        }
-        return KeyboardOptions(
-            keyboardType = type,
-            autoCorrect = false,
-            imeAction = ImeAction.Next
-        )
+        val type =
+            when (fieldState.keyboardType) {
+                ComposeKeyboardType.CNIC,
+                ComposeKeyboardType.ID_NO,
+                ComposeKeyboardType.MOBILE_NO,
+                ComposeKeyboardType.NUMBER -> KeyboardType.Number
+                ComposeKeyboardType.EMAIL -> KeyboardType.Email
+                ComposeKeyboardType.TEXT,
+                ComposeKeyboardType.SENSITIVE,
+                ComposeKeyboardType.NONE -> KeyboardType.Text
+                ComposeKeyboardType.PASSWORD -> KeyboardType.Password
+            }
+        return KeyboardOptions(keyboardType = type, autoCorrect = false, imeAction = ImeAction.Next)
     }
 
     private fun getVisualTransformation(
@@ -460,12 +422,9 @@ class ComposeTextField : ComposeField() {
         return if (mask != Patterns.MOBILE && mask != Patterns.NONE && mask.value.isNotEmpty())
             FieldMaskTransformation(mask.value)
         else if (keyboardType == ComposeKeyboardType.PASSWORD)
-            if (passwordVisible)
-                VisualTransformation.None
-            else
-                PasswordVisualTransformation(mask = '●')
-        else
-            VisualTransformation.None
+            if (passwordVisible) VisualTransformation.None
+            else PasswordVisualTransformation(mask = '●')
+        else VisualTransformation.None
     }
 
     private fun builtinValidations(
@@ -474,7 +433,7 @@ class ComposeTextField : ComposeField() {
         newValue: (Pair<Boolean, String>, String) -> Unit
     ) {
         /*we will be using curVal for getValueWithMask and on final callback-> newValue
-        * operations will be performed on value collected from getValueWithMask method*/
+         * operations will be performed on value collected from getValueWithMask method*/
 
         var bool = true
         var message = ""
@@ -492,16 +451,15 @@ class ComposeTextField : ComposeField() {
                     message = ""
                 }
             }
-            ComposeKeyboardType.ID_NO->{
+            ComposeKeyboardType.ID_NO -> {
                 val pattern = Patterns.ID_NO.pattern.toList()
                 if (!Pattern.matches(pattern.first(), valueToBeUsed)) {
                     bool = false
                     message = "ID No must 8 Character Long"
-                }else {
+                } else {
                     message = ""
                 }
             }
-
             ComposeKeyboardType.EMAIL -> {
                 val pattern = Patterns.EMAIL.pattern.toList()
                 if (!Pattern.matches(pattern.first(), valueToBeUsed)) {
@@ -509,7 +467,6 @@ class ComposeTextField : ComposeField() {
                     message = "Please enter valid Email Address"
                 }
             }
-
             ComposeKeyboardType.TEXT -> {
                 if (state.field.name.contains("email", true)) {
                     val pattern = Patterns.EMAIL.pattern.toList()
@@ -517,26 +474,22 @@ class ComposeTextField : ComposeField() {
                         bool = false
                         message = "Please enter valid Email Address"
                     }
-                } else if (state.field.pattern.isNotEmpty() && Pattern.matches(
-                        state.field.pattern,
-                        valueToBeUsed
-                    ).not()
+                } else if (
+                    state.field.pattern.isNotEmpty() &&
+                        Pattern.matches(state.field.pattern, valueToBeUsed).not()
                 ) {
                     bool = false
                     message = state.field.patternMessage
                 }
             }
-
             else -> {
-                if (state.field.pattern.isNotEmpty() && Pattern.matches(
-                        state.field.pattern,
-                        valueToBeUsed
-                    ).not()
+                if (
+                    state.field.pattern.isNotEmpty() &&
+                        Pattern.matches(state.field.pattern, valueToBeUsed).not()
                 ) {
                     bool = false
                     message = state.field.patternMessage
                 }
-
             }
         }
         newValue.invoke(Pair(bool, message), curVal)
@@ -553,24 +506,22 @@ class ComposeTextField : ComposeField() {
                     value = ""
                     pattern = arrayOf("")
                 }
-
             ComposeKeyboardType.EMAIL -> Patterns.EMAIL
             ComposeKeyboardType.NUMBER -> {
-//                module.maxValue.takeIf { x->x?.isNotEmpty()==true }?.let {
-//                    var mask = ""
-//                    it.indices.forEachIndexed { index, i ->
-//                        if (index < it.lastIndex)
-//                            mask+="#"
-//                        if (index.plus(1)/3==1 && index<it.lastIndex)
-//                            mask+=","
-//                    }
-//                    return@let mask.reversed()
-//                }?:run {
-//                    ""
-//                }
+                //                module.maxValue.takeIf { x->x?.isNotEmpty()==true }?.let {
+                //                    var mask = ""
+                //                    it.indices.forEachIndexed { index, i ->
+                //                        if (index < it.lastIndex)
+                //                            mask+="#"
+                //                        if (index.plus(1)/3==1 && index<it.lastIndex)
+                //                            mask+=","
+                //                    }
+                //                    return@let mask.reversed()
+                //                }?:run {
+                //                    ""
+                //                }
                 Patterns.NONE
             }
-
             ComposeKeyboardType.SENSITIVE,
             ComposeKeyboardType.PASSWORD,
             ComposeKeyboardType.TEXT,
@@ -579,47 +530,41 @@ class ComposeTextField : ComposeField() {
     }
 
     private fun getValueWithMask(currValue: String, field: ComposeFieldModule): String {
-        val mask = when (field.keyboardType) {
-            ComposeKeyboardType.CNIC -> Patterns.CNIC.value
-            ComposeKeyboardType.ID_NO -> Patterns.ID_NO.value
-            ComposeKeyboardType.MOBILE_NO -> Patterns.MOBILE.value
-            ComposeKeyboardType.EMAIL -> Patterns.EMAIL.value
-            ComposeKeyboardType.TEXT,
-            ComposeKeyboardType.NUMBER,
-            ComposeKeyboardType.SENSITIVE,
-            ComposeKeyboardType.PASSWORD,
-            ComposeKeyboardType.NONE -> Patterns.NONE.value
-        }
+        val mask =
+            when (field.keyboardType) {
+                ComposeKeyboardType.CNIC -> Patterns.CNIC.value
+                ComposeKeyboardType.ID_NO -> Patterns.ID_NO.value
+                ComposeKeyboardType.MOBILE_NO -> Patterns.MOBILE.value
+                ComposeKeyboardType.EMAIL -> Patterns.EMAIL.value
+                ComposeKeyboardType.TEXT,
+                ComposeKeyboardType.NUMBER,
+                ComposeKeyboardType.SENSITIVE,
+                ComposeKeyboardType.PASSWORD,
+                ComposeKeyboardType.NONE -> Patterns.NONE.value
+            }
 
         val transforation = FieldMaskTransformation(mask)
         return if (Patterns.NONE.value == mask) {
             currValue
-        } else
-            transforation.applyMaskAndGetResult(currValue)
+        } else transforation.applyMaskAndGetResult(currValue)
     }
-
-
 }
 
 @Preview
 @Composable
 private fun ShadowSample() {
 
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-
+    Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
         Text("Shadow Order")
 
         Box(
-            modifier = Modifier
-                .size(100.dp)
-                .shadow(
-                    elevation = 10.dp,
-                    spotColor = Color.Red,
-                    shape = RoundedCornerShape(8.dp)
-                ),
+            modifier =
+                Modifier.size(100.dp)
+                    .shadow(
+                        elevation = 10.dp,
+                        spotColor = Color.Red,
+                        shape = RoundedCornerShape(8.dp)
+                    ),
             contentAlignment = Alignment.Center
         ) {
             Text("Hello World")
@@ -627,13 +572,10 @@ private fun ShadowSample() {
 
         Spacer(modifier = Modifier.height(20.dp))
         Box(
-            modifier = Modifier
-                .background(Color.Red)
-                .size(100.dp)
-                .shadow(
-                    elevation = 10.dp,
-                    shape = RoundedCornerShape(8.dp)
-                ),
+            modifier =
+                Modifier.background(Color.Red)
+                    .size(100.dp)
+                    .shadow(elevation = 10.dp, shape = RoundedCornerShape(8.dp)),
             contentAlignment = Alignment.Center
         ) {
             Text("Hello World")
@@ -642,13 +584,10 @@ private fun ShadowSample() {
         Spacer(modifier = Modifier.height(20.dp))
 
         Box(
-            modifier = Modifier
-                .shadow(
-                    elevation = 10.dp,
-                    shape = RoundedCornerShape(8.dp)
-                )
-                .background(Color.Red)
-                .size(100.dp),
+            modifier =
+                Modifier.shadow(elevation = 10.dp, shape = RoundedCornerShape(8.dp))
+                    .background(Color.Red)
+                    .size(100.dp),
             contentAlignment = Alignment.Center
         ) {
             Text("Hello World")

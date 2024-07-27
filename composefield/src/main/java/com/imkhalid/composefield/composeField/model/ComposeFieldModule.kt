@@ -6,11 +6,7 @@ import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardType
 import com.imkhalid.composefield.model.CustomFields
 import com.imkhalid.composefield.model.DefaultValues
 
-
-/**
- * This Class is Used for parsing Server Field to Compose Field
- * */
-
+/** This Class is Used for parsing Server Field to Compose Field */
 data class ComposeFieldModule(
     val id: String = "",
     val name: String = "",
@@ -33,7 +29,8 @@ data class ComposeFieldModule(
     val autoFocusable: ComposeFieldYesNo = ComposeFieldYesNo.YES,
     val pattern: String = "",
     val patternMessage: String = "",
-    val hidden: ComposeFieldYesNo = if (hideInitial == ComposeFieldYesNo.YES) ComposeFieldYesNo.YES else ComposeFieldYesNo.NO,
+    val hidden: ComposeFieldYesNo =
+        if (hideInitial == ComposeFieldYesNo.YES) ComposeFieldYesNo.YES else ComposeFieldYesNo.NO,
     val helperText: String = ""
 ) {
 
@@ -44,10 +41,9 @@ data class ComposeFieldModule(
         val selected_value = customField.selectedValue
         val isEmailMobile =
             (customField.field_name == "email" || customField.field_name == "mobile_no")
-        val showIcon = customField.label.contains("date", true) || customField.field_name.contains(
-            "cnic",
-            true
-        )
+        val showIcon =
+            customField.label.contains("date", true) ||
+                customField.field_name.contains("cnic", true)
         return ComposeFieldModule(
             id = customField.id.toString(),
             name = customField.field_name,
@@ -70,21 +66,20 @@ data class ComposeFieldModule(
     }
 
     private fun getHiddenValue(field: Int): ComposeFieldYesNo {
-        return if (field == 0)
-            ComposeFieldYesNo.YES
-        else
-            ComposeFieldYesNo.NO
+        return if (field == 0) ComposeFieldYesNo.YES else ComposeFieldYesNo.NO
     }
 
     private fun getInitialValue(customField: CustomFields, selectedValue: String): String {
-        return if (selectedValue.isNotEmpty())
-            selectedValue
+        return if (selectedValue.isNotEmpty()) selectedValue
         else if (customField.type.fieldType() == ComposeFieldType.SWITCH) {
-            val falseValue = customField.default_values.find { x ->
-                x.text.contains("no", true) ||
-                        x.text.contains("false", true) ||
-                        x.text.contains("female", true)
-            }?.id ?: ""
+            val falseValue =
+                customField.default_values
+                    .find { x ->
+                        x.text.contains("no", true) ||
+                            x.text.contains("false", true) ||
+                            x.text.contains("female", true)
+                    }
+                    ?.id ?: ""
             falseValue
         } else {
             selectedValue
@@ -95,11 +90,9 @@ data class ComposeFieldModule(
         return when (type) {
             ComposeFieldType.TEXT_BOX,
             ComposeFieldType.TEXT_AREA -> customField.min_rule
-
             ComposeFieldType.DATE_PICKER,
             ComposeFieldType.TIME_PICKER,
             ComposeFieldType.DATE_TIME_PICKER -> customField.min_date
-
             ComposeFieldType.DROP_DOWN,
             ComposeFieldType.SWITCH,
             ComposeFieldType.CHECK_BOX,
@@ -114,13 +107,11 @@ data class ComposeFieldModule(
             ComposeFieldType.DATE_PICKER,
             ComposeFieldType.TIME_PICKER,
             ComposeFieldType.DATE_TIME_PICKER -> customField.max_date
-
             ComposeFieldType.DROP_DOWN,
             ComposeFieldType.SWITCH,
             ComposeFieldType.CHECK_BOX,
             ComposeFieldType.RADIO_BUTTON -> ""
         }
-
     }
 
     fun getTextFromValue(value: String): String {
@@ -132,20 +123,19 @@ data class ComposeFieldModule(
             ComposeFieldType.DATE_TIME_PICKER -> {
                 value
             }
-
             ComposeFieldType.SWITCH,
             ComposeFieldType.DROP_DOWN,
             ComposeFieldType.RADIO_BUTTON -> {
                 this.defaultValues.find { x -> x.id == value }?.text ?: ""
             }
-
             ComposeFieldType.CHECK_BOX -> {
                 val finalStr = buildString {
                     value.split("::").forEach { newVal ->
                         if (newVal.isNotEmpty()) {
                             val text =
-                                this@ComposeFieldModule.defaultValues.find { x -> x.id == newVal }?.text
-                                    ?: ""
+                                this@ComposeFieldModule.defaultValues
+                                    .find { x -> x.id == newVal }
+                                    ?.text ?: ""
                             append(text + ", ")
                         }
                     }
@@ -157,14 +147,9 @@ data class ComposeFieldModule(
 }
 
 fun String.CHOICE(): ComposeFieldYesNo {
-    return if (
-        this.equals("0", true) ||
-        this.equals("false", true) ||
-        this.equals("no", true)
-    )
+    return if (this.equals("0", true) || this.equals("false", true) || this.equals("no", true))
         ComposeFieldYesNo.NO
-    else
-        ComposeFieldYesNo.YES
+    else ComposeFieldYesNo.YES
 }
 
 fun String.fieldType(): ComposeFieldType {
@@ -187,7 +172,6 @@ fun String.keyboardType(): ComposeKeyboardType {
         "email" -> ComposeKeyboardType.EMAIL
         "mobile",
         "mobile_number" -> ComposeKeyboardType.MOBILE_NO
-
         "number" -> ComposeKeyboardType.NUMBER
         else -> ComposeKeyboardType.NONE
     }
