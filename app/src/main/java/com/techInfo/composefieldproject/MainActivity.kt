@@ -86,7 +86,6 @@ fun Greeting(
 //
 //            )
         Sections(
-            navHostController,
             rememberNavController(),
             sectionType = SectionType.Tab
         )
@@ -107,6 +106,7 @@ fun Greeting(
                         Text(text = "Add")
                     }
                 },
+                tableAddButton = null,
                 tablePopupButton = {
                     Button(onClick = { it.invoke() }) {
                         Text(text = "+ Add")
