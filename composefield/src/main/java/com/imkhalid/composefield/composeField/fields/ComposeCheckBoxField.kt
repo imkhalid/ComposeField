@@ -270,6 +270,7 @@ class ComposeCheckBoxField : ComposeField() {
         AlertDialog(
             onDismissRequest = {},
             title = { Text("Select an Option") },
+            containerColor = ComposeFieldTheme.containerColor,
             text = {
                 Column {
                     TextField(

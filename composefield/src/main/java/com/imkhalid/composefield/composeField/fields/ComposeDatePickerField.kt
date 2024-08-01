@@ -44,6 +44,7 @@ import com.imkhalid.composefield.composeField.ComposeFieldState
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
 import com.imkhalid.composefield.theme.ComposeFieldTheme
 import com.imkhalid.composefieldproject.composeField.fields.ComposeField
+import com.ozonedDigital.jhk.ui.common.responsiveSize
 import com.ozonedDigital.jhk.ui.common.responsiveTextSize
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -133,6 +134,9 @@ class ComposeDatePickerField : ComposeField() {
         if (showDialog.value) {
             DatePickerDialog(
                 onDismissRequest = { showDialog.value = false },
+                colors = DatePickerDefaults.colors().copy(
+                    containerColor = ComposeFieldTheme.containerColor
+                ),
                 confirmButton = {
                     TextButton(
                         onClick = {
@@ -168,9 +172,10 @@ class ComposeDatePickerField : ComposeField() {
                 ) {
                     Text(
                         modifier =
-                            Modifier.fillMaxWidth()
-                                .padding(start = 20.dp, top = 7.dp)
-                                .align(Alignment.CenterStart),
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(start = 20.dp, top = 7.dp)
+                            .align(Alignment.CenterStart),
                         color =
                             if (state.text.isEmpty()) ComposeFieldTheme.unfocusedLabelColor
                             else ComposeFieldTheme.textColor,
@@ -189,7 +194,9 @@ class ComposeDatePickerField : ComposeField() {
                 Image(
                     painter = painterResource(id = R.drawable.ic_calendar),
                     contentDescription = "",
-                    modifier = Modifier.align(Alignment.CenterEnd).padding(horizontal = 10.dp)
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .padding(horizontal = 10.dp)
                 )
             }
             if (state.hasError) {
@@ -201,7 +208,9 @@ class ComposeDatePickerField : ComposeField() {
                 )
             } else if (state.field.helperText.isNotEmpty())
                 Text(
-                    modifier = Modifier.fillMaxWidth().padding(start = 20.dp, top = 7.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 20.dp, top = 7.dp),
                     color = ComposeFieldTheme.unfocusedLabelColor,
                     text = state.field.helperText,
                     fontWeight = FontWeight.Normal,
@@ -220,14 +229,15 @@ class ComposeDatePickerField : ComposeField() {
             ComposeFieldTheme.FieldStyle.OUTLINE ->
                 Box(
                     modifier =
-                        Modifier.border(
-                                border = BorderStroke(1.dp, ComposeFieldTheme.unfocusedBorderColor),
-                                shape = OutlinedTextFieldDefaults.shape
-                            )
-                            .padding(top = 5.dp)
-                            .fillMaxWidth()
-                            .height(OutlinedTextFieldDefaults.MinHeight)
-                            .clickable { onClick() },
+                    Modifier
+                        .border(
+                            border = BorderStroke(1.dp, ComposeFieldTheme.unfocusedBorderColor),
+                            shape = OutlinedTextFieldDefaults.shape
+                        )
+                        .padding(top = 5.dp)
+                        .fillMaxWidth()
+                        .height(OutlinedTextFieldDefaults.MinHeight)
+                        .clickable { onClick() },
                 ) {
                     content?.invoke(this)
                 }
@@ -235,12 +245,13 @@ class ComposeDatePickerField : ComposeField() {
             ComposeFieldTheme.FieldStyle.NORMAL ->
                 Box(
                     modifier =
-                        Modifier.padding(5.dp)
-                            .fillMaxWidth()
-                            .height(TextFieldDefaults.MinHeight)
-                            .shadow(elevation = 5.dp, shape = RoundedCornerShape(8.dp))
-                            .background(color = Color.White, shape = RoundedCornerShape(8.dp))
-                            .clickable { onClick() },
+                    Modifier
+                        .padding(5.dp)
+                        .fillMaxWidth()
+                        .height(TextFieldDefaults.MinHeight)
+                        .shadow(elevation = 5.dp, shape = RoundedCornerShape(8.dp))
+                        .background(color = Color.White, shape = RoundedCornerShape(8.dp))
+                        .clickable { onClick() },
                 ) {
                     content?.invoke(this)
                 }

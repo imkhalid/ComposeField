@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.imkhalid.composefield.composeField.ComposeFieldState
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
+import com.imkhalid.composefield.composeField.section.textColor
 import com.imkhalid.composefield.theme.ComposeFieldTheme
 import com.imkhalid.composefieldproject.composeField.fields.ComposeField
 import com.ozonedDigital.jhk.ui.common.responsiveTextSize
@@ -116,7 +117,7 @@ class ComposeRadioGroupField : ComposeField() {
                         Text(
                             text = it.text,
                             fontSize = responsiveTextSize(size = 15).sp,
-                            color = MaterialTheme.colorScheme.onBackground
+                            color = ComposeFieldTheme.textColor
                         )
                     }
                 }
@@ -207,6 +208,7 @@ fun RoundedCornerRadiobox(
         Text(
             modifier = Modifier.padding(start = 8.dp, end = 8.dp),
             text = label,
+            color =ComposeFieldTheme.textColor,
             fontSize = responsiveTextSize(size = 15).sp
         )
     }

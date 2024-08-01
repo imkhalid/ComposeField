@@ -391,7 +391,7 @@ open class Sections(
             if (showSectionName)
                 Text(
                     text = section.name,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = ComposeFieldTheme.focusedLabelColor,
                     fontWeight = FontWeight.Medium,
                     fontSize = responsiveTextSize(size = 15).sp,
                     modifier = Modifier.padding(5.dp)

@@ -16,6 +16,7 @@ object ComposeFieldTheme {
     var datePickerHint = "Choose Date"
     var dropDownHint = "Choose an Option"
     var timePickerHint = "Choose Time"
+    var containerColor = Color.LightGray
 
     enum class FieldStyle {
         OUTLINE,
