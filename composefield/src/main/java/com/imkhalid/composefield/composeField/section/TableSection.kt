@@ -49,12 +49,11 @@ import com.ozonedDigital.jhk.ui.common.responsiveTextSize
 import com.ozonedDigital.jhk.ui.common.responsiveWidth
 
 class TableSection(
-    parentNav: NavHostController,
     nav: NavHostController,
     sectionType: SectionType,
     var min: Int = 0,
     var max: Int = 1,
-) : Sections(parentNav, nav, sectionType) {
+) : Sections(nav, sectionType) {
 
     @Composable
     fun TableBuild(

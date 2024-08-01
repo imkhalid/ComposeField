@@ -1,10 +1,8 @@
 package com.imkhalid.composefield.composeField.section
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -21,7 +19,6 @@ import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -29,7 +26,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -58,7 +54,6 @@ import com.imkhalid.composefield.composeField.model.FamilyData
 import com.imkhalid.composefield.composeField.rememberFieldState
 import com.imkhalid.composefield.composeField.validate
 import com.imkhalid.composefield.model.DefaultValues
-import com.imkhalid.composefield.model.section
 import com.imkhalid.composefield.theme.ComposeFieldTheme
 import com.imkhalid.composefield.theme.dashedBorder
 import com.imkhalid.composefieldproject.composeField.fields.ComposeFieldBuilder
@@ -68,25 +63,39 @@ import com.ozonedDigital.jhk.ui.common.responsiveTextSize
 import com.ozonedDigital.jhk.ui.common.responsiveWidth
 import kotlinx.coroutines.launch
 
+class  MyNavHost(val nav:NavHostController,val sections:List<String>,val section:Sections,val onLastPageReach: ((Sections) -> Unit)?) {
+
+    fun next(){
+        sections.indexOf(nav.currentDestination?.route.orEmpty()).takeIf { x->x!=-1 }?.let {
+            val nextSection = if (sections.lastIndex>it)
+                sections[it+1]
+            else {
+                onLastPageReach?.invoke(section)
+                null
+            }
+            nextSection?.let {
+                nav.navigate(it)
+            }
+        }
+    }
+}
+
 open class Sections(
-    internal val parentNav: NavHostController,
-    private val nav: NavHostController,
+    internal val nav: NavHostController,
     private val sectionType: SectionType,
     private val stepSectionContentItem:
-        (@Composable
-        LazyItemScope.(name: String, clickCallback: (sectionName: String) -> Unit) -> Unit)? =
+    @Composable() (LazyItemScope.(name: String, clickCallback: (sectionName: String) -> Unit) -> Unit)? =
         null,
     private val tabContentItem:
-        (@Composable
-        LazyItemScope.(name: String, isSelected: Boolean, clickCallback: (() -> Unit)?) -> Unit)? =
-        null,
+    @Composable() (LazyItemScope.(name: String, isSelected: Boolean, clickCallback: (() -> Unit)?) -> Unit)? =
+        null
 ) {
     val sectionState: HashMap<String, List<ComposeFieldStateHolder>> = HashMap()
     val tableData:
         HashMap<String, SnapshotStateList<HashMap<String, List<ComposeFieldStateHolder>>>> =
         HashMap()
     val sectionNames: ArrayList<String> = arrayListOf()
-    var currentSectionIndex = 0
+
 
     /**
      * here we are expecting section that can have sub section and sub section will be show in
@@ -133,10 +142,11 @@ open class Sections(
                 }
             }
         }
+        val myNav = MyNavHost(nav,sectionNames,this,onLastPageReach)
         when (sectionType) {
             SectionType.Simple ->
                 SimpleSections(
-                    nav = nav,
+                    nav = myNav,
                     modifier = modifier,
                     sections = sections,
                     showTitle = showTitle,
@@ -147,7 +157,7 @@ open class Sections(
                 )
             SectionType.SIMPLE_VERTICAL ->
                 SimpleVertical(
-                    nav = nav,
+                    nav = myNav,
                     modifier = modifier,
                     sections = sections,
                     showTitle = showTitle,
@@ -159,7 +169,7 @@ open class Sections(
                 )
             SectionType.Tab ->
                 TabSections(
-                    nav = nav,
+                    nav = myNav,
                     sections = sections,
                     familyData = familyData,
                     valueChangeForChild = valueChangeForChild,
@@ -170,7 +180,7 @@ open class Sections(
                 )
             SectionType.Step ->
                 StepsSections(
-                    nav = nav,
+                    nav = myNav,
                     modifier = modifier,
                     sections = sections,
                     onValueChange = onValueChange,
@@ -212,7 +222,7 @@ open class Sections(
             }
         }
         TabSections(
-            nav = nav,
+            nav = MyNavHost(nav,sectionNames,this,onLastPageReach),
             sections = sections,
             familyData = familyData,
             valueChangeForChild = valueChangeForChild,
@@ -225,7 +235,7 @@ open class Sections(
 
     @Composable
     private fun SimpleSections(
-        nav: NavHostController,
+        nav: MyNavHost,
         modifier: Modifier,
         sections: List<ComposeSectionModule>,
         showTitle: Boolean,
@@ -239,7 +249,7 @@ open class Sections(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = responsiveHeight(size = 60)),
-                navController = nav,
+                navController = nav.nav,
                 startDestination = sections.firstOrNull()?.name ?: ""
             ) {
                 sections.forEach { section ->
@@ -266,21 +276,12 @@ open class Sections(
                 }
             }
             button?.invoke(this) { navigateToNext(nav, onLastPageReach) }
-
-            BackHandler {
-                if (currentSectionIndex != 0) {
-                    --currentSectionIndex
-                    nav.popBackStack()
-                } else {
-                    parentNav.popBackStack()
-                }
-            }
         }
     }
 
     @Composable
     private fun SimpleVertical(
-        nav: NavHostController,
+        nav: MyNavHost,
         modifier: Modifier,
         sections: List<ComposeSectionModule>,
         showTitle: Boolean,
@@ -323,14 +324,7 @@ open class Sections(
             }
             button?.invoke(this) { navigateToNext(nav, onLastPageReach) }
 
-            BackHandler {
-                if (currentSectionIndex != 0) {
-                    --currentSectionIndex
-                    nav.popBackStack()
-                } else {
-                    parentNav.popBackStack()
-                }
-            }
+
         }
     }
 
@@ -357,7 +351,9 @@ open class Sections(
             }
         }
         coroutineScope.launch {
-            listState.animateScrollToItem(sectionNames.indexOf(currentSection))
+            sectionNames.indexOf(currentSection).takeIf { x->x>=0 }?.let {
+                listState.animateScrollToItem(it)
+            }
         }
     }
 
@@ -376,14 +372,10 @@ open class Sections(
     }
 
     internal fun navigateToNext(
-        navController: NavHostController,
+        navController: MyNavHost,
         lastPage: ((Sections) -> Unit)? = null
     ) {
-        if (currentSectionIndex < sectionNames.lastIndex) {
-            navController.navigate(sectionNames[++currentSectionIndex])
-        } else {
-            lastPage?.invoke(this)
-        }
+        navController.next()
     }
 
     internal fun LazyListScope.buildInnerSection(
@@ -469,7 +461,7 @@ open class Sections(
 
     @Composable
     fun StepsSections(
-        nav: NavHostController,
+        nav: MyNavHost,
         modifier: Modifier,
         sectionNames: List<String>,
         sections: List<ComposeSectionModule>,
@@ -485,10 +477,10 @@ open class Sections(
             null
     ) {
 
-        val callback = { str: String -> nav.navigate("CurrentSection/$str") }
+        val callback = { str: String -> nav.nav.navigate("CurrentSection/$str") }
         var showDialog by remember { mutableStateOf(false) }
 
-        NavHost(navController = nav, startDestination = "SectionNames") {
+        NavHost(navController = nav.nav, startDestination = "SectionNames") {
             composable("SectionNames") {
                 LazyColumn {
                     items(sectionNames.size) {
@@ -523,7 +515,7 @@ open class Sections(
                                                     )
                                                 }
 
-                                            if (isValidated.all { x -> x }) nav.popBackStack()
+                                            if (isValidated.all { x -> x }) nav.nav.popBackStack()
                                             else showDialog = true
                                         }
                                     ) {
@@ -540,7 +532,7 @@ open class Sections(
                                     clickCallback = {
                                         val isValidated =
                                             validatedSection(sectionState[it.name] ?: emptyList())
-                                        if (isValidated) nav.popBackStack() else showDialog = true
+                                        if (isValidated) nav.nav.popBackStack() else showDialog = true
                                     }
                                 )
                             }
@@ -558,7 +550,7 @@ open class Sections(
 
 @Composable
 private fun Sections.TabSections(
-    nav: NavHostController,
+    nav: MyNavHost,
     sections: List<ComposeSectionModule>,
     familyData: FamilyData?,
     valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
@@ -567,7 +559,7 @@ private fun Sections.TabSections(
     tablePopupButton: (@Composable BoxScope.(onClick: () -> Unit) -> Unit)?,
     onLastPageReach: ((Sections) -> Unit)? = null
 ) {
-    var currentSection by remember { mutableStateOf(sectionNames[currentSectionIndex] ?: "") }
+    var currentSection by remember { mutableStateOf("") }
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -576,13 +568,13 @@ private fun Sections.TabSections(
         ) {
             Tabs(currentSection) {}
 
-            NavHost(navController = nav, startDestination = sections.firstOrNull()?.name ?: "") {
+            NavHost(navController = nav.nav, startDestination = sections.firstOrNull()?.name ?: "") {
                 sections.forEach { section ->
                     composable(section.name) {
+                        currentSection = section.name
                         if (section.isTable) {
 
                             TableSection(
-                                    parentNav = nav,
                                     nav = rememberNavController(),
                                     sectionType = SectionType.SIMPLE_VERTICAL,
                                     min = section.min,
@@ -662,45 +654,31 @@ private fun Sections.TabSections(
             }
         }
         button?.invoke(this) {
-            val currentSectionOf = sections.getOrNull(currentSectionIndex)
+            val currentSectionOf = sections.find { x->x.name==currentSection }
             if (currentSectionOf?.isTable == true) {
-                val sectionName = sectionNames[currentSectionIndex]
+                val sectionName = currentSection
                 val dataList = tableData.getOrDefault(sectionName, SnapshotStateList())
                 if (
                     (dataList.size) >= currentSectionOf.min && dataList.size <= currentSectionOf.max
                 ) {
                     navigateToNext(nav, onLastPageReach)
-                    currentSection = sectionNames[currentSectionIndex]
                 }
             } else {
                 if (
                     sectionState
-                        .getOrDefault(
-                            (sectionNames.getOrNull(currentSectionIndex) ?: ""),
-                            emptyList()
-                        )
+                        .getOrDefault(currentSection, emptyList())
                         .validate(showError = true)
                 ) {
                     navigateToNext(nav, onLastPageReach)
-                    currentSection = sectionNames[currentSectionIndex]
                 }
             }
         }
 
-        BackHandler {
-            if (currentSectionIndex != 0) {
-                --currentSectionIndex
-                nav.popBackStack()
-                currentSection = sectionNames[currentSectionIndex]
-            } else {
-                parentNav.popBackStack()
-            }
-        }
     }
 }
 
 fun Sections.getCurrentSection(): List<ComposeFieldStateHolder>? {
-    return sectionState[sectionNames[currentSectionIndex]]
+    return sectionState[nav.currentDestination?.route.orEmpty()]
 }
 
 fun getFieldByFieldName(
