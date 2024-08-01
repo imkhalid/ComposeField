@@ -87,7 +87,7 @@ private @Composable fun FamilyItem(
     onAddClick: (List<ComposeFieldStateHolder>) -> Unit
 ) {
     val item = familyData.snapshotStateList.getOrNull(index) ?: emptyMap()
-    val form = familyData.familySetup.getFields(list = SnapshotStateList(), data = item)
+    val form = familyData.familySetup.getFields(list = SnapshotStateList(),familyData.familySetup, data = item)
     Box(modifier = Modifier.padding(top = responsiveHeight(size = 5))) {
         AnimatedVisibility(
             visible = expanded,

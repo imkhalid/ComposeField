@@ -83,13 +83,19 @@ internal fun LazyListScope.FamilyAddView(modifier: Modifier, familyData: FamilyD
                 FamilyPopup(
                     data = familyData.snapshotStateList.getOrNull(editDataInd ?: -1),
                     familyData = familyData,
-                    onDismiss = { showAddPopup = false },
+                    onDismiss = {
+                        editDataInd = null
+                        showAddPopup = false
+                    },
                     GradientButton = familyData.PopupButton,
                     onDone = { data ->
                         showAddPopup = false
                         if (editDataInd != null) {
                             editDataInd?.let {
-                                familyData.snapshotStateList.removeAt(it)
+                                try {
+                                    familyData.snapshotStateList.removeAt(it)
+                                } catch (_: IndexOutOfBoundsException) {
+                                }
                                 familyData.snapshotStateList.add(it, data)
                             }
                         } else {
@@ -110,16 +116,17 @@ internal fun LazyListScope.FamilyAddView(modifier: Modifier, familyData: FamilyD
 private fun FamilyItem(map: Map<String, String>, onEdit: () -> Unit, onDelete: () -> Unit) {
     Row(
         modifier =
-            Modifier.fillMaxWidth()
-                .padding(top = responsiveHeight(size = 8))
-                .background(
-                    shape = RoundedCornerShape(responsiveSize(size = 15)),
-                    color = Color.White
-                )
-                .padding(
-                    vertical = responsiveSize(size = 15),
-                    horizontal = responsiveSize(size = 21)
-                ),
+        Modifier
+            .fillMaxWidth()
+            .padding(top = responsiveHeight(size = 8))
+            .background(
+                shape = RoundedCornerShape(responsiveSize(size = 15)),
+                color = Color.White
+            )
+            .padding(
+                vertical = responsiveSize(size = 15),
+                horizontal = responsiveSize(size = 21)
+            ),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
@@ -131,22 +138,26 @@ private fun FamilyItem(map: Map<String, String>, onEdit: () -> Unit, onDelete: (
             text = map.getOrDefault("relation", "").capitalize(),
             color = textColor,
             fontSize = responsiveTextSize(size = 17).sp,
-            modifier = Modifier.padding(start = responsiveWidth(size = 14)).weight(1f)
+            modifier = Modifier
+                .padding(start = responsiveWidth(size = 14))
+                .weight(1f)
         )
         Image(
             painter = painterResource(id = R.drawable.ic_edit_family),
             modifier =
-                Modifier.size(responsiveSize(size = 35))
-                    .clickable { onEdit.invoke() }
-                    .padding(end = responsiveWidth(size = 8)),
+            Modifier
+                .size(responsiveSize(size = 35))
+                .clickable { onEdit.invoke() }
+                .padding(end = responsiveWidth(size = 8)),
             contentDescription = null
         )
         Image(
             painter = painterResource(id = R.drawable.ic_delete_family),
             modifier =
-                Modifier.size(responsiveSize(size = 35))
-                    .clickable { onDelete.invoke() }
-                    .padding(end = responsiveWidth(size = 8)),
+            Modifier
+                .size(responsiveSize(size = 35))
+                .clickable { onDelete.invoke() }
+                .padding(end = responsiveWidth(size = 8)),
             contentDescription = null
         )
     }
@@ -164,16 +175,21 @@ fun FamilyPopup(
 
     var fields: List<ComposeFieldStateHolder> by remember { mutableStateOf(emptyList()) }
     if (fields.isEmpty()) {
-        fields = familyData.familySetup.getFields(list = familyData.snapshotStateList, data)
+        fields = familyData.familySetup.getFields(
+            list = familyData.snapshotStateList,
+            familyData.familySetup,
+            data
+        )
     }
     Dialog(onDismissRequest = onDismiss) {
         Box(
             modifier =
-                Modifier.background(
-                        color = Color.White,
-                        shape = RoundedCornerShape(responsiveSize(size = 15))
-                    )
-                    .padding(responsiveSize(size = 20))
+            Modifier
+                .background(
+                    color = Color.White,
+                    shape = RoundedCornerShape(responsiveSize(size = 15))
+                )
+                .padding(responsiveSize(size = 20))
         ) {
             Column {
                 Row(modifier = Modifier, horizontalArrangement = Arrangement.SpaceBetween) {
@@ -186,7 +202,7 @@ fun FamilyPopup(
 
                     Image(
                         painter =
-                            painterResource(id = android.R.drawable.ic_menu_close_clear_cancel),
+                        painterResource(id = android.R.drawable.ic_menu_close_clear_cancel),
                         contentDescription = null,
                         modifier = Modifier.clickable { onDismiss.invoke() }
                     )
@@ -213,15 +229,15 @@ fun FamilyPopup(
                                     it.updateField("")
                                     it.updatedField(
                                         field =
-                                            it.state.field.copy(
-                                                minValue = maxValue,
-                                                maxValue = minValue,
-                                                helperText =
-                                                    if (
-                                                        minValue.isNotEmpty() &&
-                                                            maxValue.isNotEmpty()
-                                                    ) {
-                                                        "${it.state.field.label} should be between ${
+                                        it.state.field.copy(
+                                            minValue = maxValue,
+                                            maxValue = minValue,
+                                            helperText =
+                                            if (
+                                                minValue.isNotEmpty() &&
+                                                maxValue.isNotEmpty()
+                                            ) {
+                                                "${it.state.field.label} should be between ${
                                                     changeDateFormat(
                                                         "yyyy-mm-dd",
                                                         "dd-MMM-yyyy",
@@ -234,24 +250,24 @@ fun FamilyPopup(
                                                         minValue
                                                     )
                                                 }"
-                                                    } else if (minValue.isNotEmpty()) {
-                                                        "${it.state.field.label} can be maximum to ${
+                                            } else if (minValue.isNotEmpty()) {
+                                                "${it.state.field.label} can be maximum to ${
                                                     changeDateFormat(
                                                         "yyyy-mm-dd",
                                                         "dd-MMM-yyyy",
                                                         maxValue
                                                     )
                                                 }"
-                                                    } else if (maxValue.isNotEmpty()) {
-                                                        "${it.state.field.label} can not be further than ${
+                                            } else if (maxValue.isNotEmpty()) {
+                                                "${it.state.field.label} can not be further than ${
                                                     changeDateFormat(
                                                         "yyyy-mm-dd",
                                                         "dd-MMM-yyyy",
                                                         minValue
                                                     )
                                                 }"
-                                                    } else ""
-                                            )
+                                            } else ""
+                                        )
                                     )
                                 }
                             }

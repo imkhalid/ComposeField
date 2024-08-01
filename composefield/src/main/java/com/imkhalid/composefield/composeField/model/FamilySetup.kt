@@ -104,7 +104,8 @@ data class FamilySetup(
     @Composable
     fun getFields(
         list: SnapshotStateList<Map<String, String>>,
-        data: Map<String, String>?
+        familySetup: FamilySetup,
+        data: Map<String, String>?,
     ): List<ComposeFieldStateHolder> {
         val spouse = list.filter { x -> x.values.contains("spouse") }
         val child = list.filter { x -> x.values.contains("child") }
@@ -167,6 +168,28 @@ data class FamilySetup(
                                     arrayListOf()
                                 }
                             },
+                        maxValue = if (data!=null && it.familyDetailField == "dob"){
+                            if (data.get("relation").orEmpty().equals("spouse",true)){
+                                familySetup.spouseMinDate
+                            }else if (data.get("relation").orEmpty().equals("child",true)){
+                                familySetup.childMinDate
+                            }else if (data.get("relation").orEmpty().equals("parent",true)){
+                                familySetup.parentMinDate
+                            }else{
+                                ""
+                            }
+                        }else "",
+                        minValue = if (data!=null && it.familyDetailField == "dob"){
+                            if (data.get("relation").orEmpty().equals("spouse",true)){
+                                familySetup.spouseMaxDate
+                            }else if (data.get("relation").orEmpty().equals("child",true)){
+                                familySetup.childMaxDate
+                            }else if (data.get("relation").orEmpty().equals("parent",true)){
+                                familySetup.parentMaxDate
+                            }else{
+                                ""
+                            }
+                        }else ""
                     )
             )
         }
