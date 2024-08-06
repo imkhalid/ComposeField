@@ -352,6 +352,7 @@ fun RoundedCornerCheckbox(
         Text(
             modifier = Modifier.padding(start = 8.dp),
             text = label,
+            color = ComposeFieldTheme.textColor
         )
     }
 }

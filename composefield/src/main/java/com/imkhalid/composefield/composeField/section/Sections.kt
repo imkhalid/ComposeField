@@ -23,10 +23,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -66,7 +66,8 @@ import kotlinx.coroutines.launch
 class  MyNavHost(val nav:NavHostController,val sections:List<String>,val section:Sections,val onLastPageReach: ((Sections) -> Unit)?) {
 
     fun next(){
-        sections.indexOf(nav.currentDestination?.route.orEmpty()).takeIf { x->x!=-1 }?.let {
+        val currentSection = nav.currentDestination?.route.orEmpty()
+        sections.indexOf(currentSection).takeIf { x->x!=-1 }?.let {
             val nextSection = if (sections.lastIndex>it)
                 sections[it+1]
             else {
@@ -560,6 +561,9 @@ private fun Sections.TabSections(
     onLastPageReach: ((Sections) -> Unit)? = null
 ) {
     var currentSection by remember { mutableStateOf("") }
+    var familyExpandItem = remember {
+        mutableIntStateOf(-1)
+    }
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -655,9 +659,13 @@ private fun Sections.TabSections(
         }
         button?.invoke(this) {
             val currentSectionOf = sections.find { x->x.name==currentSection }
-            if (currentSectionOf?.isTable == true) {
-                val sectionName = currentSection
-                val dataList = tableData.getOrDefault(sectionName, SnapshotStateList())
+            if (currentSection=="Family Details" && invalidFamily(familyData).isNotEmpty()){
+                invalidFamily(familyData).firstOrNull()?.let {
+                    familyExpandItem.value=it
+                }
+            } else if (currentSectionOf?.isTable == true) {
+
+                val dataList = tableData.getOrDefault(currentSection, SnapshotStateList())
                 if (
                     (dataList.size) >= currentSectionOf.min && dataList.size <= currentSectionOf.max
                 ) {
@@ -675,6 +683,15 @@ private fun Sections.TabSections(
         }
 
     }
+}
+
+fun invalidFamily(familyData: FamilyData?): List<Int> {
+    return familyData?.snapshotStateList?.mapIndexedNotNull { index, map ->
+        if(map.getOrDefault("isValidated","") !="1")
+            index
+        else null
+
+    }.orEmpty()
 }
 
 fun Sections.getCurrentSection(): List<ComposeFieldStateHolder>? {

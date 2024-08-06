@@ -130,7 +130,7 @@ class ComposeDropDownField : ComposeField() {
                 ) {
                     options.take(6).forEach { option ->
                         DropdownMenuItem(
-                            text = { Text(text = option) },
+                            text = { Text(text = option, color = ComposeFieldTheme.textColor) },
                             onClick = {
                                 focusCallback?.invoke(true, state.field.name)
                                 options
@@ -244,7 +244,7 @@ class ComposeDropDownField : ComposeField() {
                                         ?.let { onOptionSelected(values[it]) }
                                 }
                             ) {
-                                Text(option)
+                                Text(option, color = ComposeFieldTheme.textColor)
                             }
                         }
                     }

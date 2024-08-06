@@ -1,6 +1,5 @@
 package com.imkhalid.composefield.composeField.section.family
 
-import android.R
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -19,11 +18,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -44,7 +45,7 @@ import com.ozonedDigital.jhk.ui.common.responsiveHeight
 import com.ozonedDigital.jhk.ui.common.responsiveSize
 import com.ozonedDigital.jhk.ui.common.responsiveTextSize
 
-internal fun LazyListScope.FamilyEditView(modifier: Modifier, familyData: FamilyData) {
+internal fun LazyListScope.FamilyEditView(modifier: Modifier, familyData: FamilyData,errorItem:MutableState<Int>) {
 
     var expandedItem by mutableStateOf(-1)
     itemsIndexed(familyData.snapshotStateList) { index, item ->
@@ -53,11 +54,15 @@ internal fun LazyListScope.FamilyEditView(modifier: Modifier, familyData: Family
             familyData = familyData,
             index = index,
             expanded = expandedItem == index,
+            errorItem = errorItem.value==index,
             onClick = {
                 if (expandedItem == index) {
                     expandedItem = -1
                 } else {
                     expandedItem = index
+                }
+                if (errorItem.value == index) {
+                    errorItem.value=-1
                 }
             },
             onAddClick = { form ->
@@ -83,6 +88,7 @@ private @Composable fun FamilyItem(
     familyData: FamilyData,
     index: Int,
     expanded: Boolean,
+    errorItem: Boolean,
     onClick: () -> Unit,
     onAddClick: (List<ComposeFieldStateHolder>) -> Unit
 ) {
@@ -96,14 +102,15 @@ private @Composable fun FamilyItem(
         ) {
             Column(
                 modifier =
-                    Modifier.border(
-                            width = 1.dp,
-                            shape = RoundedCornerShape(responsiveSize(size = 12)),
-                            color = Color.Gray
-                        )
-                        .padding(top = responsiveHeight(size = 75))
-                        .padding(horizontal = responsiveSize(size = 10))
-                        .padding(bottom = responsiveHeight(size = 10))
+                Modifier
+                    .border(
+                        width = 1.dp,
+                        shape = RoundedCornerShape(responsiveSize(size = 12)),
+                        color = Color.Gray
+                    )
+                    .padding(top = responsiveHeight(size = 75))
+                    .padding(horizontal = responsiveSize(size = 10))
+                    .padding(bottom = responsiveHeight(size = 10))
             ) {
                 form.forEach { field ->
                     ComposeFieldBuilder()
@@ -122,29 +129,39 @@ private @Composable fun FamilyItem(
         }
         Row(
             modifier =
-                Modifier.height(responsiveHeight(size = 60))
-                    .background(
-                        color = Color.White,
-                        shape = RoundedCornerShape(responsiveSize(size = 12))
-                    )
-                    .clickable { onClick.invoke() }
-                    .padding(responsiveSize(size = 10)),
+            Modifier
+                .height(responsiveHeight(size = 60))
+                .background(
+                    color = Color.White,
+                    shape = RoundedCornerShape(responsiveSize(size = 12))
+                )
+                .clickable { onClick.invoke() }
+                .padding(responsiveSize(size = 10)),
             verticalAlignment = Alignment.CenterVertically
         ) {
             val title =
                 item.getOrDefault("name", "").takeIf { x -> x.isNotEmpty() }
                     ?: item.getOrDefault("relation", "")
             Text(
-                text = title,
+                text = title.capitalize(),
                 color = Color.Black,
                 fontSize = responsiveTextSize(size = 17).sp,
                 fontWeight = FontWeight.Medium,
                 modifier = Modifier.weight(1f)
             )
+            if (errorItem){
+                Image(
+                    painter = painterResource(id = com.imkhalid.composefield.R.drawable.ic_error),
+                    contentDescription = "",
+                    modifier= Modifier
+                        .padding(horizontal = responsiveSize(size = 10))
+                        .size(responsiveSize(size = 15))
+                )
+            }
             Image(
                 painter =
-                    if (expanded) painterResource(id = R.drawable.arrow_up_float)
-                    else painterResource(id = R.drawable.arrow_down_float),
+                    if (expanded) painterResource(id = com.imkhalid.composefield.R.drawable.ic_up_arrow)
+                    else painterResource(id = com.imkhalid.composefield.R.drawable.ic_down_arrow),
                 contentDescription = ""
             )
         }
