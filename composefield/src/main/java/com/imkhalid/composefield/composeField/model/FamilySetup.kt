@@ -136,8 +136,6 @@ data class FamilySetup(
                                 "email" -> ComposeKeyboardType.EMAIL
                                 "mobile_no",
                                 "phone_no" -> ComposeKeyboardType.MOBILE_NO
-                                "id_no",
-                                "cnic" -> ComposeKeyboardType.CNIC
                                 else -> ComposeKeyboardType.TEXT
                             },
                         isEditable =

@@ -5,10 +5,12 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import com.imkhalid.composefield.composeField.model.FamilyData
+import com.imkhalid.composefield.composeField.model.FamilySetup
 import com.imkhalid.composefield.composeField.section.family.FamilyAddView
 import com.imkhalid.composefield.composeField.section.family.FamilyEditView
 
@@ -24,10 +26,10 @@ fun LazyListScope.FamilyForm(modifier: Modifier = Modifier, familyData: FamilyDa
     }
 }
 
-fun FamilyData.validateFamily(): String {
-    val spouseSize = snapshotStateList.filter { x -> x.values.contains("spouse") }.size
-    val childSize = snapshotStateList.filter { x -> x.values.contains("child") }.size
-    val parentSize = snapshotStateList.filter { x -> x.values.contains("parent") }.size
+fun SnapshotStateList<Map<String,String>>.validateFamily(familySetup: FamilySetup): String {
+    val spouseSize = this.filter { x -> x.values.contains("spouse") }.size
+    val childSize = this.filter { x -> x.values.contains("child") }.size
+    val parentSize = this.filter { x -> x.values.contains("parent") }.size
     val spouseMin = familySetup.minNoOfSpouse
     val spouseMax = familySetup.maxNoOfSpouse
     val childMin = familySetup.minNoOfChild
