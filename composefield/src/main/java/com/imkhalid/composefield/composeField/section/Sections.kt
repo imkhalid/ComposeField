@@ -655,6 +655,7 @@ private fun Sections.TabSections(
                 }
                 if (familyData != null && familyData.snapshotStateList.isNotEmpty())
                     composable("Family Details") {
+                        currentSection = "Family Details"
                         LazyColumn { FamilyForm(userCountry = userCountry, familyData = familyData) }
                     }
             }
