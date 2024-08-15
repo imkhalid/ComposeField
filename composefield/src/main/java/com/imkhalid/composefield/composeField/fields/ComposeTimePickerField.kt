@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
@@ -74,17 +75,17 @@ class ComposeTimePickerField : ComposeField() {
         val label = buildAnnotatedString {
             withStyle(
                 style =
-                    SpanStyle(
-                        fontSize = responsiveTextSize(size = 13).sp,
-                        color = ComposeFieldTheme.focusedLabelColor,
-                    )
+                SpanStyle(
+                    fontSize = responsiveTextSize(size = 13).sp,
+                    color = ComposeFieldTheme.focusedLabelColor,
+                )
             ) {
                 append(state.field.label)
             }
             if (state.field.required == ComposeFieldYesNo.YES) {
                 withStyle(
                     style =
-                        SpanStyle(fontSize = responsiveTextSize(size = 13).sp, color = Color.Red)
+                    SpanStyle(fontSize = responsiveTextSize(size = 13).sp, color = Color.Red)
                 ) {
                     append("*")
                 }
@@ -99,25 +100,42 @@ class ComposeTimePickerField : ComposeField() {
             ) {
                 Box(
                     modifier =
-                        Modifier.background(color = Color.White, shape = RoundedCornerShape(12.dp))
-                            .padding(10.dp)
+                    Modifier
+                        .background(color = Color.White, shape = RoundedCornerShape(12.dp))
+                        .padding(10.dp)
                 ) {
+                    val defColors = TimePickerDefaults.colors()
                     TimePicker(
                         modifier = Modifier.padding(vertical = 10.dp),
                         state = timePickerState,
                         colors =
-                            TimePickerDefaults.colors(
-                                clockDialColor = ComposeFieldTheme.unfocusedBorderColor,
-                                selectorColor = ComposeFieldTheme.focusedBorderColor,
-                                containerColor = ComposeFieldTheme.unfocusedBorderColor
-                            )
+                        TimePickerDefaults.colors(
+                            clockDialColor =Color.White,
+                            selectorColor = if (isSystemInDarkTheme())
+                                defColors.selectorColor
+                            else
+                                ComposeFieldTheme.focusedBorderColor,
+                            containerColor = ComposeFieldTheme.containerColor,
+                            clockDialSelectedContentColor =Color.White,
+                            clockDialUnselectedContentColor = ComposeFieldTheme.textColor,
+                            timeSelectorSelectedContentColor = Color.White,
+                            timeSelectorSelectedContainerColor = ComposeFieldTheme.focusedLabelColor.copy(0.4f),
+                            timeSelectorUnselectedContentColor = Color.White,
+                            timeSelectorUnselectedContainerColor = ComposeFieldTheme.focusedLabelColor.copy(0.3f)
+
+                        )
                     )
 
                     TextButton(
                         modifier = Modifier.align(Alignment.BottomEnd),
                         onClick = {
                             val result =
-                                "${String.format("%02d",timePickerState.hour)}:${String.format("%02d",timePickerState.minute)}:00"
+                                "${
+                                    String.format(
+                                        "%02d",
+                                        timePickerState.hour
+                                    )
+                                }:${String.format("%02d", timePickerState.minute)}:00"
                             newValue(Pair(true, ""), result)
                             showDialog.value = false
                         }
@@ -137,15 +155,16 @@ class ComposeTimePickerField : ComposeField() {
                 ) {
                     Text(
                         modifier =
-                            Modifier.fillMaxWidth()
-                                .padding(start = 20.dp, top = 7.dp)
-                                .align(Alignment.CenterStart),
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(start = 20.dp, top = 7.dp)
+                            .align(Alignment.CenterStart),
                         color =
-                            if (state.text.isEmpty()) ComposeFieldTheme.unfocusedLabelColor
-                            else ComposeFieldTheme.textColor,
+                        if (state.text.isEmpty()) ComposeFieldTheme.unfocusedLabelColor
+                        else ComposeFieldTheme.textColor,
                         text = dropDownText,
                         fontWeight =
-                            if (state.text.isEmpty()) FontWeight.Normal else FontWeight.Medium,
+                        if (state.text.isEmpty()) FontWeight.Normal else FontWeight.Medium,
                         fontSize = responsiveTextSize(size = 15).sp
                     )
                     Text(
@@ -157,7 +176,9 @@ class ComposeTimePickerField : ComposeField() {
                 Image(
                     painter = painterResource(id = R.drawable.ic_clock_),
                     contentDescription = "",
-                    modifier = Modifier.align(Alignment.CenterEnd).padding(horizontal = 15.dp)
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .padding(horizontal = 15.dp)
                 )
             }
         }
@@ -173,27 +194,30 @@ class ComposeTimePickerField : ComposeField() {
             ComposeFieldTheme.FieldStyle.OUTLINE ->
                 Box(
                     modifier =
-                        Modifier.border(
-                                border = BorderStroke(1.dp, ComposeFieldTheme.unfocusedBorderColor),
-                                shape = OutlinedTextFieldDefaults.shape
-                            )
-                            .padding(top = 5.dp)
-                            .fillMaxWidth()
-                            .height(OutlinedTextFieldDefaults.MinHeight)
-                            .clickable { onClick() },
+                    Modifier
+                        .border(
+                            border = BorderStroke(1.dp, ComposeFieldTheme.unfocusedBorderColor),
+                            shape = OutlinedTextFieldDefaults.shape
+                        )
+                        .padding(top = 5.dp)
+                        .fillMaxWidth()
+                        .height(OutlinedTextFieldDefaults.MinHeight)
+                        .clickable { onClick() },
                 ) {
                     content?.invoke(this)
                 }
+
             ComposeFieldTheme.FieldStyle.CONTAINER,
             ComposeFieldTheme.FieldStyle.NORMAL ->
                 Box(
                     modifier =
-                        Modifier.padding(5.dp)
-                            .fillMaxWidth()
-                            .height(TextFieldDefaults.MinHeight)
-                            .shadow(elevation = 5.dp, shape = RoundedCornerShape(8.dp))
-                            .background(color = Color.White, shape = RoundedCornerShape(8.dp))
-                            .clickable { onClick() },
+                    Modifier
+                        .padding(5.dp)
+                        .fillMaxWidth()
+                        .height(TextFieldDefaults.MinHeight)
+                        .shadow(elevation = 5.dp, shape = RoundedCornerShape(8.dp))
+                        .background(color = Color.White, shape = RoundedCornerShape(8.dp))
+                        .clickable { onClick() },
                 ) {
                     content?.invoke(this)
                 }

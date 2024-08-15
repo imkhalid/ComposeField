@@ -17,7 +17,7 @@ data class CustomFields(
     val max_rule: String,
     val min_date: String,
     val max_date: String,
-    val regex: String,
+    val regex: String?,
     var field_name: String,
     var search: Boolean,
     val searchActon: String,

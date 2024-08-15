@@ -61,7 +61,9 @@ data class ComposeFieldModule(
             sortNumber = customField.field_sort_number,
             sectionSortNumber = sortNumber,
             hidden = getHiddenValue(customField.visible),
-            hideInitial = getHiddenValue(customField.visible)
+            hideInitial = getHiddenValue(customField.visible),
+            pattern = customField.regex.orEmpty(),
+            patternMessage = if (customField.regex.isNullOrEmpty().not()) customField.field_hint.orEmpty() else ""
         )
     }
 

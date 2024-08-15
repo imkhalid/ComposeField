@@ -44,7 +44,6 @@ import com.imkhalid.composefield.composeField.ComposeFieldState
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
 import com.imkhalid.composefield.theme.ComposeFieldTheme
 import com.imkhalid.composefieldproject.composeField.fields.ComposeField
-import com.ozonedDigital.jhk.ui.common.responsiveSize
 import com.ozonedDigital.jhk.ui.common.responsiveTextSize
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -132,10 +131,30 @@ class ComposeDatePickerField : ComposeField() {
             )
         val showDialog = rememberSaveable { mutableStateOf(false) }
         if (showDialog.value) {
+            val colors =DatePickerDefaults.colors(
+                containerColor = ComposeFieldTheme.containerColor,  // Background color
+                titleContentColor = ComposeFieldTheme.focusedLabelColor.copy(0.9f),  // Title color
+                headlineContentColor = ComposeFieldTheme.focusedLabelColor.copy(0.6f),  // Headline color
+                weekdayContentColor = ComposeFieldTheme.textColor,  // Weekday text color
+                subheadContentColor = ComposeFieldTheme.textColor,  // Subhead (month, year) text color
+                yearContentColor = ComposeFieldTheme.textColor.copy(0.8f),  // Year text color
+                selectedDayContentColor = Color.White,  // Selected day text color
+                selectedDayContainerColor = ComposeFieldTheme.focusedBorderColor,  // Selected day background color
+                dayContentColor = Color.Black,
+                disabledDayContentColor = Color.Black.copy(0.4f),
+                todayDateBorderColor = ComposeFieldTheme.focusedBorderColor,
+                dateTextFieldColors = OutlinedTextFieldDefaults.colors().copy(
+                    focusedTextColor = ComposeFieldTheme.textColor,
+                    unfocusedTextColor = ComposeFieldTheme.textColor,
+                    focusedIndicatorColor = ComposeFieldTheme.textColor.copy(0.7f),
+                    unfocusedIndicatorColor = ComposeFieldTheme.textColor.copy(0.7f),
+                    focusedContainerColor = Color.Transparent
+                )
+            )
             DatePickerDialog(
                 onDismissRequest = { showDialog.value = false },
                 colors = DatePickerDefaults.colors().copy(
-                    containerColor = ComposeFieldTheme.containerColor
+                    containerColor = ComposeFieldTheme.containerColor,
                 ),
                 confirmButton = {
                     TextButton(
@@ -159,6 +178,7 @@ class ComposeDatePickerField : ComposeField() {
             ) {
                 DatePicker(
                     state = datePickerState,
+                    colors = colors
                 )
             }
         }
