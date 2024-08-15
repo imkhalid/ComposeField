@@ -55,7 +55,10 @@ class ComposeMobileField : ComposeField() {
         newValue: (Pair<Boolean, String>, String) -> Unit
     ) {
         val phoneNumberUtil: MutableState<PhoneNumberUtil> = remember {
-            mutableStateOf(PhoneNumberUtil().apply { setCountryOfSelectedText(state.text, this) })
+            mutableStateOf(PhoneNumberUtil().apply {
+                setDefaultCountry(currentUserCountryCode)
+                setCountryOfSelectedText(state.text, this) }
+            )
         }
 
         MyBuild(

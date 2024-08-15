@@ -40,7 +40,11 @@ import com.ozonedDigital.jhk.ui.common.responsiveSize
 import com.ozonedDigital.jhk.ui.common.responsiveTextSize
 import com.ozonedDigital.jhk.ui.common.responsiveWidth
 
-internal fun LazyListScope.FamilyAddView(modifier: Modifier, familyData: FamilyData) {
+internal fun LazyListScope.FamilyAddView(
+    userCountry:String,
+    modifier: Modifier,
+    familyData: FamilyData
+) {
     item {
         var shouldShowAddButton by remember {
             mutableStateOf(
@@ -81,6 +85,7 @@ internal fun LazyListScope.FamilyAddView(modifier: Modifier, familyData: FamilyD
 
             if (showAddPopup) {
                 FamilyPopup(
+                    userCountry=userCountry,
                     data = familyData.snapshotStateList.getOrNull(editDataInd ?: -1),
                     familyData = familyData,
                     onDismiss = {
@@ -165,6 +170,7 @@ private fun FamilyItem(map: Map<String, String>, onEdit: () -> Unit, onDelete: (
 
 @Composable
 fun FamilyPopup(
+    userCountry: String,
     modifier: Modifier = Modifier,
     familyData: FamilyData,
     GradientButton: @Composable() (BoxScope.(() -> Unit) -> Unit)? = null,
@@ -211,7 +217,7 @@ fun FamilyPopup(
                 fields.forEach {
                     com.imkhalid.composefieldproject.composeField.fields
                         .ComposeFieldBuilder()
-                        .Build(modifier = Modifier, stateHolder = it) { pair, value ->
+                        .Build(modifier = Modifier, userCountry = userCountry, stateHolder = it) { pair, value ->
                             if (it.state.field.name == "relation") {
                                 fields.getFieldByFieldName("dob")?.also {
                                     val minValue =

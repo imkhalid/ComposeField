@@ -17,6 +17,32 @@ class PhoneNumberUtil {
         var maxLength: Int = -1
     )
 
+    fun setDefaultCountry(userCountryCode:String){
+        when(userCountryCode){
+            "2"->{ //Kenya
+                prefix="254"
+                currentCountryCode="ke"
+                currentCountryFlag="\uD83C\uDDF0\uD83C\uDDEA +"
+                minLength=9
+                maxLength=9
+            }
+            "3"->{ //Tanzania
+                prefix="255"
+                currentCountryCode="tz"
+                currentCountryFlag="\uD83C\uDDF9\uD83C\uDDFF +"
+                minLength=9
+                maxLength=10
+            }
+            "4"->{ //Uganda
+                prefix="256"
+                currentCountryCode="ug"
+                currentCountryFlag="\uD83C\uDDFA\uD83C\uDDEC +"
+                minLength=9
+                maxLength=9
+            }
+        }
+    }
+
     fun validateNumbers(number: String): Boolean {
         var bool = false
         numbers

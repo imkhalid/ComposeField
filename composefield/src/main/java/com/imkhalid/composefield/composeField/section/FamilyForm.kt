@@ -18,11 +18,16 @@ val titleColor = Color(0xFFBA0C2F)
 val textColor = Color(0xFF5B6770)
 
 @Preview(widthDp = 720)
-fun LazyListScope.FamilyForm(modifier: Modifier = Modifier, familyData: FamilyData,errorItem:MutableState<Int> = mutableStateOf(-1)) {
+fun LazyListScope.FamilyForm(
+    modifier: Modifier = Modifier,
+    familyData: FamilyData,
+    errorItem:MutableState<Int> = mutableStateOf(-1),
+    userCountry:String
+) {
     if (familyData.isEditView) {
-        FamilyEditView(modifier, familyData, errorItem = errorItem)
+        FamilyEditView(modifier = modifier, familyData = familyData, errorItem = errorItem,userCountry=userCountry)
     } else {
-        FamilyAddView(modifier, familyData)
+        FamilyAddView(modifier=modifier, familyData = familyData,userCountry=userCountry)
     }
 }
 

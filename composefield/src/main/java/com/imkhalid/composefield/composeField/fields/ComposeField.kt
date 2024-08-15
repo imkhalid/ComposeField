@@ -22,6 +22,7 @@ import com.imkhalid.composefield.composeField.model.ComposeFieldModule
 import com.imkhalid.composefield.composeField.rememberFieldState
 
 abstract class ComposeField {
+    var currentUserCountryCode = ""
     var focusCallback: ((isValidated: Boolean, fieldName: String) -> Unit)? = null
 
     @Composable
@@ -53,6 +54,7 @@ class ComposeFieldBuilder {
     @Composable
     fun Build(
         modifier: Modifier = Modifier,
+        userCountry:String="2",
         stateHolder: ComposeFieldStateHolder = rememberFieldState(name = "", label = ""),
         focusCallback: ((isValidated: Boolean, fieldName: String) -> Unit)? = null,
         onValueChangeForChild: ((value: String) -> Unit)? = null,
@@ -78,6 +80,7 @@ class ComposeFieldBuilder {
                 ComposeFieldType.RADIO_BUTTON -> ComposeRadioGroupField()
             }
 
+        field.currentUserCountryCode = userCountry
         if (state.field.hidden == ComposeFieldYesNo.NO)
             field.Build(
                 state = state,

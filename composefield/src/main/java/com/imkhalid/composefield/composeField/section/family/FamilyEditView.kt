@@ -45,12 +45,17 @@ import com.ozonedDigital.jhk.ui.common.responsiveHeight
 import com.ozonedDigital.jhk.ui.common.responsiveSize
 import com.ozonedDigital.jhk.ui.common.responsiveTextSize
 
-internal fun LazyListScope.FamilyEditView(modifier: Modifier, familyData: FamilyData,errorItem:MutableState<Int>) {
+internal fun LazyListScope.FamilyEditView(
+    userCountry:String,
+    modifier: Modifier,
+    familyData: FamilyData,
+    errorItem:MutableState<Int>) {
 
     var expandedItem by mutableStateOf(-1)
     itemsIndexed(familyData.snapshotStateList) { index, item ->
         val context = LocalContext.current
         FamilyItem(
+            userCountry=userCountry,
             familyData = familyData,
             index = index,
             expanded = expandedItem == index,
@@ -84,6 +89,7 @@ internal fun LazyListScope.FamilyEditView(modifier: Modifier, familyData: Family
 }
 
 private @Composable fun FamilyItem(
+    userCountry: String,
     modifier: Modifier = Modifier,
     familyData: FamilyData,
     index: Int,
@@ -116,6 +122,7 @@ private @Composable fun FamilyItem(
                     ComposeFieldBuilder()
                         .Build(
                             stateHolder = field,
+                            userCountry = userCountry
                         )
                 }
                 Spacer(modifier = Modifier.height(responsiveHeight(size = 10)))

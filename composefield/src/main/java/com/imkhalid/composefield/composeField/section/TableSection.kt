@@ -53,7 +53,8 @@ class TableSection(
     sectionType: SectionType,
     var min: Int = 0,
     var max: Int = 1,
-) : Sections(nav, sectionType) {
+    userCountry:String="2"
+) : Sections(nav, sectionType,userCountry=userCountry) {
 
     @Composable
     fun TableBuild(

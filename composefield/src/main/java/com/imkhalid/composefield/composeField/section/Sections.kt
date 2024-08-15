@@ -89,7 +89,8 @@ open class Sections(
         null,
     private val tabContentItem:
     @Composable() (LazyItemScope.(name: String, isSelected: Boolean, clickCallback: (() -> Unit)?) -> Unit)? =
-        null
+        null,
+    val userCountry:String="2"
 ) {
     val sectionState: HashMap<String, List<ComposeFieldStateHolder>> = HashMap()
     val tableData:
@@ -320,7 +321,7 @@ open class Sections(
                     }
                 }
                 if (familyData != null) {
-                    FamilyForm(familyData = familyData)
+                    FamilyForm(familyData = familyData,userCountry=userCountry)
                 }
             }
             button?.invoke(this) { navigateToNext(nav, onLastPageReach) }
@@ -409,6 +410,7 @@ open class Sections(
 
                 ComposeFieldBuilder()
                     .Build(
+                        userCountry = userCountry,
                         modifier = modifier,
                         stateHolder = state,
                         onValueChange = onValueChange,
@@ -653,7 +655,7 @@ private fun Sections.TabSections(
                 }
                 if (familyData != null && familyData.snapshotStateList.isNotEmpty())
                     composable("Family Details") {
-                        LazyColumn { FamilyForm(familyData = familyData) }
+                        LazyColumn { FamilyForm(userCountry = userCountry, familyData = familyData) }
                     }
             }
         }
