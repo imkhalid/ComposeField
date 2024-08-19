@@ -106,23 +106,24 @@ class ComposeDropDownField : ComposeField() {
 
         Column(modifier = modifier) {
             DropDownField(onClick = toggleDropdown) {
-                Text(
-                    text = label,
-                    modifier = Modifier.padding(start = 20.dp, top = 7.dp),
-                )
-                Text(
-                    modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.CenterStart)
-                        .padding(start = 20.dp, top = 7.dp),
-                    color =
+                Column {
+                    Text(
+                        text = label,
+                        modifier = Modifier.padding(start = 20.dp, top = 7.dp),
+                    )
+                    Text(
+                        modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(start = 20.dp, bottom = 7.dp),
+                        color =
                         if (state.text.isEmpty()) ComposeFieldTheme.unfocusedLabelColor
                         else ComposeFieldTheme.textColor,
-                    text = dropDownText,
-                    fontSize = responsiveTextSize(size = 15).sp,
-                    fontWeight = if (state.text.isEmpty()) FontWeight.Normal else FontWeight.Medium,
-                )
+                        text = dropDownText,
+                        fontSize = responsiveTextSize(size = 15).sp,
+                        fontWeight = if (state.text.isEmpty()) FontWeight.Normal else FontWeight.Medium,
+                    )
+                }
                 Icon(
                     imageVector = Icons.Default.ArrowDropDown,
                     contentDescription = null,
@@ -203,7 +204,7 @@ class ComposeDropDownField : ComposeField() {
                     Modifier
                         .padding(5.dp)
                         .fillMaxWidth()
-                        .height(TextFieldDefaults.MinHeight)
+                        .heightIn(TextFieldDefaults.MinHeight)
                         .focusRequester(focusRequester)
                         .onFocusChanged { s -> isFocused = s.isFocused }
                         .shadow(elevation = 5.dp, shape = RoundedCornerShape(8.dp))
