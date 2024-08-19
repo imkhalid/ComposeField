@@ -18,6 +18,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -84,24 +85,59 @@ class ComposeTextField : ComposeField() {
                 LocalTextToolbar provides EmptyTextToolbar
             else LocalTextToolbar provides LocalTextToolbar.current
 
+        val colors = TextFieldDefaults.colors(
+            focusedContainerColor = Color.White,
+            unfocusedContainerColor = Color.White,
+            errorLabelColor = ComposeFieldTheme.errorColor,
+            focusedLabelColor = ComposeFieldTheme.hintColor,
+            focusedTextColor = ComposeFieldTheme.textColor,
+            unfocusedTextColor = ComposeFieldTheme.textColor,
+            focusedSupportingTextColor = ComposeFieldTheme.infoColor,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            disabledTextColor = Color(0xFFBDBDBD),
+            disabledLabelColor = Color(0xFF9E9E9E),
+            disabledPlaceholderColor = Color(0xFFBDBDBD),
+            disabledContainerColor = Color(0xFFE0E0E0),
+        )
+
         Column(modifier = modifier) {
             CompositionLocalProvider(toolbar) {
                 when (ComposeFieldTheme.fieldStyle) {
                     ComposeFieldTheme.FieldStyle.OUTLINE ->
                         OutlineField(
                             modifier = Modifier.fillMaxWidth(),
+                            colors=colors,
                             state = state,
                             newValue = newValue
                         )
                     ComposeFieldTheme.FieldStyle.CONTAINER ->
                         ContainerField(
                             modifier = Modifier.fillMaxWidth(),
+                            colors=TextFieldDefaults.colors(
+                                focusedContainerColor = Color.White,
+                                unfocusedContainerColor = Color.White,
+                                errorLabelColor = ComposeFieldTheme.errorColor,
+                                focusedLabelColor = ComposeFieldTheme.focusedLabelColor,
+                                unfocusedLabelColor = ComposeFieldTheme.unfocusedLabelColor,
+                                unfocusedPlaceholderColor = ComposeFieldTheme.unfocusedLabelColor,
+                                focusedTextColor = ComposeFieldTheme.textColor,
+                                unfocusedTextColor = ComposeFieldTheme.textColor,
+                                focusedSupportingTextColor = ComposeFieldTheme.infoColor,
+                                focusedIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent,
+                                disabledTextColor = Color(0xFFBDBDBD),
+                                disabledLabelColor = Color(0xFF9E9E9E),
+                                disabledPlaceholderColor = Color(0xFFBDBDBD),
+                                disabledContainerColor = Color(0xFFE0E0E0),
+                            ),
                             state = state,
                             newValue = newValue
                         )
                     ComposeFieldTheme.FieldStyle.NORMAL ->
                         NormalField(
                             modifier = Modifier.fillMaxWidth(),
+                            colors=colors,
                             state = state,
                             newValue = newValue
                         )
@@ -113,6 +149,7 @@ class ComposeTextField : ComposeField() {
     @Composable
     private fun NormalField(
         modifier: Modifier = Modifier,
+        colors:TextFieldColors,
         state: ComposeFieldState,
         newValue: (Pair<Boolean, String>, String) -> Unit
     ) {
@@ -148,21 +185,12 @@ class ComposeTextField : ComposeField() {
             minLines = getMinLine(state.field.type),
             maxLines = getMaxLine(state.field.type),
             visualTransformation = visualTransformation,
-            colors =
-                TextFieldDefaults.colors(
-                    focusedContainerColor = Color.White,
-                    unfocusedContainerColor = Color.White,
-                    errorLabelColor = ComposeFieldTheme.errorColor,
-                    focusedLabelColor = ComposeFieldTheme.hintColor,
-                    focusedTextColor = ComposeFieldTheme.textColor,
-                    unfocusedTextColor = ComposeFieldTheme.textColor,
-                    focusedSupportingTextColor = ComposeFieldTheme.infoColor,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent
-                ),
+            colors =colors,
             shape = RoundedCornerShape(8.dp),
             modifier =
-                modifier.padding(5.dp).shadow(elevation = 5.dp, shape = RoundedCornerShape(8.dp)),
+            modifier
+                .padding(5.dp)
+                .shadow(elevation = 5.dp, shape = RoundedCornerShape(8.dp)),
             trailingIcon = {
                 TrailingIcon(state.field, passwordVisible = passwordVisible) {
                     passwordVisible = passwordVisible.not()
@@ -182,6 +210,7 @@ class ComposeTextField : ComposeField() {
     @Composable
     private fun ContainerField(
         modifier: Modifier = Modifier,
+        colors: TextFieldColors,
         state: ComposeFieldState,
         newValue: (Pair<Boolean, String>, String) -> Unit
     ) {
@@ -238,34 +267,21 @@ class ComposeTextField : ComposeField() {
             minLines = getMinLine(state.field.type),
             maxLines = getMaxLine(state.field.type),
             visualTransformation = visualTransformation,
-            colors =
-                TextFieldDefaults.colors(
-                    focusedContainerColor = Color.White,
-                    unfocusedContainerColor = Color.White,
-                    errorLabelColor = ComposeFieldTheme.errorColor,
-                    focusedLabelColor = ComposeFieldTheme.focusedLabelColor,
-                    unfocusedLabelColor = ComposeFieldTheme.unfocusedLabelColor,
-                    unfocusedPlaceholderColor = ComposeFieldTheme.unfocusedLabelColor,
-                    focusedTextColor = ComposeFieldTheme.textColor,
-                    unfocusedTextColor = ComposeFieldTheme.textColor,
-                    focusedSupportingTextColor = ComposeFieldTheme.infoColor,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent
-                ),
+            colors =colors,
             shape = RoundedCornerShape(8.dp),
             modifier =
-                modifier
-                    .focusRequester(focusRequester)
-                    .onFocusChanged { s -> isFocused = s.isFocused }
-                    .padding(5.dp)
-                    .border(
-                        width = if (isFocused) 1.dp else 0.dp,
-                        color =
-                            if (isFocused) ComposeFieldTheme.focusedBorderColor
-                            else Color.Transparent,
-                        shape = RoundedCornerShape(8.dp)
-                    )
-                    .shadow(elevation = 5.dp, shape = RoundedCornerShape(8.dp)),
+            modifier
+                .focusRequester(focusRequester)
+                .onFocusChanged { s -> isFocused = s.isFocused }
+                .padding(5.dp)
+                .border(
+                    width = if (isFocused) 1.dp else 0.dp,
+                    color =
+                    if (isFocused) ComposeFieldTheme.focusedBorderColor
+                    else Color.Transparent,
+                    shape = RoundedCornerShape(8.dp)
+                )
+                .shadow(elevation = 5.dp, shape = RoundedCornerShape(8.dp)),
             trailingIcon = {
                 TrailingIcon(state.field, passwordVisible = passwordVisible) {
                     passwordVisible = passwordVisible.not()
@@ -285,6 +301,7 @@ class ComposeTextField : ComposeField() {
     @Composable
     private fun OutlineField(
         modifier: Modifier = Modifier,
+        colors:TextFieldColors,
         state: ComposeFieldState,
         newValue: (Pair<Boolean, String>, String) -> Unit
     ) {
@@ -339,18 +356,7 @@ class ComposeTextField : ComposeField() {
             minLines = getMinLine(state.field.type),
             maxLines = getMaxLine(state.field.type),
             visualTransformation = visualTransformation,
-            colors =
-                OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = ComposeFieldTheme.focusedBorderColor,
-                    unfocusedBorderColor = ComposeFieldTheme.unfocusedBorderColor,
-                    errorBorderColor = ComposeFieldTheme.errorColor,
-                    errorLabelColor = ComposeFieldTheme.errorColor,
-                    focusedLabelColor = ComposeFieldTheme.focusedBorderColor,
-                    unfocusedPlaceholderColor = ComposeFieldTheme.hintColor,
-                    focusedTextColor = ComposeFieldTheme.textColor,
-                    unfocusedTextColor = ComposeFieldTheme.textColor,
-                    focusedSupportingTextColor = ComposeFieldTheme.infoColor,
-                ),
+            colors =colors,
             modifier = modifier,
             trailingIcon = {
                 TrailingIcon(field = state.field, passwordVisible = passwordVisible) {
