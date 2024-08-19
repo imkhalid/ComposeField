@@ -85,8 +85,8 @@ class ComposeFieldBuilder {
             field.Build(
                 state = state,
                 newValue = { error, newVal ->
-                    onValueChange?.invoke(state.field.name, newVal)
                     updateFieldState(error, newVal, stateHolder, onValueChangeForChild)
+                    onValueChange?.invoke(state.field.name, newVal)
                 },
                 modifier = modifier
             )
