@@ -38,7 +38,7 @@ data class ComposeFieldModule(
         customField: CustomFields,
         sortNumber: Int = 0,
     ): ComposeFieldModule {
-        val selected_value = customField.selectedValue
+        val selected_value = customField.selectedValue?.takeIf { x->x.isNotEmpty() }?:customField.selected_value.orEmpty()
         val isEmailMobile =
             (customField.field_name == "email" || customField.field_name == "mobile_no")
         val showIcon =
