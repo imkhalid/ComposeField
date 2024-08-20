@@ -199,6 +199,7 @@ open class Sections(
     fun TabBuild(
         sections: List<ComposeSectionModule>,
         familyData: FamilyData? = null,
+        onValueChange: ((name: String, newValue: String) -> Unit)? = null,
         button: @Composable (BoxScope.(onClick: () -> Unit) -> Unit)?,
         tableAddButton: @Composable (BoxScope.(onClick: () -> Unit) -> Unit)?,
         tablePopupButton: @Composable (BoxScope.(onClick: () -> Unit) -> Unit)?,
@@ -227,6 +228,7 @@ open class Sections(
             nav = MyNavHost(nav,sectionNames,this,onLastPageReach),
             sections = sections,
             familyData = familyData,
+            onValueChange=onValueChange,
             valueChangeForChild = valueChangeForChild,
             button = button,
             tableAddButton = tableAddButton,
@@ -556,6 +558,7 @@ private fun Sections.TabSections(
     nav: MyNavHost,
     sections: List<ComposeSectionModule>,
     familyData: FamilyData?,
+    onValueChange: ((name: String, newValue: String) -> Unit)? = null,
     valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
     button: (@Composable BoxScope.(onClick: () -> Unit) -> Unit)?,
     tableAddButton: (@Composable BoxScope.(onClick: () -> Unit) -> Unit)?,
@@ -615,6 +618,7 @@ private fun Sections.TabSections(
                                             }
                                     },
                                     valueChangeForChild = valueChangeForChild,
+                                    onValueChange = onValueChange,
                                     AddButton = { onClick ->
                                         tableAddButton?.invoke(this@Box, onClick)
                                     },
@@ -640,12 +644,14 @@ private fun Sections.TabSections(
                                     section.subSections.forEachIndexed { itemindex, item ->
                                         this.buildInnerSection(
                                             section = item,
+                                            onValueChange = onValueChange,
                                             valueChangeForChild = valueChangeForChild
                                         )
                                     }
                                 } else {
                                     buildInnerSection(
                                         section = section,
+                                        onValueChange = onValueChange,
                                         valueChangeForChild = valueChangeForChild
                                     )
                                 }
