@@ -205,12 +205,12 @@ class ComposeMobileField : ComposeField() {
         val toggleDropdown: () -> Unit = { expanded = !expanded }
         Column {
             TextField(
-                value = state.text.removePrefix(phoneNumberUtil.prefix),
+                value = state.text.removePrefix("+"+phoneNumberUtil.prefix),
                 enabled = state.field.isEditable.value,
                 onValueChange = { curVal ->
                     if (curVal.length <= phoneNumberUtil.maxLength) {
                         builtinValidations(curVal, phoneNumberUtil) { validated, newVal ->
-                            newValue.invoke(validated, phoneNumberUtil.prefix.plus(newVal))
+                            newValue.invoke(validated, "+"+phoneNumberUtil.prefix.plus(newVal))
                         }
                     }
                 },

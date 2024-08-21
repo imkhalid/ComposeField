@@ -6,6 +6,7 @@ plugins {
     id("kotlin-kapt")
     id("dagger.hilt.android.plugin")
     id("com.google.dagger.hilt.android") version "2.50" apply false
+    id ("org.jetbrains.kotlin.plugin.compose")
 }
 
 android {
@@ -44,9 +45,6 @@ android {
     }
     buildFeatures {
         compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
     }
     packaging {
         resources {

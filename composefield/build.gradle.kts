@@ -3,16 +3,17 @@ plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
     id("maven-publish")
-    id("kotlin-kapt")
+    id("org.jetbrains.kotlin.kapt")
+    id ("org.jetbrains.kotlin.plugin.compose")
 }
 
 android {
     namespace = "com.imkhalid.composefield"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         multiDexEnabled = true
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -30,9 +31,6 @@ android {
     }
     buildFeatures {
         compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -98,5 +96,5 @@ dependencies {
 
     implementation("androidx.hilt:hilt-navigation-compose:$hiltWork")
 
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.0")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:2.0.0")
 }

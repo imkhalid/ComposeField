@@ -545,8 +545,8 @@ open class Sections(
                 }
                 if (showDialog)
                     errorDialog?.invoke(
-                        onClick = { showDialog = false },
-                        onDismiss = { showDialog = false }
+                        { showDialog = false },
+                        { showDialog = false }
                     )
             }
         }

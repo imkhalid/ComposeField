@@ -148,14 +148,14 @@ class TableSection(
                         item,
                         SingleItemHeader = {
                             SingleItemHeader.invoke(
-                                onEditClick = { editItem = it },
-                                onDeleteClick = { onDeleteItem.invoke(it) },
-                                onExpandClick = {
+                                /*onEditClick = */{ editItem = it },
+                                /*onDeleteClick = */{ onDeleteItem.invoke(it) },
+                                /*onExpandClick = */{
                                     if (expandedItem == it) {
                                         expandedItem = -1
                                     } else expandedItem = it
                                 },
-                                textTitle = "${it.plus(1)}. ${tableName.replace("_", " ")}"
+                                /*textTitle = */"${it.plus(1)}. ${tableName.replace("_", " ")}"
                             )
                         },
                         expandedItem
