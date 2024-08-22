@@ -12,6 +12,7 @@ import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldType
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardType
 import com.imkhalid.composefield.composeField.fields.ComposeCheckBoxField
+import com.imkhalid.composefield.composeField.fields.ComposeCurrencyField
 import com.imkhalid.composefield.composeField.fields.ComposeDatePickerField
 import com.imkhalid.composefield.composeField.fields.ComposeDropDownField
 import com.imkhalid.composefield.composeField.fields.ComposeMobileField
@@ -67,6 +68,8 @@ class ComposeFieldBuilder {
                 ComposeFieldType.TEXT_AREA -> {
                     if (state.field.keyboardType == ComposeKeyboardType.MOBILE_NO) {
                         ComposeMobileField()
+                    } else if (state.field.keyboardType==ComposeKeyboardType.CURRENCY){
+                      ComposeCurrencyField()
                     } else {
                         ComposeTextField().setFocusCallback(focusCallback)
                     }
