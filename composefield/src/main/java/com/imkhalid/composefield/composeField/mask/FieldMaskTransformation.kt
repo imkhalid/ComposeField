@@ -1,4 +1,4 @@
-package com.imkhalid.composefield.composeField
+package com.imkhalid.composefield.composeField.mask
 
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.OffsetMapping

@@ -9,16 +9,18 @@ import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.core.text.isDigitsOnly
+import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.util.Currency
 
 class CurrencyMaskTransformation(
     val currencyCode:String
 ) : VisualTransformation {
-    private val numberFormatter = NumberFormat.getCurrencyInstance().apply {
-        currency = Currency.getInstance(currencyCode)
+    private val numberFormatter = /*NumberFormat.getCurrencyInstance().apply {
+//        currency = Currency.getInstance(currencyCode)
         maximumFractionDigits = 0
-    }
+    }*/
+        DecimalFormat("#,###")
 
     override fun filter(text: AnnotatedString): TransformedText {
         val originalText = text.text.trim()

@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.withStyle
@@ -39,6 +40,7 @@ import com.imkhalid.composefield.theme.ComposeFieldTheme
 import com.imkhalid.composefieldproject.composeField.fields.ComposeField
 import com.ozonedDigital.jhk.ui.common.responsiveTextSize
 import java.text.DecimalFormat
+import java.util.Locale
 
 
 class ComposeCurrencyField : ComposeField() {
@@ -137,12 +139,21 @@ class ComposeCurrencyField : ComposeField() {
         val currency =
             if (currentUserCountryCode == "2") "KES" else if (currentUserCountryCode == "3") "TZS" else "UGX"
         val visualTransformation = rememberCurrencyVisualTransformation(currency = currency)
+        var helper by remember {
+            mutableStateOf("")
+        }
 
         TextField(
             value = state.text,
             enabled = state.field.isEditable.value,
             onValueChange = { curVal ->
-                builtinValidations(curVal, state) { validated, newVal ->
+                builtinValidations(
+                    curVal,
+                    state,
+                    helperCallback = {
+                        helper= it
+                    }
+                ) { validated, newVal ->
                     newValue.invoke(validated, newVal)
                 }
             },
@@ -191,13 +202,22 @@ class ComposeCurrencyField : ComposeField() {
         val currency =
             if (currentUserCountryCode == "2") "KES" else if (currentUserCountryCode == "3") "TZS" else "UGX"
         val visualTransformation = rememberCurrencyVisualTransformation(currency = currency)
+        var helper by remember {
+            mutableStateOf("")
+        }
 
 
         TextField(
             value = state.text,
             enabled = state.field.isEditable.value,
             onValueChange = { curVal ->
-                builtinValidations(curVal, state) { validated, newVal ->
+                builtinValidations(
+                    curVal,
+                    state,
+                    helperCallback = {
+                        helper=it
+                    }
+                ) { validated, newVal ->
                     newValue.invoke(validated, newVal)
                 }
             },
@@ -251,6 +271,16 @@ class ComposeCurrencyField : ComposeField() {
                 }
             }
         )
+        if (helper.isNotEmpty())
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 20.dp),
+                color = ComposeFieldTheme.unfocusedLabelColor,
+                text =helper,
+                fontWeight = FontWeight.Normal,
+                fontSize = responsiveTextSize(size = 11).sp
+            )
         if (state.hasError) {
             Text(
                 text = state.errorMessage,
@@ -272,12 +302,17 @@ class ComposeCurrencyField : ComposeField() {
         val currency =
             if (currentUserCountryCode == "2") "KES" else if (currentUserCountryCode == "3") "TZS" else "UGX"
         val visualTransformation = rememberCurrencyVisualTransformation(currency = currency)
+        var helper by remember {
+            mutableStateOf("")
+        }
 
         OutlinedTextField(
             value = state.text,
             enabled = state.field.isEditable.value,
             onValueChange = { curVal ->
-                builtinValidations(curVal, state) { validated, newVal ->
+                builtinValidations(
+                    curVal, state, helperCallback = { helper = it }
+                ) { validated, newVal ->
                     newValue.invoke(validated, newVal)
                 }
             },
@@ -337,6 +372,7 @@ class ComposeCurrencyField : ComposeField() {
     private fun builtinValidations(
         curVal: String,
         state: ComposeFieldState,
+        helperCallback:(String)->Unit,
         newValue: (Pair<Boolean, String>, String) -> Unit
     ) {
         /*we will be using curVal for getValueWithMask and on final callback-> newValue
@@ -344,38 +380,37 @@ class ComposeCurrencyField : ComposeField() {
 
         var bool = true
         var message = ""
+        val formatter = DecimalFormat("#,###")
 
-        val max = (state.field.maxValue?:"17").toLong()
-        val min = (state.field.minValue?:"0").toLong()
-        var maxValue:Long = -1
-        var minValue:Long = -1
+        val max = (state.field.maxValue ?: "-1").toLong()
+        val min = (state.field.minValue ?: "-1").toLong()
 
-        val length = if (max<100){
-            max
-        }else{
-            maxValue = max
-            max.toString().length.toLong()
-        }
-
-        val minLength = if (min<=5) {
-            min
-        }else {
-            minValue = min
-            min.toString().length.toLong()
-        }
-
-        if (curVal.length <=length) {
-            if (minValue!=-1L && maxValue!=-1L){
-                if (curVal.toLong()<minValue || curVal.toLong()>maxValue){
-                    val formatter = DecimalFormat("#,###")
-                    bool =false
-                    message = "Value must be between ${formatter.format(minValue)} to ${formatter.format(maxValue)}"
-                }
-
-                newValue.invoke(Pair(bool, message), curVal)
-            }else {
-                newValue.invoke(Pair(bool, message), curVal)
+        if (curVal.length <= 17) {
+            if (min != -1L && (curVal.toLongOrNull()?:0L) < min) {
+                bool = false
+                message = "Minimum Value must be greater or equal to ${formatter.format(min)}"
             }
+            if (max != -1L && (curVal.toLongOrNull()?:0L) > max) {
+                bool = false
+                message = "Maximum Value must be lesser or equal to ${formatter.format(max)}"
+            }
+            if (curVal.isNotEmpty()){
+                helperCallback.invoke(formatNumberToReadableString(curVal.toLong()))
+            }else{
+                helperCallback.invoke("")
+            }
+            newValue.invoke(Pair(bool, message), curVal)
         }
     }
+
+    fun formatNumberToReadableString(number: Long): String {
+        return when {
+            number >= 1_000_000000 -> String.format(Locale.getDefault(),"%.2f billion", number / 1_000_000_000.0)
+            number >= 1_000_000 -> String.format(Locale.getDefault(),"%.2f million", number / 1_000_000.0)
+            number >= 1_000 -> String.format(Locale.getDefault(),"%.2f thousand", number / 1_000.0)
+            else -> number.toString()
+        }
+    }
+
+
 }
