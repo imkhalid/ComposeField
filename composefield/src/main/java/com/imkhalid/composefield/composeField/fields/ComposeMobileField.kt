@@ -152,7 +152,9 @@ class ComposeMobileField : ComposeField() {
                         unfocusedTextColor = ComposeFieldTheme.textColor,
                         focusedSupportingTextColor = ComposeFieldTheme.infoColor,
                         focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent
+                        unfocusedIndicatorColor = Color.Transparent,
+                        errorContainerColor = Color(0xFFfaebeb),
+                        errorTextColor = ComposeFieldTheme.textColor
                     ),
                 shape = RoundedCornerShape(8.dp),
                 modifier =
@@ -264,7 +266,9 @@ class ComposeMobileField : ComposeField() {
                         unfocusedTextColor = ComposeFieldTheme.textColor,
                         focusedSupportingTextColor = ComposeFieldTheme.infoColor,
                         focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent
+                        unfocusedIndicatorColor = Color.Transparent,
+                        errorContainerColor = Color(0xFFfaebeb),
+                        errorTextColor = ComposeFieldTheme.textColor
                     ),
                 shape = RoundedCornerShape(8.dp),
                 modifier =
@@ -374,7 +378,9 @@ class ComposeMobileField : ComposeField() {
                         unfocusedPlaceholderColor = ComposeFieldTheme.hintColor,
                         focusedTextColor = ComposeFieldTheme.textColor,
                         unfocusedTextColor = ComposeFieldTheme.textColor,
-                        focusedSupportingTextColor = ComposeFieldTheme.infoColor
+                        focusedSupportingTextColor = ComposeFieldTheme.infoColor,
+                        errorContainerColor = Color(0xFFfaebeb),
+                        errorTextColor = ComposeFieldTheme.textColor
                     ),
                 modifier = Modifier.then(modifier),
                 trailingIcon = {

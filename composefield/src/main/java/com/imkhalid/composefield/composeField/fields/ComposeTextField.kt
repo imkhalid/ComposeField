@@ -15,7 +15,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
@@ -49,7 +48,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.imkhalid.composefield.composeField.ComposeFieldState
-import com.imkhalid.composefield.composeField.FieldMaskTransformation
+import com.imkhalid.composefield.composeField.mask.FieldMaskTransformation
 import com.imkhalid.composefield.composeField.Patterns
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldType
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
@@ -99,6 +98,8 @@ class ComposeTextField : ComposeField() {
             disabledLabelColor = Color(0xFF9E9E9E),
             disabledPlaceholderColor = Color(0xFFBDBDBD),
             disabledContainerColor = Color(0xFFE0E0E0),
+            errorContainerColor = Color(0xFFfaebeb),
+            errorTextColor = ComposeFieldTheme.textColor
         )
 
         Column(modifier = modifier) {
@@ -130,6 +131,8 @@ class ComposeTextField : ComposeField() {
                                 disabledLabelColor = Color(0xFF9E9E9E),
                                 disabledPlaceholderColor = Color(0xFFBDBDBD),
                                 disabledContainerColor = Color(0xFFE0E0E0),
+                                errorContainerColor = Color(0xFFfaebeb),
+                                errorTextColor = ComposeFieldTheme.textColor
                             ),
                             state = state,
                             newValue = newValue
@@ -410,6 +413,7 @@ class ComposeTextField : ComposeField() {
                 ComposeKeyboardType.CNIC,
                 ComposeKeyboardType.ID_NO,
                 ComposeKeyboardType.MOBILE_NO,
+                ComposeKeyboardType.CURRENCY,
                 ComposeKeyboardType.NUMBER -> KeyboardType.Number
                 ComposeKeyboardType.EMAIL -> KeyboardType.Email
                 ComposeKeyboardType.TEXT,
@@ -528,10 +532,7 @@ class ComposeTextField : ComposeField() {
                 //                }
                 Patterns.NONE
             }
-            ComposeKeyboardType.SENSITIVE,
-            ComposeKeyboardType.PASSWORD,
-            ComposeKeyboardType.TEXT,
-            ComposeKeyboardType.NONE -> Patterns.NONE
+            else -> Patterns.NONE
         }
     }
 
@@ -542,11 +543,7 @@ class ComposeTextField : ComposeField() {
                 ComposeKeyboardType.ID_NO -> Patterns.ID_NO.value
                 ComposeKeyboardType.MOBILE_NO -> Patterns.MOBILE.value
                 ComposeKeyboardType.EMAIL -> Patterns.EMAIL.value
-                ComposeKeyboardType.TEXT,
-                ComposeKeyboardType.NUMBER,
-                ComposeKeyboardType.SENSITIVE,
-                ComposeKeyboardType.PASSWORD,
-                ComposeKeyboardType.NONE -> Patterns.NONE.value
+                else -> Patterns.NONE.value
             }
 
         val transforation = FieldMaskTransformation(mask)
