@@ -22,30 +22,6 @@ data class ComposeFieldState(
     var errorMessage: String = "",
 ) {}
 
-//
-// @Composable
-// fun rememberFieldState(
-//    name:String,
-//    label:String,
-//    id: String= "",
-//    type:ComposeFieldType = ComposeFieldType.TEXT_BOX,
-//    keyboardType: ComposeKeyboardType = ComposeKeyboardType.TEXT,
-//    value:String="",
-// ):ComposeFieldState{
-//    return rememberSaveable(
-//        inputs = arrayOf(
-//            id,name, type, keyboardType, value, label
-//        ),
-//        saver = ComposeFieldState.Saver,
-//    ){
-//        ComposeFieldState(
-//            field = ComposeFieldModule(
-//                id,name, type, keyboardType, value, label
-//            )
-//        )
-//    }
-// }
-
 @Composable
 fun rememberFieldState(
     name: String,
