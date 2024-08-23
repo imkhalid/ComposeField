@@ -36,6 +36,7 @@ import com.imkhalid.composefield.composeField.ComposeFieldState
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardType
 import com.imkhalid.composefield.composeField.mask.rememberCurrencyVisualTransformation
+import com.imkhalid.composefield.composeField.util.EnglishNumberToWords
 import com.imkhalid.composefield.theme.ComposeFieldTheme
 import com.imkhalid.composefieldproject.composeField.fields.ComposeField
 import com.ozonedDigital.jhk.ui.common.responsiveTextSize
@@ -112,7 +113,7 @@ class ComposeCurrencyField : ComposeField() {
                         disabledPlaceholderColor = Color(0xFFBDBDBD),
                         disabledContainerColor = Color(0xFFE0E0E0),
                         errorContainerColor = Color(0xFFfaebeb),
-                        errorTextColor = ComposeFieldTheme.textColor
+                        errorTextColor = ComposeFieldTheme.textColor,
                     ),
                     state = state,
                     newValue = newValue
@@ -256,7 +257,7 @@ class ComposeCurrencyField : ComposeField() {
             modifier
                 .focusRequester(focusRequester)
                 .onFocusChanged { s -> isFocused = s.isFocused }
-                .padding(5.dp)
+                .padding(start = 5.dp,top=5.dp,end=5.dp)
                 .border(
                     width = if (isFocused) 1.dp else 0.dp,
                     color =
@@ -275,16 +276,16 @@ class ComposeCurrencyField : ComposeField() {
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 20.dp),
-                color = ComposeFieldTheme.unfocusedLabelColor,
+                    .padding(start = 20.dp,bottom=5.dp),
+                color = ComposeFieldTheme.textColor,
                 text =helper,
                 fontWeight = FontWeight.Normal,
-                fontSize = responsiveTextSize(size = 11).sp
+                fontSize = responsiveTextSize(size = 12).sp
             )
         if (state.hasError) {
             Text(
                 text = state.errorMessage,
-                color = MaterialTheme.colorScheme.error,
+                color = Color.Red,
                 style = MaterialTheme.typography.labelSmall,
                 modifier = Modifier.padding(start = 16.dp)
             )
@@ -395,20 +396,11 @@ class ComposeCurrencyField : ComposeField() {
                 message = "Maximum Value must be lesser or equal to ${formatter.format(max)}"
             }
             if (curVal.isNotEmpty()){
-                helperCallback.invoke(formatNumberToReadableString(curVal.toLong()))
+                helperCallback.invoke(EnglishNumberToWords.convert(curVal.toLong()))
             }else{
                 helperCallback.invoke("")
             }
             newValue.invoke(Pair(bool, message), curVal)
-        }
-    }
-
-    fun formatNumberToReadableString(number: Long): String {
-        return when {
-            number >= 1_000_000000 -> String.format(Locale.getDefault(),"%.2f billion", number / 1_000_000_000.0)
-            number >= 1_000_000 -> String.format(Locale.getDefault(),"%.2f million", number / 1_000_000.0)
-            number >= 1_000 -> String.format(Locale.getDefault(),"%.2f thousand", number / 1_000.0)
-            else -> number.toString()
         }
     }
 
