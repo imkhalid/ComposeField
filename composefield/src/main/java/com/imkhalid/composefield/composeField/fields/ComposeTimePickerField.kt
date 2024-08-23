@@ -119,9 +119,9 @@ class ComposeTimePickerField : ComposeField() {
                             clockDialSelectedContentColor =Color.White,
                             clockDialUnselectedContentColor = ComposeFieldTheme.textColor,
                             timeSelectorSelectedContentColor = Color.White,
-                            timeSelectorSelectedContainerColor = ComposeFieldTheme.focusedLabelColor.copy(0.4f),
+                            timeSelectorSelectedContainerColor = ComposeFieldTheme.focusedLabelColor,
                             timeSelectorUnselectedContentColor = Color.White,
-                            timeSelectorUnselectedContainerColor = ComposeFieldTheme.focusedLabelColor.copy(0.3f)
+                            timeSelectorUnselectedContainerColor = ComposeFieldTheme.focusedLabelColor.copy(0.5f)
 
                         )
                     )

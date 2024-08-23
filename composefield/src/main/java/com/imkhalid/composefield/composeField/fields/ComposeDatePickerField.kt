@@ -90,17 +90,17 @@ class ComposeDatePickerField : ComposeField() {
         val label = buildAnnotatedString {
             withStyle(
                 style =
-                    SpanStyle(
-                        fontSize = responsiveTextSize(size = 13).sp,
-                        color = ComposeFieldTheme.focusedLabelColor
-                    )
+                SpanStyle(
+                    fontSize = responsiveTextSize(size = 13).sp,
+                    color = ComposeFieldTheme.focusedLabelColor
+                )
             ) {
                 append(state.field.label)
             }
             if (state.field.required == ComposeFieldYesNo.YES) {
                 withStyle(
                     style =
-                        SpanStyle(fontSize = responsiveTextSize(size = 13).sp, color = Color.Red)
+                    SpanStyle(fontSize = responsiveTextSize(size = 13).sp, color = Color.Red)
                 ) {
                     append("*")
                 }
@@ -118,29 +118,35 @@ class ComposeDatePickerField : ComposeField() {
             DatePickerState(
                 locale = CalendarLocale.getDefault(),
                 initialSelectedDateMillis =
-                    if (maxMil != null && maxMil < calendar.timeInMillis) maxMil
-                    else calendar.timeInMillis,
+                if (state.text.isNotEmpty())
+                    SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(state.text)?.time
+                else if (maxMil != null && maxMil < calendar.timeInMillis)
+                    maxMil
+                else
+                    calendar.timeInMillis,
                 yearRange = rangeMin..rangeMax,
                 selectableDates =
-                    object : SelectableDates {
-                        override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-                            return (minMil == null || (minMil < utcTimeMillis)) &&
+                object : SelectableDates {
+                    override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                        return (minMil == null || (minMil < utcTimeMillis)) &&
                                 (maxMil == null || (maxMil > utcTimeMillis))
-                        }
                     }
+                }
             )
         val showDialog = rememberSaveable { mutableStateOf(false) }
         if (showDialog.value) {
-            val colors =DatePickerDefaults.colors(
+            val colors = DatePickerDefaults.colors(
                 containerColor = ComposeFieldTheme.containerColor,  // Background color
-                titleContentColor = ComposeFieldTheme.focusedLabelColor.copy(0.9f),  // Title color
-                headlineContentColor = ComposeFieldTheme.focusedLabelColor.copy(0.6f),  // Headline color
-                weekdayContentColor = ComposeFieldTheme.textColor,  // Weekday text color
-                subheadContentColor = ComposeFieldTheme.textColor,  // Subhead (month, year) text color
-                yearContentColor = ComposeFieldTheme.textColor.copy(0.8f),  // Year text color
+                titleContentColor = ComposeFieldTheme.focusedLabelColor,  // Title color
+                headlineContentColor = ComposeFieldTheme.focusedLabelColor,  // Headline color
+                weekdayContentColor = ComposeFieldTheme.focusedLabelColor,  // Weekday text color
+                navigationContentColor = Color.Black,  // Subhead (month, year) text color
+                yearContentColor = Color.Black,  // Year text color
                 selectedDayContentColor = Color.White,  // Selected day text color
+                selectedYearContentColor = Color.White,
                 selectedDayContainerColor = ComposeFieldTheme.focusedBorderColor,  // Selected day background color
                 dayContentColor = Color.Black,
+                disabledYearContentColor = Color.Black.copy(0.4f),
                 disabledDayContentColor = Color.Black.copy(0.4f),
                 todayDateBorderColor = ComposeFieldTheme.focusedBorderColor,
                 dateTextFieldColors = OutlinedTextFieldDefaults.colors().copy(
@@ -197,11 +203,11 @@ class ComposeDatePickerField : ComposeField() {
                             .padding(start = 20.dp, top = 7.dp)
                             .align(Alignment.CenterStart),
                         color =
-                            if (state.text.isEmpty()) ComposeFieldTheme.unfocusedLabelColor
-                            else ComposeFieldTheme.textColor,
+                        if (state.text.isEmpty()) ComposeFieldTheme.unfocusedLabelColor
+                        else ComposeFieldTheme.textColor,
                         text = dropDownText,
                         fontWeight =
-                            if (state.text.isEmpty()) FontWeight.Normal else FontWeight.Medium,
+                        if (state.text.isEmpty()) FontWeight.Normal else FontWeight.Medium,
                         fontSize = responsiveTextSize(size = 15).sp
                     )
                     Text(
@@ -261,6 +267,7 @@ class ComposeDatePickerField : ComposeField() {
                 ) {
                     content?.invoke(this)
                 }
+
             ComposeFieldTheme.FieldStyle.CONTAINER,
             ComposeFieldTheme.FieldStyle.NORMAL ->
                 Box(
