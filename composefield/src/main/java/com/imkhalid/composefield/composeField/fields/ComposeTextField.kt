@@ -55,7 +55,7 @@ import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardType
 import com.imkhalid.composefield.composeField.model.ComposeFieldModule
 import com.imkhalid.composefield.theme.ComposeFieldTheme
-import com.ozonedDigital.jhk.ui.common.responsiveTextSize
+import com.imkhalid.composefield.composeField.responsiveTextSize
 import java.util.regex.Pattern
 
 class ComposeTextField : ComposeField() {

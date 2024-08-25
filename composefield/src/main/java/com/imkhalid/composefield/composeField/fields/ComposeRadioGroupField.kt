@@ -44,7 +44,7 @@ import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
 import com.imkhalid.composefield.composeField.section.textColor
 import com.imkhalid.composefield.theme.ComposeFieldTheme
 import com.imkhalid.composefieldproject.composeField.fields.ComposeField
-import com.ozonedDigital.jhk.ui.common.responsiveTextSize
+import com.imkhalid.composefield.composeField.responsiveTextSize
 
 class ComposeRadioGroupField : ComposeField() {
 

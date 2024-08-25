@@ -42,7 +42,7 @@ import com.imkhalid.composefield.composeField.ComposeFieldState
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
 import com.imkhalid.composefield.theme.ComposeFieldTheme
 import com.imkhalid.composefieldproject.composeField.fields.ComposeField
-import com.ozonedDigital.jhk.ui.common.responsiveTextSize
+import com.imkhalid.composefield.composeField.responsiveTextSize
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

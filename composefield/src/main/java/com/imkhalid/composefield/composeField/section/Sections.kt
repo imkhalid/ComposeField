@@ -57,10 +57,10 @@ import com.imkhalid.composefield.model.DefaultValues
 import com.imkhalid.composefield.theme.ComposeFieldTheme
 import com.imkhalid.composefield.theme.dashedBorder
 import com.imkhalid.composefieldproject.composeField.fields.ComposeFieldBuilder
-import com.ozonedDigital.jhk.ui.common.responsiveHeight
-import com.ozonedDigital.jhk.ui.common.responsiveSize
-import com.ozonedDigital.jhk.ui.common.responsiveTextSize
-import com.ozonedDigital.jhk.ui.common.responsiveWidth
+import com.imkhalid.composefield.composeField.responsiveHeight
+import com.imkhalid.composefield.composeField.responsiveSize
+import com.imkhalid.composefield.composeField.responsiveTextSize
+import com.imkhalid.composefield.composeField.responsiveWidth
 import kotlinx.coroutines.launch
 
 class  MyNavHost(val nav:NavHostController,val sections:List<String>,val section:Sections,val onLastPageReach: ((Sections) -> Unit)?) {

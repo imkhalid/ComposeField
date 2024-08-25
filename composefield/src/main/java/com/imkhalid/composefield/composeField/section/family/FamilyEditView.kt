@@ -41,9 +41,9 @@ import com.imkhalid.composefield.composeField.ComposeFieldStateHolder
 import com.imkhalid.composefield.composeField.model.FamilyData
 import com.imkhalid.composefield.composeField.validate
 import com.imkhalid.composefieldproject.composeField.fields.ComposeFieldBuilder
-import com.ozonedDigital.jhk.ui.common.responsiveHeight
-import com.ozonedDigital.jhk.ui.common.responsiveSize
-import com.ozonedDigital.jhk.ui.common.responsiveTextSize
+import com.imkhalid.composefield.composeField.responsiveHeight
+import com.imkhalid.composefield.composeField.responsiveSize
+import com.imkhalid.composefield.composeField.responsiveTextSize
 
 internal fun LazyListScope.FamilyEditView(
     userCountry:String,

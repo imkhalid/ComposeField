@@ -43,10 +43,10 @@ import com.imkhalid.composefield.composeField.model.ChildValueModel
 import com.imkhalid.composefield.composeField.model.ComposeSectionModule
 import com.imkhalid.composefield.composeField.rememberFieldState
 import com.imkhalid.composefield.theme.ComposeFieldTheme
-import com.ozonedDigital.jhk.ui.common.responsiveHeight
-import com.ozonedDigital.jhk.ui.common.responsiveSize
-import com.ozonedDigital.jhk.ui.common.responsiveTextSize
-import com.ozonedDigital.jhk.ui.common.responsiveWidth
+import com.imkhalid.composefield.composeField.responsiveHeight
+import com.imkhalid.composefield.composeField.responsiveSize
+import com.imkhalid.composefield.composeField.responsiveTextSize
+import com.imkhalid.composefield.composeField.responsiveWidth
 
 class TableSection(
     nav: NavHostController,

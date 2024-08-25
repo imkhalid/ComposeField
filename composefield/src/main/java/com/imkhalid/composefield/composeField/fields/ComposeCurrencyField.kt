@@ -39,7 +39,7 @@ import com.imkhalid.composefield.composeField.mask.rememberCurrencyVisualTransfo
 import com.imkhalid.composefield.composeField.util.EnglishNumberToWords
 import com.imkhalid.composefield.theme.ComposeFieldTheme
 import com.imkhalid.composefieldproject.composeField.fields.ComposeField
-import com.ozonedDigital.jhk.ui.common.responsiveTextSize
+import com.imkhalid.composefield.composeField.responsiveTextSize
 import java.text.DecimalFormat
 import java.util.Locale
 

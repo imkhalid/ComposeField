@@ -51,7 +51,7 @@ import com.imkhalid.composefield.composeField.rememberFieldState
 import com.imkhalid.composefield.theme.ComposeFieldTheme
 import com.imkhalid.composefieldproject.composeField.fields.ComposeField
 import com.imkhalid.composefieldproject.composeField.fields.ComposeFieldBuilder
-import com.ozonedDigital.jhk.ui.common.responsiveTextSize
+import com.imkhalid.composefield.composeField.responsiveTextSize
 
 class ComposeDropDownField : ComposeField() {
 

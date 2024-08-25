@@ -35,10 +35,10 @@ import com.imkhalid.composefield.composeField.section.getFieldByFieldName
 import com.imkhalid.composefield.composeField.section.textColor
 import com.imkhalid.composefield.composeField.section.titleColor
 import com.imkhalid.composefield.composeField.validate
-import com.ozonedDigital.jhk.ui.common.responsiveHeight
-import com.ozonedDigital.jhk.ui.common.responsiveSize
-import com.ozonedDigital.jhk.ui.common.responsiveTextSize
-import com.ozonedDigital.jhk.ui.common.responsiveWidth
+import com.imkhalid.composefield.composeField.responsiveHeight
+import com.imkhalid.composefield.composeField.responsiveSize
+import com.imkhalid.composefield.composeField.responsiveTextSize
+import com.imkhalid.composefield.composeField.responsiveWidth
 
 internal fun LazyListScope.FamilyAddView(
     userCountry:String,

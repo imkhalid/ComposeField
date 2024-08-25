@@ -1,10 +1,9 @@
-package com.ozonedDigital.jhk.ui.common
+package com.imkhalid.composefield.composeField
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.imkhalid.composefield.composeField.Size
 
 @Composable
 fun screenSize(): Size {
