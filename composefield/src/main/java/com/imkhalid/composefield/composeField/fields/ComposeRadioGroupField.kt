@@ -65,7 +65,7 @@ class ComposeRadioGroupField : ComposeField() {
     ) {
         val twoOption =
             state.field.defaultValues.size == 2 &&
-                state.field.defaultValues.all { x -> x.text.length <= 10 }
+                state.field.defaultValues.all { x -> x.text.length <= 30 }
         RadioGroupField(modifier = modifier) {
             val label = buildAnnotatedString {
                 withStyle(
@@ -104,22 +104,13 @@ class ComposeRadioGroupField : ComposeField() {
                 }
             } else {
                 state.field.defaultValues.forEach {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center,
-                        modifier = Modifier.clickable { newValue(Pair(true, ""), it.id) }
-                    ) {
-                        RadioButton(
-                            modifier = Modifier.padding(8.dp),
-                            selected = state.text == it.id,
-                            onClick = null
-                        )
-                        Text(
-                            text = it.text,
-                            fontSize = responsiveTextSize(size = 15).sp,
-                            color = ComposeFieldTheme.textColor
-                        )
-                    }
+                    RoundedCornerRadiobox(
+                        modifier = Modifier.padding(start = 20.dp),
+                        label = it.text,
+                        checkedColor = ComposeFieldTheme.focusedBorderColor,
+                        isChecked = state.text == it.id,
+                        onValueChange = { b -> newValue(Pair(true, ""), it.id) }
+                    )
                 }
             }
         }
@@ -186,8 +177,10 @@ fun RoundedCornerRadiobox(
         Box(
             modifier =
                 Modifier.size(size.dp)
+                    .shadow(elevation = 5.dp, shape = RoundedCornerShape(4.dp))
                     .background(color = checkboxColor, shape = RoundedCornerShape(4.dp))
-                    .border(width = 1.5.dp, color = checkedColor, shape = RoundedCornerShape(4.dp)),
+                    .border(width = 1.dp, color = checkedColor, shape = RoundedCornerShape(4.dp))
+            ,
             contentAlignment = Alignment.Center
         ) {
             androidx.compose.animation.AnimatedVisibility(
