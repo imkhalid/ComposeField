@@ -129,9 +129,10 @@ class TableSection(
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 items(tableDataList.size) {
                     val item =
-                        HashMap<String, Pair<String, String>>().apply {
+                        LinkedHashMap<String, Pair<String, String>>().apply {
                             tableDataList[it].forEach { x ->
-                                x.value.forEach { y ->
+                                x.value.sortedBy { y->y.state.field.sortNumber }
+                                    .forEach { y ->
                                     put(
                                         y.state.field.name,
                                         Pair(
