@@ -2,6 +2,7 @@ package com.imkhalid.composefield.composeField.fields
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -84,48 +85,50 @@ class ComposeCurrencyField : ComposeField() {
             errorTextColor = ComposeFieldTheme.textColor
         )
 
-        when (ComposeFieldTheme.fieldStyle) {
-            ComposeFieldTheme.FieldStyle.OUTLINE ->
-                OutlineField(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = colors,
-                    state = state,
-                    newValue = newValue
-                )
+        Column {
+            when (ComposeFieldTheme.fieldStyle) {
+                ComposeFieldTheme.FieldStyle.OUTLINE ->
+                    OutlineField(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = colors,
+                        state = state,
+                        newValue = newValue
+                    )
 
-            ComposeFieldTheme.FieldStyle.CONTAINER ->
-                ContainerField(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color.White,
-                        unfocusedContainerColor = Color.White,
-                        errorLabelColor = ComposeFieldTheme.errorColor,
-                        focusedLabelColor = ComposeFieldTheme.focusedLabelColor,
-                        unfocusedLabelColor = ComposeFieldTheme.unfocusedLabelColor,
-                        unfocusedPlaceholderColor = ComposeFieldTheme.unfocusedLabelColor,
-                        focusedTextColor = ComposeFieldTheme.textColor,
-                        unfocusedTextColor = ComposeFieldTheme.textColor,
-                        focusedSupportingTextColor = ComposeFieldTheme.infoColor,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        disabledTextColor = Color(0xFFBDBDBD),
-                        disabledLabelColor = Color(0xFF9E9E9E),
-                        disabledPlaceholderColor = Color(0xFFBDBDBD),
-                        disabledContainerColor = Color(0xFFE0E0E0),
-                        errorContainerColor = Color(0xFFfaebeb),
-                        errorTextColor = ComposeFieldTheme.textColor,
-                    ),
-                    state = state,
-                    newValue = newValue
-                )
+                ComposeFieldTheme.FieldStyle.CONTAINER ->
+                    ContainerField(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = Color.White,
+                            unfocusedContainerColor = Color.White,
+                            errorLabelColor = ComposeFieldTheme.errorColor,
+                            focusedLabelColor = ComposeFieldTheme.focusedLabelColor,
+                            unfocusedLabelColor = ComposeFieldTheme.unfocusedLabelColor,
+                            unfocusedPlaceholderColor = ComposeFieldTheme.unfocusedLabelColor,
+                            focusedTextColor = ComposeFieldTheme.textColor,
+                            unfocusedTextColor = ComposeFieldTheme.textColor,
+                            focusedSupportingTextColor = ComposeFieldTheme.infoColor,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            disabledTextColor = Color(0xFFBDBDBD),
+                            disabledLabelColor = Color(0xFF9E9E9E),
+                            disabledPlaceholderColor = Color(0xFFBDBDBD),
+                            disabledContainerColor = Color(0xFFE0E0E0),
+                            errorContainerColor = Color(0xFFfaebeb),
+                            errorTextColor = ComposeFieldTheme.textColor,
+                        ),
+                        state = state,
+                        newValue = newValue
+                    )
 
-            ComposeFieldTheme.FieldStyle.NORMAL ->
-                NormalField(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = colors,
-                    state = state,
-                    newValue = newValue
-                )
+                ComposeFieldTheme.FieldStyle.NORMAL ->
+                    NormalField(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = colors,
+                        state = state,
+                        newValue = newValue
+                    )
+            }
         }
     }
 
@@ -257,7 +260,7 @@ class ComposeCurrencyField : ComposeField() {
             modifier
                 .focusRequester(focusRequester)
                 .onFocusChanged { s -> isFocused = s.isFocused }
-                .padding(start = 5.dp,top=5.dp,end=5.dp)
+                .padding(start = 5.dp, top = 5.dp, end = 5.dp)
                 .border(
                     width = if (isFocused) 1.dp else 0.dp,
                     color =
@@ -276,7 +279,7 @@ class ComposeCurrencyField : ComposeField() {
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 20.dp,bottom=5.dp),
+                    .padding(start = 20.dp, bottom = 5.dp),
                 color = ComposeFieldTheme.textColor,
                 text =helper,
                 fontWeight = FontWeight.Normal,
@@ -371,7 +374,7 @@ class ComposeCurrencyField : ComposeField() {
     }
 
     private fun builtinValidations(
-        curVal: String,
+        currVal: String,
         state: ComposeFieldState,
         helperCallback:(String)->Unit,
         newValue: (Pair<Boolean, String>, String) -> Unit
@@ -379,12 +382,13 @@ class ComposeCurrencyField : ComposeField() {
         /*we will be using curVal for getValueWithMask and on final callback-> newValue
          * operations will be performed on value collected from getValueWithMask method*/
 
+        val curVal = currVal.replace(",","")
         var bool = true
         var message = ""
         val formatter = DecimalFormat("#,###")
 
-        val max = (state.field.maxValue ?: "-1").toLong()
-        val min = (state.field.minValue ?: "-1").toLong()
+        val max = (state.field.maxValue?.takeIf { x->x.isNotEmpty() } ?: "-1").toLong()
+        val min = (state.field.minValue?.takeIf { x->x.isNotEmpty() } ?: "-1").toLong()
 
         if (curVal.length <= 17) {
             if (min != -1L && (curVal.toLongOrNull()?:0L) < min) {
@@ -395,7 +399,7 @@ class ComposeCurrencyField : ComposeField() {
                 bool = false
                 message = "Maximum Value must be lesser or equal to ${formatter.format(max)}"
             }
-            if (curVal.isNotEmpty()){
+            if (curVal.replace(",","").isNotEmpty()){
                 helperCallback.invoke(EnglishNumberToWords.convert(curVal.toLong()))
             }else{
                 helperCallback.invoke("")
