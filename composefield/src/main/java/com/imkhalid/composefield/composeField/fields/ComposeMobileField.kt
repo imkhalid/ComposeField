@@ -320,7 +320,7 @@ class ComposeMobileField : ComposeField() {
 
     private fun setCountryOfSelectedText(text: String, phoneNumberUtil: PhoneNumberUtil) {
         PhoneNumberUtil.numbers
-            .find { x -> text.startsWith(x.dialCode) }
+            .find { x -> text.startsWith("+"+x.dialCode) }
             ?.let {
                 phoneNumberUtil.apply {
                     prefix = it.dialCode
