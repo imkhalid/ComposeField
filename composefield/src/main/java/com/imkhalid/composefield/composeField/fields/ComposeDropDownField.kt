@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -154,6 +155,9 @@ class ComposeDropDownField : ComposeField() {
                     DropdownDialog(
                         options = options,
                         values = values,
+                        onDismiss = {
+                            expanded=false
+                        },
                         onOptionSelected = {
                             focusCallback?.invoke(true, state.field.name)
                             newValue(Pair(true, ""), it)
@@ -227,13 +231,21 @@ class ComposeDropDownField : ComposeField() {
     private fun DropdownDialog(
         options: List<String>,
         values: List<String>,
+        onDismiss:()->Unit,
         onOptionSelected: (String) -> Unit
     ) {
         var searchText by remember { mutableStateOf("") }
-        val filteredOptions = options.filter { it.contains(searchText, ignoreCase = true) }
+        val filteredOptions = ArrayList<String>()
+        val filteredValues = ArrayList<String>()
+        options.forEachIndexed { index, s ->
+            if (s.contains(searchText, ignoreCase = true)) {
+                filteredOptions.add(s)
+                filteredValues.add(values[index])
+            }
+        }
 
         AlertDialog(
-            onDismissRequest = {},
+            onDismissRequest = onDismiss,
             title = { Text("Select an Option",color=ComposeFieldTheme.textColor) },
             containerColor = ComposeFieldTheme.containerColor,
             text = {
@@ -255,13 +267,10 @@ class ComposeDropDownField : ComposeField() {
                     LazyColumn(modifier = Modifier
                         .fillMaxWidth()
                         .heightIn(max = 200.dp)) {
-                        items(filteredOptions) { option ->
+                        itemsIndexed(filteredOptions) { index,option ->
                             TextButton(
                                 onClick = {
-                                    options
-                                        .indexOf(option)
-                                        .takeIf { it != -1 }
-                                        ?.let { onOptionSelected(values[it]) }
+                                     onOptionSelected(filteredValues[index])
                                 }
                             ) {
                                 Text(option, color = ComposeFieldTheme.textColor)

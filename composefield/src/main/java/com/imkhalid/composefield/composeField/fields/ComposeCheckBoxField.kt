@@ -179,6 +179,9 @@ class ComposeCheckBoxField : ComposeField() {
                             options = options,
                             values = values,
                             state = state,
+                            onDismiss = {
+                                expanded=false
+                            },
                             onOptionSelected = {
                                 if (selectedIDs.contains(it)) {
                                     newValue(Pair(true, ""), state.text.replace("$it::", ""))
@@ -270,15 +273,23 @@ class ComposeCheckBoxField : ComposeField() {
         options: List<String>,
         values: List<String>,
         state: ComposeFieldState,
+        onDismiss:()->Unit,
         onOptionSelected: (String) -> Unit,
         onConfirm: () -> Unit,
     ) {
         var searchText by remember { mutableStateOf("") }
-        val filteredOptions = options.filter { it.contains(searchText, ignoreCase = true) }
+        val filteredOptions = ArrayList<String>()
+        val filteredValues = ArrayList<String>()
+        options.forEachIndexed { index, s ->
+            if (s.contains(searchText, ignoreCase = true)) {
+                filteredOptions.add(s)
+                filteredValues.add(values[index])
+            }
+        }
         val selectedIDs = state.text.split("::")
 
         AlertDialog(
-            onDismissRequest = {},
+            onDismissRequest = onDismiss,
             title = { Text("Select an Option", color = ComposeFieldTheme.textColor) },
             containerColor = ComposeFieldTheme.containerColor,
             text = {
@@ -302,15 +313,12 @@ class ComposeCheckBoxField : ComposeField() {
                         .heightIn(max = 200.dp)) {
                         itemsIndexed(filteredOptions) { inde, option ->
                             RoundedCornerCheckbox(
-                                modifier = Modifier.padding(8.dp),
-                                isChecked = selectedIDs.contains(values[inde]),
+                                modifier = Modifier.fillMaxWidth().padding(8.dp),
+                                isChecked = selectedIDs.contains(filteredValues[inde]),
                                 label = option,
                                 checkedColor = ComposeFieldTheme.focusedBorderColor,
                                 onValueChange = {
-                                    options
-                                        .indexOf(option)
-                                        .takeIf { it != -1 }
-                                        ?.let { onOptionSelected(values[it]) }
+                                    onOptionSelected(filteredValues[inde])
                                 }
                             )
                         }
