@@ -92,7 +92,7 @@ open class Sections(
         null,
     val userCountry:String="2"
 ) {
-    val sectionState: HashMap<String, List<ComposeFieldStateHolder>> = HashMap()
+    val sectionState: HashMap<String, List<ComposeFieldStateHolder>> = LinkedHashMap()
     val tableData:
         HashMap<String, SnapshotStateList<HashMap<String, List<ComposeFieldStateHolder>>>> =
         HashMap()
