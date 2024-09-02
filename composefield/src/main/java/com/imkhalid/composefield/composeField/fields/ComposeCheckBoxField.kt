@@ -194,29 +194,46 @@ class ComposeCheckBoxField : ComposeField() {
                     }
                 }
             } else {
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 7.dp),
-                    text = state.field.label,
-                    fontSize = MaterialTheme.typography.titleMedium.fontSize,
-                    color = ComposeFieldTheme.focusedBorderColor
-                )
-                Spacer(modifier = Modifier.padding(top = 5.dp))
-                state.field.defaultValues.forEach { defV ->
-                    RoundedCornerCheckbox(
-                        modifier = Modifier.padding(8.dp),
-                        isChecked = selectedIDs.contains(defV.id),
-                        label = defV.text,
-                        checkedColor = ComposeFieldTheme.focusedBorderColor,
-                        onValueChange = {
-                            if (selectedIDs.contains(defV.id)) {
-                                newValue(Pair(true, ""), state.text.replace("${defV.id}::", ""))
-                            } else {
-                                newValue(Pair(true, ""), state.text.plus(defV.id + "::"))
+                CheckBoxField3Options {
+                    val label = buildAnnotatedString {
+                        withStyle(
+                            style =
+                            SpanStyle(
+                                fontSize = responsiveTextSize(size = 13).sp,
+                                color = ComposeFieldTheme.focusedBorderColor,
+                            )
+                        ) {
+                            append(state.field.label)
+                        }
+                        if (state.field.required == ComposeFieldYesNo.YES) {
+                            withStyle(
+                                style =
+                                SpanStyle(
+                                    fontSize = responsiveTextSize(size = 13).sp,
+                                    color = Color.Red
+                                )
+                            ) {
+                                append("*")
                             }
                         }
-                    )
+                    }
+                    Text(text = label, modifier = Modifier.padding(start = 15.dp, end = 20.dp, top = 2.dp))
+                    Spacer(modifier = Modifier.padding(top = 5.dp))
+                    state.field.defaultValues.forEach { defV ->
+                        RoundedCornerCheckbox(
+                            modifier = Modifier.padding(start = 20.dp),
+                            isChecked = selectedIDs.contains(defV.id),
+                            label = defV.text,
+                            checkedColor = ComposeFieldTheme.focusedBorderColor,
+                            onValueChange = {
+                                if (selectedIDs.contains(defV.id)) {
+                                    newValue(Pair(true, ""), state.text.replace("${defV.id}::", ""))
+                                } else {
+                                    newValue(Pair(true, ""), state.text.plus(defV.id + "::"))
+                                }
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -313,7 +330,9 @@ class ComposeCheckBoxField : ComposeField() {
                         .heightIn(max = 200.dp)) {
                         itemsIndexed(filteredOptions) { inde, option ->
                             RoundedCornerCheckbox(
-                                modifier = Modifier.fillMaxWidth().padding(8.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(8.dp),
                                 isChecked = selectedIDs.contains(filteredValues[inde]),
                                 label = option,
                                 checkedColor = ComposeFieldTheme.focusedBorderColor,
@@ -383,5 +402,37 @@ fun RoundedCornerCheckbox(
             text = label,
             color = ComposeFieldTheme.textColor
         )
+    }
+}
+
+@Composable
+private fun CheckBoxField3Options(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+    when (ComposeFieldTheme.fieldStyle) {
+        ComposeFieldTheme.FieldStyle.OUTLINE ->
+            Column(
+                modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.Start,
+                content = { content.invoke() }
+            )
+        ComposeFieldTheme.FieldStyle.CONTAINER,
+        ComposeFieldTheme.FieldStyle.NORMAL ->
+            Column(
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.Start,
+                modifier =
+                modifier
+                    .padding(5.dp)
+                    .fillMaxWidth()
+                    .border(
+                        width = 0.dp,
+                        color = Color.Transparent,
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    .shadow(elevation = 5.dp, shape = RoundedCornerShape(8.dp))
+                    .background(color = Color.White, shape = RoundedCornerShape(8.dp))
+                    .padding(5.dp),
+                content = { content.invoke() }
+            )
     }
 }
