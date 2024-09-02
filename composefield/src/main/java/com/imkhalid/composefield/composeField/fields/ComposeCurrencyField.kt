@@ -320,11 +320,6 @@ class ComposeCurrencyField : ComposeField() {
                     newValue.invoke(validated, newVal)
                 }
             },
-            prefix = {
-                if (state.field.keyboardType == ComposeKeyboardType.MOBILE_NO)
-                    Text(text = "+1", modifier = Modifier.clickable {})
-                else null
-            },
             keyboardOptions = getKeyboardOptions(),
             isError = state.hasError,
             label = {
@@ -369,7 +364,7 @@ class ComposeCurrencyField : ComposeField() {
 
 
     private fun getKeyboardOptions(): KeyboardOptions {
-        val type = KeyboardType.Number
+        val type = KeyboardType.NumberPassword
         return KeyboardOptions(keyboardType = type, autoCorrect = false, imeAction = ImeAction.Next)
     }
 
