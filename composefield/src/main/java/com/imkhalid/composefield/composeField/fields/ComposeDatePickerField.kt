@@ -72,8 +72,24 @@ class ComposeDatePickerField : ComposeField() {
 
         val minDate = parseToDate(to = "yyyy-MM-dd", date = state.field.minValue ?: "")
         val maxDate = parseToDate(to = "yyyy-MM-dd", date = state.field.maxValue ?: "")
-        val minMil: Long? = minDate?.let { Calendar.getInstance().apply { time = it }.timeInMillis }
-        val maxMil: Long? = maxDate?.let { Calendar.getInstance().apply { time = it }.timeInMillis }
+        val minMil: Long? = minDate?.let {
+            Calendar.getInstance().apply {
+                time = it
+                set(Calendar.HOUR_OF_DAY,0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }.timeInMillis
+        }
+        val maxMil: Long? = maxDate?.let {
+            Calendar.getInstance().apply {
+                time = it
+                set(Calendar.HOUR_OF_DAY,23)
+                set(Calendar.MINUTE, 59)
+                set(Calendar.SECOND, 59)
+                set(Calendar.MILLISECOND, 999)
+            }.timeInMillis
+        }
 
         val rangeMin =
             if (minDate != null) {
