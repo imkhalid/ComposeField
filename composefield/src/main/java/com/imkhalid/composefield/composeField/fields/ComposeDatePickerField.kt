@@ -49,6 +49,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 
 class ComposeDatePickerField : ComposeField() {
 
@@ -116,11 +117,15 @@ class ComposeDatePickerField : ComposeField() {
 
         val datePickerState =
             DatePickerState(
-                locale = CalendarLocale.getDefault(),
+                locale = CalendarLocale.ENGLISH,
                 initialSelectedDateMillis =
-                if (state.text.isNotEmpty())
-                    SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(state.text)?.time
-                else if (maxMil != null && maxMil < calendar.timeInMillis)
+                if (state.text.isNotEmpty()) {
+                    SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
+                        .apply {
+                            timeZone= TimeZone.getTimeZone("UTC")
+                        }
+                        .parse(state.text)?.time
+                }else if (maxMil != null && maxMil < calendar.timeInMillis)
                     maxMil
                 else
                     calendar.timeInMillis,
@@ -297,7 +302,11 @@ fun changeDateFormat(
 
 fun parseToDate(to: String, date: String): Date? {
     return try {
-        SimpleDateFormat(to, Locale.getDefault()).parse(date)
+        SimpleDateFormat(to, Locale.getDefault())
+            .apply {
+                timeZone= TimeZone.getTimeZone("UTC")
+            }
+            .parse(date)
     } catch (e: Exception) {
         null
     }
