@@ -110,6 +110,20 @@ data class FamilySetup(
         val spouse = list.filter { x -> x.values.contains("spouse") }
         val child = list.filter { x -> x.values.contains("child") }
         val parent = list.filter { x -> x.values.contains("parent") }
+        val orderMap = HashMap<String,Int>()
+            .apply {
+
+                put("first_name",1)
+                put("last_name",2)
+                put("gender",3)
+                put("relation",4)
+                put("dob",5)
+                put("id_no",6)
+                put("cnic",7)
+                put("email",8)
+                put("mobile_no",9)
+                put("phone_no",10)
+            }
         return fields.map {
             rememberFieldState(
                 fieldModule =
@@ -131,6 +145,7 @@ data class FamilySetup(
                                     ComposeFieldType.TEXT_BOX
                                 }
                             },
+                        sortNumber = orderMap.getOrDefault(it.familyDetailField,1),
                         keyboardType =
                             when (it.familyDetailField) {
                                 "email" -> ComposeKeyboardType.EMAIL
@@ -190,7 +205,7 @@ data class FamilySetup(
                         }else ""
                     )
             )
-        }
+        }.sortedBy { x->x.state.field.sortNumber }
     }
 }
 
