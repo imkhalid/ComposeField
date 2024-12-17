@@ -216,6 +216,7 @@ class ComposeDatePickerField : ComposeField() {
                 DatePickerField(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = { showDialog.value = true },
+                    enabled = state.field.isEditable==ComposeFieldYesNo.YES
                 ) {
                     Text(
                         modifier =
@@ -270,6 +271,7 @@ class ComposeDatePickerField : ComposeField() {
     private fun DatePickerField(
         modifier: Modifier,
         onClick: () -> Unit,
+        enabled:Boolean=true,
         content: @Composable (BoxScope.() -> Unit)? = null
     ) {
         when (ComposeFieldTheme.fieldStyle) {
@@ -284,7 +286,10 @@ class ComposeDatePickerField : ComposeField() {
                         .padding(top = 5.dp)
                         .fillMaxWidth()
                         .height(OutlinedTextFieldDefaults.MinHeight)
-                        .clickable { onClick() },
+                        .clickable {
+                            if (enabled)
+                                onClick()
+                        },
                 ) {
                     content?.invoke(this)
                 }
@@ -298,8 +303,14 @@ class ComposeDatePickerField : ComposeField() {
                         .fillMaxWidth()
                         .height(TextFieldDefaults.MinHeight)
                         .shadow(elevation = 5.dp, shape = RoundedCornerShape(8.dp))
-                        .background(color = Color.White, shape = RoundedCornerShape(8.dp))
-                        .clickable { onClick() },
+                        .background(
+                            color = if (enabled.not()) Color(0xFFE0E0E0) else Color.White,
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                        .clickable {
+                            if (enabled)
+                                onClick()
+                        },
                 ) {
                     content?.invoke(this)
                 }

@@ -123,7 +123,10 @@ class ComposeCheckBoxField : ComposeField() {
             horizontalAlignment = Alignment.Start
         ) {
             if (state.field.defaultValues.size > 3) {
-                CheckboxField(onClick = toggleDropdown) {
+                CheckboxField(
+                    onClick = toggleDropdown,
+                    enabled = state.field.isEditable==ComposeFieldYesNo.YES
+                ) {
                     Row(
                         modifier =
                         Modifier
@@ -225,6 +228,7 @@ class ComposeCheckBoxField : ComposeField() {
                             isChecked = selectedIDs.contains(defV.id),
                             label = defV.text,
                             checkedColor = ComposeFieldTheme.focusedBorderColor,
+                            enabled= state.field.isEditable==ComposeFieldYesNo.YES,
                             onValueChange = {
                                 if (selectedIDs.contains(defV.id)) {
                                     newValue(Pair(true, ""), state.text.replace("${defV.id}::", ""))
@@ -240,7 +244,11 @@ class ComposeCheckBoxField : ComposeField() {
     }
 
     @Composable
-    private fun CheckboxField(onClick: () -> Unit, content: @Composable BoxScope.() -> Unit) {
+    private fun CheckboxField(
+        onClick: () -> Unit,
+        enabled:Boolean=true,
+        content: @Composable BoxScope.() -> Unit,
+    ) {
         val focusRequester = remember { FocusRequester() }
         var isFocused by remember { mutableStateOf(false) }
         when (ComposeFieldTheme.fieldStyle) {
@@ -255,7 +263,10 @@ class ComposeCheckBoxField : ComposeField() {
                         .padding(top = 5.dp)
                         .fillMaxWidth()
                         .height(OutlinedTextFieldDefaults.MinHeight)
-                        .clickable { onClick() }
+                        .clickable {
+                            if (enabled)
+                                onClick()
+                        }
                 ) {
                     content.invoke(this)
                 }
@@ -270,7 +281,10 @@ class ComposeCheckBoxField : ComposeField() {
                         .focusRequester(focusRequester)
                         .onFocusChanged { s -> isFocused = s.isFocused }
                         .shadow(elevation = 5.dp, shape = RoundedCornerShape(8.dp))
-                        .background(color = Color.White, shape = RoundedCornerShape(8.dp))
+                        .background(
+                            color = if (enabled) Color(0xFFE0E0E0) else Color.White,
+                            shape = RoundedCornerShape(8.dp)
+                        )
                         .border(
                             width = if (isFocused) 1.dp else 0.dp,
                             color =
@@ -278,7 +292,10 @@ class ComposeCheckBoxField : ComposeField() {
                             else Color.Transparent,
                             shape = RoundedCornerShape(8.dp)
                         )
-                        .clickable { onClick() },
+                        .clickable {
+                            if (enabled)
+                                onClick()
+                        },
                 ) {
                     content.invoke(this)
                 }
@@ -335,6 +352,7 @@ class ComposeCheckBoxField : ComposeField() {
                                     .padding(8.dp),
                                 isChecked = selectedIDs.contains(filteredValues[inde]),
                                 label = option,
+                                enabled = state.field.isEditable==ComposeFieldYesNo.YES,
                                 checkedColor = ComposeFieldTheme.focusedBorderColor,
                                 onValueChange = {
                                     onOptionSelected(filteredValues[inde])
@@ -357,6 +375,7 @@ fun RoundedCornerCheckbox(
     size: Float = 20f,
     checkedColor: Color = Color.Blue,
     uncheckedColor: Color = Color.White,
+    enabled: Boolean=true,
     onValueChange: ((Boolean) -> Unit)? = null
 ) {
     val checkboxColor: Color by animateColorAsState(if (isChecked) checkedColor else uncheckedColor)
@@ -370,6 +389,7 @@ fun RoundedCornerCheckbox(
             .heightIn(30.dp) // height of 48dp to comply with minimum touch target size
             .toggleable(
                 value = isChecked,
+                enabled = enabled,
                 role = Role.Checkbox,
                 onValueChange = { onValueChange?.invoke(it) }
             )

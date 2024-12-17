@@ -105,7 +105,7 @@ class ComposeDropDownField : ComposeField() {
         }
 
         Column(modifier = modifier) {
-            DropDownField(onClick = toggleDropdown) {
+            DropDownField(onClick = toggleDropdown, enabled = state.field.isEditable==ComposeFieldYesNo.YES) {
                 Column {
                     Text(
                         text = label,
@@ -180,6 +180,7 @@ class ComposeDropDownField : ComposeField() {
     @Composable
     private fun DropDownField(
         onClick: () -> Unit,
+        enabled:Boolean=true,
         content: @Composable (BoxScope.() -> Unit)? = null
     ) {
         val focusRequester = remember { FocusRequester() }
@@ -196,7 +197,10 @@ class ComposeDropDownField : ComposeField() {
                         .padding(top = 5.dp)
                         .fillMaxWidth()
                         .height(OutlinedTextFieldDefaults.MinHeight)
-                        .clickable { onClick() },
+                        .clickable {
+                            if (enabled)
+                                onClick()
+                       },
                 ) {
                     content?.invoke(this)
                 }
@@ -214,12 +218,18 @@ class ComposeDropDownField : ComposeField() {
                         .background(color = Color.White, shape = RoundedCornerShape(8.dp))
                         .border(
                             width = if (isFocused) 1.dp else 0.dp,
-                            color =
-                            if (isFocused) ComposeFieldTheme.focusedBorderColor
-                            else Color.Transparent,
+                            color =if (enabled.not()){
+                                Color(0xFFE0E0E0)
+                            }else if (isFocused)
+                                ComposeFieldTheme.focusedBorderColor
+                            else
+                                Color.Transparent,
                             shape = RoundedCornerShape(8.dp)
                         )
-                        .clickable { onClick() },
+                        .clickable {
+                            if (enabled)
+                                onClick()
+                       },
                 ) {
                     content?.invoke(this)
                 }
