@@ -31,7 +31,8 @@ data class ComposeFieldModule(
     val patternMessage: String = "",
     val hidden: ComposeFieldYesNo =
         if (hideInitial == ComposeFieldYesNo.YES) ComposeFieldYesNo.YES else ComposeFieldYesNo.NO,
-    val helperText: String = ""
+    val helperText: String = "",
+    var visualTransformation:String = ""
 ) {
 
     fun parseCustomField(

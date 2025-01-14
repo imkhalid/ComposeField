@@ -158,7 +158,9 @@ class ComposeTextField : ComposeField() {
     ) {
         val mask = getFieldMask(state.field)
         var passwordVisible by remember { mutableStateOf(false) }
-        val visualTransformation =
+        val visualTransformation =if (state.field.visualTransformation.isNotEmpty())
+            getVisualTransformation(state.field.visualTransformation, state.field.keyboardType, passwordVisible)
+        else
             getVisualTransformation(mask, state.field.keyboardType, passwordVisible)
 
         TextField(
@@ -221,7 +223,9 @@ class ComposeTextField : ComposeField() {
         val focusRequester = remember { FocusRequester() }
         var isFocused by remember { mutableStateOf(false) }
         var passwordVisible by remember { mutableStateOf(false) }
-        val visualTransformation =
+        val visualTransformation =if (state.field.visualTransformation.isNotEmpty())
+            getVisualTransformation(state.field.visualTransformation, state.field.keyboardType, passwordVisible)
+        else
             getVisualTransformation(mask, state.field.keyboardType, passwordVisible)
 
         TextField(
@@ -310,7 +314,9 @@ class ComposeTextField : ComposeField() {
     ) {
         val mask = getFieldMask(state.field)
         var passwordVisible by remember { mutableStateOf(false) }
-        val visualTransformation =
+        val visualTransformation =if (state.field.visualTransformation.isNotEmpty())
+            getVisualTransformation(state.field.visualTransformation, state.field.keyboardType, passwordVisible)
+        else
             getVisualTransformation(mask, state.field.keyboardType, passwordVisible)
 
         OutlinedTextField(
@@ -437,6 +443,19 @@ class ComposeTextField : ComposeField() {
         else VisualTransformation.None
     }
 
+    private fun getVisualTransformation(
+        mask: String,
+        keyboardType: ComposeKeyboardType,
+        passwordVisible: Boolean
+    ): VisualTransformation {
+        return if (mask.isNotEmpty())
+            FieldMaskTransformation(mask)
+        else if (keyboardType == ComposeKeyboardType.PASSWORD)
+            if (passwordVisible) VisualTransformation.None
+            else PasswordVisualTransformation(mask = '●')
+        else VisualTransformation.None
+    }
+
     private fun builtinValidations(
         curVal: String,
         state: ComposeFieldState,
@@ -548,7 +567,10 @@ class ComposeTextField : ComposeField() {
 
         val transforation = FieldMaskTransformation(mask)
         return if (Patterns.NONE.value == mask) {
-            currValue
+            if (field.visualTransformation.isNotEmpty())
+                FieldMaskTransformation(field.visualTransformation).applyMaskAndGetResult(currValue)
+            else
+                currValue
         } else transforation.applyMaskAndGetResult(currValue)
     }
 }
