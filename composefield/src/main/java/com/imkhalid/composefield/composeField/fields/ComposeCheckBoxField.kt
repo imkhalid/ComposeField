@@ -197,7 +197,7 @@ class ComposeCheckBoxField : ComposeField() {
                     }
                 }
             } else {
-                CheckBoxField3Options {
+                CheckBoxField3Options(enabled = state.field.isEditable==ComposeFieldYesNo.YES) {
                     val label = buildAnnotatedString {
                         withStyle(
                             style =
@@ -282,7 +282,7 @@ class ComposeCheckBoxField : ComposeField() {
                         .onFocusChanged { s -> isFocused = s.isFocused }
                         .shadow(elevation = 5.dp, shape = RoundedCornerShape(8.dp))
                         .background(
-                            color = if (enabled) Color(0xFFE0E0E0) else Color.White,
+                            color = if (enabled) Color.White else Color(0xFFE0E0E0),
                             shape = RoundedCornerShape(8.dp)
                         )
                         .border(
@@ -426,7 +426,7 @@ fun RoundedCornerCheckbox(
 }
 
 @Composable
-private fun CheckBoxField3Options(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+private fun CheckBoxField3Options(modifier: Modifier = Modifier,enabled: Boolean=true, content: @Composable () -> Unit) {
     when (ComposeFieldTheme.fieldStyle) {
         ComposeFieldTheme.FieldStyle.OUTLINE ->
             Column(
@@ -450,7 +450,7 @@ private fun CheckBoxField3Options(modifier: Modifier = Modifier, content: @Compo
                         shape = RoundedCornerShape(8.dp)
                     )
                     .shadow(elevation = 5.dp, shape = RoundedCornerShape(8.dp))
-                    .background(color = Color.White, shape = RoundedCornerShape(8.dp))
+                    .background(color = if (enabled) Color.White else Color(0xFFE0E0E0), shape = RoundedCornerShape(8.dp))
                     .padding(5.dp),
                 content = { content.invoke() }
             )
