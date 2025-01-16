@@ -40,9 +40,15 @@ data class FamilySetup(
         val spouse = snapshotStateList.filter { x -> x.values.contains("spouse") }
         val child = snapshotStateList.filter { x -> x.values.contains("child") }
         val parent = snapshotStateList.filter { x -> x.values.contains("parent") }
-        return (hasChild.not() || (hasChild && child.size <= maxNoOfChild)) &&
+        val validated =  (hasChild.not() || (hasChild && child.size <= maxNoOfChild)) &&
             (hasParent.not() || (hasParent && parent.size <= maxNoOfParent)) &&
             (hasSpouse.not() || (hasSpouse && spouse.size <= maxNoOfSpouse))
+
+        val limitNotReach = ((hasChild.not() || (hasChild && child.size == maxNoOfChild)) &&
+                (hasParent.not() || (hasParent && parent.size == maxNoOfParent)) &&
+                (hasSpouse.not() || (hasSpouse && spouse.size == maxNoOfSpouse))).not()
+
+        return validated && limitNotReach
     }
 
     fun getComposeSection(
