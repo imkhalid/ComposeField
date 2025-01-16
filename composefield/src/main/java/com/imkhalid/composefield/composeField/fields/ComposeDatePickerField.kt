@@ -211,7 +211,6 @@ class ComposeDatePickerField : ComposeField() {
         }
 
         Column(modifier = modifier) {
-            Spacer(modifier = Modifier.padding(top = 8.dp))
             Box(modifier = Modifier.fillMaxWidth()) {
                 DatePickerField(
                     modifier = Modifier.fillMaxWidth(),
