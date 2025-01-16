@@ -129,18 +129,29 @@ open class Sections(
                     sectionNames.add("Family Details")
                 }
             }
-            sections.forEach {
-                if (it.isTable) {
-                    tableData[it.name] = SnapshotStateList()
+            sections.forEach {sec->
+                if (sec.isTable) {
+                    tableData[sec.name] = SnapshotStateList()
                 } else {
-                    sectionState[it.name] =
-                        it.fields.map { field ->
+                    if (sec.fields.isNotEmpty())
+                        sectionState[sec.name] = sec.fields.map { field ->
                             val preFieldState =
-                                preState?.getOrDefault(it.name, emptyList())?.find { x ->
+                                preState?.getOrDefault(sec.name, emptyList())?.find { x ->
                                     x.state.field.name == field.name
                                 }
                             rememberFieldState(fieldModule = field, stateHolder = preFieldState)
                         }
+                    else
+                        sectionState[sec.name] = sec.subSections.flatMap {
+                            it.fields.map { field ->
+                                val preFieldState =
+                                    preState?.getOrDefault(sec.name, emptyList())?.find { x ->
+                                        x.state.field.name == field.name
+                                    }
+                                rememberFieldState(fieldModule = field, stateHolder = preFieldState)
+                            }
+                        }
+
                 }
             }
         }
@@ -262,7 +273,9 @@ open class Sections(
                             if (section.subSections.isNotEmpty()) {
                                 section.subSections.forEachIndexed { itemindex, item ->
                                     buildInnerSection(
+                                        parentSectionName=section.name,
                                         section = item,
+                                        showSectionName = showTitle,
                                         valueChangeForChild = valueChangeForChild,
                                         onValueChange = onValueChange
                                     )
@@ -381,13 +394,15 @@ open class Sections(
     ) {
         navController.next()
     }
-
+/**
+ * parentSectionName is Used to send main section name so it can retrieve state fields*/
     internal fun LazyListScope.buildInnerSection(
         modifier: Modifier = Modifier,
         section: ComposeSectionModule,
         showButton: Boolean = false,
         showSectionName: Boolean = false,
         clickCallback: (() -> Unit)? = null,
+        parentSectionName:String?=null,
         valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
         onValueChange: ((name: String, newValue: String) -> Unit)? = null
     ) {
@@ -402,12 +417,12 @@ open class Sections(
                 )
             section.fields.forEach { field ->
                 val selectedState =
-                    this@Sections.sectionState[section.name]?.find { x ->
+                    this@Sections.sectionState[parentSectionName?:section.name]?.find { x ->
                         x.state.field.name == field.name
                     }
 
                 val state =
-                    sectionState[section.name]?.find { x -> x.state.field.name == field.name }
+                    sectionState[parentSectionName?:section.name]?.find { x -> x.state.field.name == field.name }
                         ?: rememberFieldState(fieldModule = field, stateHolder = selectedState)
 
                 ComposeFieldBuilder()
