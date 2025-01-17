@@ -147,7 +147,6 @@ class ComposeTimePickerField : ComposeField() {
         }
 
         Column(modifier = modifier) {
-            Spacer(modifier = Modifier.padding(top = 8.dp))
             Box {
                 TimePickerField(
                     modifier = Modifier.fillMaxWidth(),
