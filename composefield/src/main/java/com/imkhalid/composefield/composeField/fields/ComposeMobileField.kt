@@ -55,8 +55,13 @@ class ComposeMobileField : ComposeField() {
     ) {
         val phoneNumberUtil: MutableState<PhoneNumberUtil> = remember {
             mutableStateOf(PhoneNumberUtil().apply {
-                 if (state.field.keyboardType is ComposeKeyboardTypeAdv.MOBILE_NO)
-                     currentCountryCode = state.field.keyboardType.countryCode.takeIf { x->x.isNotEmpty() }?:currentCountryCode
+                 if (state.field.keyboardType is ComposeKeyboardTypeAdv.MOBILE_NO) {
+                     state.field.keyboardType.let {
+                         shouldShowPicker=it.isSelectionDisabled.not()
+                             currentCountryCode = it.countryCode.takeIf { x -> x.isNotEmpty() }
+                                 ?: currentCountryCode
+                     }
+                 }
                 setDefaultCountry(currentCountryCode)
                 setCountryOfSelectedText(state.text, this) }
             )
@@ -300,7 +305,7 @@ class ComposeMobileField : ComposeField() {
                     modifier = Modifier.padding(start = 16.dp)
                 )
             }
-            if (expanded) {
+            if(expanded && phoneNumberUtil.shouldShowPicker) {
                 CountryPickerDialog(
                     onDone = { toggleDropdown() },
                     onOptionSelected = { countryModel ->
