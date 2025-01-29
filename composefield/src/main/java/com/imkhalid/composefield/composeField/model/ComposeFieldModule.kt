@@ -32,7 +32,8 @@ data class ComposeFieldModule(
     val hidden: ComposeFieldYesNo =
         if (hideInitial == ComposeFieldYesNo.YES) ComposeFieldYesNo.YES else ComposeFieldYesNo.NO,
     val helperText: String = "",
-    var visualTransformation:String = ""
+    var visualTransformation:String = "",
+    val parent_field_value_id:String?=null,
 ) {
 
     fun parseCustomField(
@@ -47,6 +48,7 @@ data class ComposeFieldModule(
                 customField.field_name.contains("cnic", true)
         return ComposeFieldModule(
             id = customField.id.toString(),
+            parent_field_value_id=customField.parent_field_value_id,
             name = customField.field_name,
             childID = customField.child_id.toString(),
             type = customField.type.fieldType(),
@@ -61,15 +63,20 @@ data class ComposeFieldModule(
             maxValue = getMaxValue(customField, customField.type.fieldType()),
             sortNumber = customField.field_sort_number,
             sectionSortNumber = sortNumber,
-            hidden = getHiddenValue(customField.visible),
-            hideInitial = getHiddenValue(customField.visible),
+            hidden = getHiddenValue(customField.visible,customField.parent_field_value_id),
+            hideInitial = getHiddenValue(customField.visible,customField.parent_field_value_id),
             pattern = customField.regex.orEmpty(),
             patternMessage = if (customField.regex.isNullOrEmpty().not()) customField.field_hint.orEmpty() else ""
         )
     }
 
-    private fun getHiddenValue(field: Int): ComposeFieldYesNo {
-        return if (field == 0) ComposeFieldYesNo.YES else ComposeFieldYesNo.NO
+    private fun getHiddenValue(field: Int,parentFieldValueId:String?): ComposeFieldYesNo {
+        //parent id null or empty means it should not hide,
+        // field == 1 means it should not hide.
+        return if (parentFieldValueId.isNullOrEmpty() || field==1)
+            ComposeFieldYesNo.NO
+        else
+            ComposeFieldYesNo.YES
     }
 
     private fun getInitialValue(customField: CustomFields, selectedValue: String): String {
@@ -149,8 +156,12 @@ data class ComposeFieldModule(
     }
 }
 
-fun String.CHOICE(): ComposeFieldYesNo {
-    return if (this.equals("0", true) || this.equals("false", true) || this.equals("no", true))
+fun String?.CHOICE(): ComposeFieldYesNo {
+    return if (this==null ||
+        this.equals("0", true) ||
+        this.equals("false", true) ||
+        this.equals("no", true) ||
+        this.isEmpty())
         ComposeFieldYesNo.NO
     else ComposeFieldYesNo.YES
 }

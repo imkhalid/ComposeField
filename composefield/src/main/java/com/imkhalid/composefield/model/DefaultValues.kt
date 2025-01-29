@@ -8,7 +8,8 @@ data class DefaultValues(
     val text: String,
     val code: String? = null,
     val form_fields_id: String? = null,
-    var isChecked: Boolean = false
+    var isChecked: Boolean = false,
+    val dependent_child_fields:List<DependantChild> = emptyList()
 ) : Parcelable {
     constructor(
         parcel: Parcel

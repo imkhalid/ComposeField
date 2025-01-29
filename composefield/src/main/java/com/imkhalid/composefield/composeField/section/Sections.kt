@@ -46,6 +46,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.imkhalid.composefield.R
 import com.imkhalid.composefield.composeField.ComposeFieldStateHolder
+import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldType
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
 import com.imkhalid.composefield.composeField.fieldTypes.SectionType
 import com.imkhalid.composefield.composeField.model.ChildValueModel
@@ -416,10 +417,11 @@ open class Sections(
                     modifier = Modifier.padding(5.dp)
                 )
             section.fields.forEach { field ->
-                val selectedState =
-                    this@Sections.sectionState[parentSectionName?:section.name]?.find { x ->
-                        x.state.field.name == field.name
-                    }
+                val sectionsStateList = this@Sections.sectionState[parentSectionName?:section.name]?: emptyList()
+                val selectedState =sectionsStateList.find { x ->
+                    x.state.field.name == field.name
+                }
+
 
                 val state =
                     sectionState[parentSectionName?:section.name]?.find { x -> x.state.field.name == field.name }
@@ -430,7 +432,11 @@ open class Sections(
                         userCountry = userCountry,
                         modifier = modifier,
                         stateHolder = state,
-                        onValueChange = onValueChange,
+                        onValueChange = {name,value->
+                            updateDependantChildren(sectionsStateList,state,value)
+                            onValueChange?.invoke(name,value)
+                        }
+                        ,
                         onValueChangeForChild = {
                             valueChangeForChild?.invoke(
                                 ChildValueModel(
@@ -455,6 +461,38 @@ open class Sections(
                 ) {
                     Text(text = "Continue")
                 }
+        }
+    }
+
+    private fun updateDependantChildren(fields: List<ComposeFieldStateHolder>,stateHolder: ComposeFieldStateHolder,newValue:String){
+        if (
+            stateHolder.state.field.type==ComposeFieldType.DROP_DOWN ||
+            stateHolder.state.field.type==ComposeFieldType.RADIO_BUTTON ||
+            stateHolder.state.field.type==ComposeFieldType.SWITCH
+            ){
+            val currentChildName = stateHolder.state.field.defaultValues.find { x->x.id==newValue }?.dependent_child_fields?.map {
+                it.field_name
+            }?: emptyList()
+            val allChild = stateHolder.state.field.defaultValues.flatMap {
+                it.dependent_child_fields.map { it.field_name }
+            }
+            fields.onEach {
+                if (currentChildName.contains(it.state.field.name)){
+                    it.updatedField(
+                        it.state.field.copy(
+                            required = ComposeFieldYesNo.YES,
+                            hidden = ComposeFieldYesNo.NO
+                        )
+                    )
+                }else if (allChild.contains(it.state.field.name)){
+                    it.updatedField(
+                        it.state.field.copy(
+                            required = ComposeFieldYesNo.NO,
+                            hidden = ComposeFieldYesNo.YES
+                        )
+                    )
+                }
+            }
         }
     }
 

@@ -28,5 +28,6 @@ data class CustomFields(
     val visible: Int = 1,
     var isEditable: Boolean? = true,
     var isMultiSelect: Boolean? = false,
-    var sectionSortNumber: Int? = 0
+    var sectionSortNumber: Int? = 0,
+    val parent_field_value_id:String?=null,
 )
