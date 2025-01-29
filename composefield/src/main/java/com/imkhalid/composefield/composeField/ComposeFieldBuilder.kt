@@ -5,7 +5,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldType
-import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardType
+import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardTypeAdv
 import com.imkhalid.composefield.composeField.fields.ComposeCheckBoxField
 import com.imkhalid.composefield.composeField.fields.ComposeDatePickerField
 import com.imkhalid.composefield.composeField.fields.ComposeDropDownField
@@ -41,7 +41,7 @@ class ComposeFieldBuilder {
             when (state.field.type) {
                 ComposeFieldType.TEXT_BOX,
                 ComposeFieldType.TEXT_AREA -> {
-                    if (state.field.keyboardType == ComposeKeyboardType.MOBILE_NO) {
+                    if (state.field.keyboardType is ComposeKeyboardTypeAdv.MOBILE_NO) {
                         ComposeMobileField()
                     } else {
                         ComposeTextField().setFocusCallback(callback)

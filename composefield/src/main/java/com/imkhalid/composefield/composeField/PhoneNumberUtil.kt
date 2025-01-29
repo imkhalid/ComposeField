@@ -4,6 +4,7 @@ class PhoneNumberUtil {
 
     var prefix = "254"
     var currentCountryCode = "ke"
+    var shouldShowPicker=true
     var currentCountryFlag = "\uD83C\uDDF0\uD83C\uDDEA +"
     var minLength = 9
     var maxLength = 9

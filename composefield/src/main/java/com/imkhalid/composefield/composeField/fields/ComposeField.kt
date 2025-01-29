@@ -10,7 +10,7 @@ import com.imkhalid.composefield.composeField.ComposeFieldState
 import com.imkhalid.composefield.composeField.ComposeFieldStateHolder
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldType
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
-import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardType
+import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardTypeAdv
 import com.imkhalid.composefield.composeField.fields.ComposeCheckBoxField
 import com.imkhalid.composefield.composeField.fields.ComposeCurrencyField
 import com.imkhalid.composefield.composeField.fields.ComposeDatePickerField
@@ -20,7 +20,7 @@ import com.imkhalid.composefield.composeField.fields.ComposeRadioGroupField
 import com.imkhalid.composefield.composeField.fields.ComposeSwitchField
 import com.imkhalid.composefield.composeField.fields.ComposeTimePickerField
 import com.imkhalid.composefield.composeField.model.ComposeFieldModule
-import com.imkhalid.composefield.composeField.rememberFieldState
+import com.imkhalid.composefield.composeField.states.rememberFieldState
 
 abstract class ComposeField {
     var currentUserCountryCode = ""
@@ -32,7 +32,7 @@ abstract class ComposeField {
         passwordVisible: Boolean,
         onClick: (() -> Unit)? = null
     ) {
-        if (field.keyboardType == ComposeKeyboardType.PASSWORD) {
+        if (field.keyboardType is ComposeKeyboardTypeAdv.PASSWORD) {
             Image(
                 painter =
                     if (passwordVisible) painterResource(id = R.drawable.ic_open_password)
@@ -66,9 +66,9 @@ class ComposeFieldBuilder {
             when (state.field.type) {
                 ComposeFieldType.TEXT_BOX,
                 ComposeFieldType.TEXT_AREA -> {
-                    if (state.field.keyboardType == ComposeKeyboardType.MOBILE_NO) {
+                    if (state.field.keyboardType is ComposeKeyboardTypeAdv.MOBILE_NO) {
                         ComposeMobileField()
-                    } else if (state.field.keyboardType==ComposeKeyboardType.CURRENCY){
+                    } else if (state.field.keyboardType is ComposeKeyboardTypeAdv.CURRENCY){
                       ComposeCurrencyField()
                     } else {
                         ComposeTextField().setFocusCallback(focusCallback)

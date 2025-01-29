@@ -6,7 +6,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.imkhalid.composefield.composeField.ComposeFieldStateHolder
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldType
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
-import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardType
+import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardTypeAdv
 import com.imkhalid.composefield.composeField.rememberFieldState
 import com.imkhalid.composefield.model.DefaultValues
 
@@ -154,10 +154,10 @@ data class FamilySetup(
                         sortNumber = orderMap.getOrDefault(it.familyDetailField,1),
                         keyboardType =
                             when (it.familyDetailField) {
-                                "email" -> ComposeKeyboardType.EMAIL
+                                "email" -> ComposeKeyboardTypeAdv.EMAIL
                                 "mobile_no",
-                                "phone_no" -> ComposeKeyboardType.MOBILE_NO
-                                else -> ComposeKeyboardType.TEXT
+                                "phone_no" -> ComposeKeyboardTypeAdv.MOBILE_NO()
+                                else -> ComposeKeyboardTypeAdv.TEXT
                             },
                         isEditable =
                             if (data != null && it.familyDetailField.equals("relation"))

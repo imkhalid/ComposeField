@@ -61,8 +61,8 @@ import androidx.compose.ui.unit.sp
 import com.imkhalid.composefield.composeField.ComposeFieldState
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldType
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
-import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardType
-import com.imkhalid.composefield.composeField.rememberFieldState
+import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardTypeAdv
+import com.imkhalid.composefield.composeField.states.rememberFieldState
 import com.imkhalid.composefield.theme.ComposeFieldTheme
 import com.imkhalid.composefieldproject.composeField.fields.ComposeField
 import com.imkhalid.composefieldproject.composeField.fields.ComposeFieldBuilder
@@ -335,7 +335,7 @@ class ComposeCheckBoxField : ComposeField() {
                             label = "Search",
                             id = "",
                             type = ComposeFieldType.TEXT_BOX,
-                            keyboardType = ComposeKeyboardType.TEXT,
+                            keyboardType = ComposeKeyboardTypeAdv.TEXT,
                             value = "",
                         ),
                         onValueChange = {_,value->

@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.imkhalid.composefield.composeField.ComposeFieldState
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
-import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardType
+import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardTypeAdv
 import com.imkhalid.composefield.composeField.mask.rememberCurrencyVisualTransformation
 import com.imkhalid.composefield.composeField.util.EnglishNumberToWords
 import com.imkhalid.composefield.theme.ComposeFieldTheme
@@ -162,7 +162,7 @@ class ComposeCurrencyField : ComposeField() {
                 }
             },
             prefix = {
-                if (state.field.keyboardType == ComposeKeyboardType.MOBILE_NO)
+                if (state.field.keyboardType is ComposeKeyboardTypeAdv.MOBILE_NO)
                     Text(text = "+1", modifier = Modifier.clickable {})
                 else null
             },
@@ -226,7 +226,7 @@ class ComposeCurrencyField : ComposeField() {
                 }
             },
             prefix = {
-                if (state.field.keyboardType == ComposeKeyboardType.MOBILE_NO)
+                if (state.field.keyboardType is ComposeKeyboardTypeAdv.MOBILE_NO)
                     Text(text = "+1", modifier = Modifier.clickable {})
                 else null
             },

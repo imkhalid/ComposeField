@@ -36,12 +36,11 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
 import com.imkhalid.composefield.composeField.ComposeFieldState
 import com.imkhalid.composefield.composeField.PhoneNumberUtil
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
-import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardType
+import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardTypeAdv
 import com.imkhalid.composefield.theme.ComposeFieldTheme
 import com.imkhalid.composefieldproject.composeField.fields.ComposeField
 import com.imkhalid.composefield.composeField.responsiveTextSize
@@ -56,7 +55,9 @@ class ComposeMobileField : ComposeField() {
     ) {
         val phoneNumberUtil: MutableState<PhoneNumberUtil> = remember {
             mutableStateOf(PhoneNumberUtil().apply {
-                setDefaultCountry(currentUserCountryCode)
+                 if (state.field.keyboardType is ComposeKeyboardTypeAdv.MOBILE_NO)
+                     currentCountryCode = state.field.keyboardType.countryCode.takeIf { x->x.isNotEmpty() }?:currentCountryCode
+                setDefaultCountry(currentCountryCode)
                 setCountryOfSelectedText(state.text, this) }
             )
         }
@@ -122,7 +123,7 @@ class ComposeMobileField : ComposeField() {
                     }
                 },
                 prefix = {
-                    if (state.field.keyboardType == ComposeKeyboardType.MOBILE_NO)
+                    if (state.field.keyboardType is ComposeKeyboardTypeAdv.MOBILE_NO)
                         Text(
                             text = "${phoneNumberUtil.currentCountryFlag}${phoneNumberUtil.prefix}",
                             modifier = Modifier.clickable { toggleDropdown() },
@@ -175,7 +176,7 @@ class ComposeMobileField : ComposeField() {
                     modifier = Modifier.padding(start = 16.dp)
                 )
             }
-            if (expanded) {
+            if (expanded && phoneNumberUtil.shouldShowPicker) {
                 CountryPickerDialog(
                     onDone = { toggleDropdown() },
                     onOptionSelected = { countryModel ->
@@ -217,7 +218,7 @@ class ComposeMobileField : ComposeField() {
                     }
                 },
                 prefix = {
-                    if (state.field.keyboardType == ComposeKeyboardType.MOBILE_NO)
+                    if (state.field.keyboardType is ComposeKeyboardTypeAdv.MOBILE_NO)
                         Text(
                             text = "${phoneNumberUtil.currentCountryFlag}${phoneNumberUtil.prefix}",
                             modifier = Modifier.clickable { toggleDropdown() },
@@ -351,7 +352,7 @@ class ComposeMobileField : ComposeField() {
                     }
                 },
                 prefix = {
-                    if (state.field.keyboardType == ComposeKeyboardType.MOBILE_NO)
+                    if (state.field.keyboardType is ComposeKeyboardTypeAdv.MOBILE_NO)
                         Text(
                             text = "${phoneNumberUtil.currentCountryFlag}${phoneNumberUtil.prefix}",
                             modifier = Modifier.clickable { toggleDropdown() }

@@ -2,7 +2,7 @@ package com.imkhalid.composefield.composeField.model
 
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldType
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
-import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardType
+import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardTypeAdv
 import com.imkhalid.composefield.model.CustomFields
 import com.imkhalid.composefield.model.DefaultValues
 
@@ -11,7 +11,7 @@ data class ComposeFieldModule(
     val id: String = "",
     val name: String = "",
     val type: ComposeFieldType = ComposeFieldType.TEXT_BOX,
-    val keyboardType: ComposeKeyboardType = ComposeKeyboardType.TEXT,
+    val keyboardType: ComposeKeyboardTypeAdv = ComposeKeyboardTypeAdv.TEXT,
     val value: String = "",
     val label: String = "",
     val hint: String = "",
@@ -179,15 +179,15 @@ fun String.fieldType(): ComposeFieldType {
     }
 }
 
-fun String.keyboardType(): ComposeKeyboardType {
+fun String.keyboardType(): ComposeKeyboardTypeAdv {
     return when (this.lowercase()) {
-        "text" -> ComposeKeyboardType.TEXT
-        "cnic" -> ComposeKeyboardType.CNIC
-        "email" -> ComposeKeyboardType.EMAIL
+        "text" -> ComposeKeyboardTypeAdv.TEXT
+        "cnic" -> ComposeKeyboardTypeAdv.CNIC
+        "email" -> ComposeKeyboardTypeAdv.EMAIL
         "mobile",
-        "mobile_number" -> ComposeKeyboardType.MOBILE_NO
-        "number" -> ComposeKeyboardType.NUMBER
-        else -> ComposeKeyboardType.NONE
+        "mobile_number" -> ComposeKeyboardTypeAdv.MOBILE_NO()
+        "number" -> ComposeKeyboardTypeAdv.NUMBER
+        else -> ComposeKeyboardTypeAdv.NONE
     }
 }
 

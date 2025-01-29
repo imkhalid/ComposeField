@@ -52,7 +52,7 @@ import com.imkhalid.composefield.composeField.mask.FieldMaskTransformation
 import com.imkhalid.composefield.composeField.Patterns
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldType
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
-import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardType
+import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardTypeAdv
 import com.imkhalid.composefield.composeField.model.ComposeFieldModule
 import com.imkhalid.composefield.theme.ComposeFieldTheme
 import com.imkhalid.composefield.composeField.responsiveTextSize
@@ -80,7 +80,7 @@ class ComposeTextField : ComposeField() {
         modifier: Modifier = Modifier,
     ) {
         val toolbar =
-            if (state.field.keyboardType == ComposeKeyboardType.SENSITIVE)
+            if (state.field.keyboardType is ComposeKeyboardTypeAdv.SENSITIVE)
                 LocalTextToolbar provides EmptyTextToolbar
             else LocalTextToolbar provides LocalTextToolbar.current
 
@@ -180,7 +180,7 @@ class ComposeTextField : ComposeField() {
                 }
             },
             prefix = {
-                if (state.field.keyboardType == ComposeKeyboardType.MOBILE_NO)
+                if (state.field.keyboardType is ComposeKeyboardTypeAdv.MOBILE_NO)
                     Text(text = "+1", modifier = Modifier.clickable {})
                 else null
             },
@@ -245,7 +245,7 @@ class ComposeTextField : ComposeField() {
                 }
             },
             prefix = {
-                if (state.field.keyboardType == ComposeKeyboardType.MOBILE_NO)
+                if (state.field.keyboardType is ComposeKeyboardTypeAdv.MOBILE_NO)
                     Text(text = "+1", modifier = Modifier.clickable {})
                 else null
             },
@@ -336,7 +336,7 @@ class ComposeTextField : ComposeField() {
                 }
             },
             prefix = {
-                if (state.field.keyboardType == ComposeKeyboardType.MOBILE_NO)
+                if (state.field.keyboardType is ComposeKeyboardTypeAdv.MOBILE_NO)
                     Text(text = "+1", modifier = Modifier.clickable {})
                 else null
             },
@@ -416,28 +416,28 @@ class ComposeTextField : ComposeField() {
     private fun getKeyboardOptions(fieldState: ComposeFieldModule): KeyboardOptions {
         val type =
             when (fieldState.keyboardType) {
-                ComposeKeyboardType.CNIC,
-                ComposeKeyboardType.ID_NO,
-                ComposeKeyboardType.MOBILE_NO,
-                ComposeKeyboardType.CURRENCY,
-                ComposeKeyboardType.NUMBER -> KeyboardType.Number
-                ComposeKeyboardType.EMAIL -> KeyboardType.Email
-                ComposeKeyboardType.TEXT,
-                ComposeKeyboardType.SENSITIVE,
-                ComposeKeyboardType.NONE -> KeyboardType.Text
-                ComposeKeyboardType.PASSWORD -> KeyboardType.Password
+                is ComposeKeyboardTypeAdv.CNIC,
+                is ComposeKeyboardTypeAdv.ID_NO,
+                is ComposeKeyboardTypeAdv.MOBILE_NO,
+                is ComposeKeyboardTypeAdv.CURRENCY,
+                is ComposeKeyboardTypeAdv.NUMBER -> KeyboardType.Number
+                is ComposeKeyboardTypeAdv.EMAIL -> KeyboardType.Email
+                is ComposeKeyboardTypeAdv.TEXT,
+                is ComposeKeyboardTypeAdv.SENSITIVE,
+                is ComposeKeyboardTypeAdv.NONE -> KeyboardType.Text
+                is ComposeKeyboardTypeAdv.PASSWORD -> KeyboardType.Password
             }
         return KeyboardOptions(keyboardType = type, autoCorrect = false, imeAction = ImeAction.Next)
     }
 
     private fun getVisualTransformation(
         mask: Patterns,
-        keyboardType: ComposeKeyboardType,
+        keyboardType: ComposeKeyboardTypeAdv,
         passwordVisible: Boolean
     ): VisualTransformation {
         return if (mask != Patterns.MOBILE && mask != Patterns.NONE && mask.value.isNotEmpty())
             FieldMaskTransformation(mask.value)
-        else if (keyboardType == ComposeKeyboardType.PASSWORD)
+        else if (keyboardType is ComposeKeyboardTypeAdv.PASSWORD)
             if (passwordVisible) VisualTransformation.None
             else PasswordVisualTransformation(mask = '●')
         else VisualTransformation.None
@@ -445,12 +445,12 @@ class ComposeTextField : ComposeField() {
 
     private fun getVisualTransformation(
         mask: String,
-        keyboardType: ComposeKeyboardType,
+        keyboardType: ComposeKeyboardTypeAdv,
         passwordVisible: Boolean
     ): VisualTransformation {
         return if (mask.isNotEmpty())
             FieldMaskTransformation(mask)
-        else if (keyboardType == ComposeKeyboardType.PASSWORD)
+        else if (keyboardType is ComposeKeyboardTypeAdv.PASSWORD)
             if (passwordVisible) VisualTransformation.None
             else PasswordVisualTransformation(mask = '●')
         else VisualTransformation.None
@@ -468,7 +468,7 @@ class ComposeTextField : ComposeField() {
         var message = ""
         val valueToBeUsed = getValueWithMask(curVal, state.field)
         when (state.field.keyboardType) {
-            ComposeKeyboardType.CNIC -> {
+            is ComposeKeyboardTypeAdv.CNIC -> {
                 val pattern = Patterns.CNIC.pattern.toList()
                 if (!Pattern.matches(pattern.first(), valueToBeUsed)) {
                     bool = false
@@ -480,7 +480,7 @@ class ComposeTextField : ComposeField() {
                     message = ""
                 }
             }
-            ComposeKeyboardType.ID_NO -> {
+            is ComposeKeyboardTypeAdv.ID_NO -> {
                 val pattern = Patterns.ID_NO.pattern.toList()
                 if (!Pattern.matches(pattern.first(), valueToBeUsed)) {
                     bool = false
@@ -489,14 +489,14 @@ class ComposeTextField : ComposeField() {
                     message = ""
                 }
             }
-            ComposeKeyboardType.EMAIL -> {
+            is ComposeKeyboardTypeAdv.EMAIL -> {
                 val pattern = Patterns.EMAIL.pattern.toList()
                 if (!Pattern.matches(pattern.first(), valueToBeUsed)) {
                     bool = false
                     message = "Please enter valid Email Address"
                 }
             }
-            ComposeKeyboardType.TEXT -> {
+            is ComposeKeyboardTypeAdv.TEXT -> {
                 if (state.field.name.contains("email", true)) {
                     val pattern = Patterns.EMAIL.pattern.toList()
                     if (!Pattern.matches(pattern.first(), valueToBeUsed)) {
@@ -528,15 +528,15 @@ class ComposeTextField : ComposeField() {
         val keyboardType = module.keyboardType
 
         return when (keyboardType) {
-            ComposeKeyboardType.CNIC -> Patterns.CNIC
-            ComposeKeyboardType.ID_NO -> Patterns.ID_NO
-            ComposeKeyboardType.MOBILE_NO ->
+            is ComposeKeyboardTypeAdv.CNIC -> Patterns.CNIC
+            is ComposeKeyboardTypeAdv.ID_NO -> Patterns.ID_NO
+            is ComposeKeyboardTypeAdv.MOBILE_NO ->
                 Patterns.MOBILE.apply {
                     value = ""
                     pattern = arrayOf("")
                 }
-            ComposeKeyboardType.EMAIL -> Patterns.EMAIL
-            ComposeKeyboardType.NUMBER -> {
+            is ComposeKeyboardTypeAdv.EMAIL -> Patterns.EMAIL
+            is ComposeKeyboardTypeAdv.NUMBER -> {
                 //                module.maxValue.takeIf { x->x?.isNotEmpty()==true }?.let {
                 //                    var mask = ""
                 //                    it.indices.forEachIndexed { index, i ->
@@ -558,10 +558,10 @@ class ComposeTextField : ComposeField() {
     private fun getValueWithMask(currValue: String, field: ComposeFieldModule): String {
         val mask =
             when (field.keyboardType) {
-                ComposeKeyboardType.CNIC -> Patterns.CNIC.value
-                ComposeKeyboardType.ID_NO -> Patterns.ID_NO.value
-                ComposeKeyboardType.MOBILE_NO -> Patterns.MOBILE.value
-                ComposeKeyboardType.EMAIL -> Patterns.EMAIL.value
+                is ComposeKeyboardTypeAdv.CNIC -> Patterns.CNIC.value
+                is ComposeKeyboardTypeAdv.ID_NO -> Patterns.ID_NO.value
+                is ComposeKeyboardTypeAdv.MOBILE_NO -> Patterns.MOBILE.value
+                is ComposeKeyboardTypeAdv.EMAIL -> Patterns.EMAIL.value
                 else -> Patterns.NONE.value
             }
 
