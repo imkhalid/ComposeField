@@ -75,7 +75,7 @@ class ComposeDatePickerField : ComposeField() {
         val minMil: Long? = minDate?.let {
             Calendar.getInstance().apply {
                 time = it
-                set(Calendar.HOUR_OF_DAY,0)
+                set(Calendar.HOUR_OF_DAY, 0)
                 set(Calendar.MINUTE, 0)
                 set(Calendar.SECOND, 0)
                 set(Calendar.MILLISECOND, 0)
@@ -84,7 +84,7 @@ class ComposeDatePickerField : ComposeField() {
         val maxMil: Long? = maxDate?.let {
             Calendar.getInstance().apply {
                 time = it
-                set(Calendar.HOUR_OF_DAY,23)
+                set(Calendar.HOUR_OF_DAY, 23)
                 set(Calendar.MINUTE, 59)
                 set(Calendar.SECOND, 59)
                 set(Calendar.MILLISECOND, 999)
@@ -138,11 +138,13 @@ class ComposeDatePickerField : ComposeField() {
                 if (state.text.isNotEmpty()) {
                     SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
                         .apply {
-                            timeZone= TimeZone.getTimeZone("UTC")
+                            timeZone = TimeZone.getTimeZone("UTC")
                         }
                         .parse(state.text)?.time
-                }else if (maxMil != null && maxMil < calendar.timeInMillis)
+                } else if (maxMil != null && maxMil < calendar.timeInMillis)
                     maxMil
+                else if (minMil != null && minMil >= calendar.timeInMillis)
+                    minMil
                 else
                     calendar.timeInMillis,
                 yearRange = rangeMin..rangeMax,
@@ -215,7 +217,7 @@ class ComposeDatePickerField : ComposeField() {
                 DatePickerField(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = { showDialog.value = true },
-                    enabled = state.field.isEditable==ComposeFieldYesNo.YES
+                    enabled = state.field.isEditable == ComposeFieldYesNo.YES
                 ) {
                     Text(
                         modifier =
@@ -270,7 +272,7 @@ class ComposeDatePickerField : ComposeField() {
     private fun DatePickerField(
         modifier: Modifier,
         onClick: () -> Unit,
-        enabled:Boolean=true,
+        enabled: Boolean = true,
         content: @Composable (BoxScope.() -> Unit)? = null
     ) {
         when (ComposeFieldTheme.fieldStyle) {
@@ -330,7 +332,7 @@ fun parseToDate(to: String, date: String): Date? {
     return try {
         SimpleDateFormat(to, Locale.getDefault())
             .apply {
-                timeZone= TimeZone.getTimeZone("UTC")
+                timeZone = TimeZone.getTimeZone("UTC")
             }
             .parse(date)
     } catch (e: Exception) {
