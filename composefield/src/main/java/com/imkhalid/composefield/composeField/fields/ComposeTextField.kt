@@ -503,24 +503,27 @@ class ComposeTextField : ComposeField() {
                         bool = false
                         message = "Please enter valid Email Address"
                     }
-                } else if (state.text.isNotEmpty() &&
+                } else if (valueToBeUsed.isNotEmpty() &&
                     state.field.pattern.isNotEmpty() &&
                         Pattern.matches(state.field.pattern, valueToBeUsed).not()
                 ) {
                     bool = false
                     message = state.field.patternMessage
-                }else if (state.field.required==ComposeFieldYesNo.YES && state.text.isEmpty()){
+                }else if (state.field.required==ComposeFieldYesNo.YES && valueToBeUsed.isEmpty()){
                     bool = false
                     message = "Required Field"
                 }
             }
             else -> {
-                if (
+                if (valueToBeUsed.isNotEmpty() &&
                     state.field.pattern.isNotEmpty() &&
                         Pattern.matches(state.field.pattern, valueToBeUsed).not()
                 ) {
                     bool = false
                     message = state.field.patternMessage
+                }else if (state.field.required==ComposeFieldYesNo.YES && valueToBeUsed.isEmpty()){
+                    bool = false
+                    message = "Required Field"
                 }
             }
         }
