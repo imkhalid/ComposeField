@@ -66,12 +66,7 @@ fun Greeting(
         }
 
     if (state.loadingModel.isLoading.not() && state.section != null)
-//        viewModel.sections
-//            .setParentNav(navHostController)
-//            .setLasPageCallback { }
-//            .Build(sections = emptyList(),
-//
-//            )
+
         Sections(
             rememberNavController(),
             sectionType = SectionType.Tab
