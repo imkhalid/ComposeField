@@ -37,55 +37,57 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 }
+
+group = "com.github.imkhalid" // ✅ Required for JitPack
+version = "1.0.16" // ✅ Must match Git tag
+
 afterEvaluate {
     publishing {
         publications {
-            // ✅ Ensure AAR publication is configured correctly
-            create<MavenPublication>("aar") {
-                groupId = "com.imkhalid"
-                artifactId = project.name
-                version = "1.0.16" // ✅ Define version explicitly
+            create<MavenPublication>("jitpack") {
+                groupId = "com.github.imkhalid" // ✅ Required for JitPack
+                artifactId = "composefield" // ✅ Explicitly set `artifactId`
+                version = "1.0.16"
 
-                // Publish AAR
-                artifact("${buildDir}/outputs/aar/${project.name}-release.aar") {
-                    builtBy(tasks.named("assembleRelease"))
-                }
-            }
-
-            // ✅ Ensure Java/Android publication is properly defined
-            create<MavenPublication>("mavenJava") {
-                groupId = "com.imkhalid"
-                artifactId = project.name
-                version = "1.0.16" // ✅ Define version explicitly
-
-                // Ensure "release" component exists
+                // ✅ Use correct Android component
                 if (components.findByName("release") != null) {
-                    from(components.getByName("release"))
+                    from(components["release"])
                 } else {
                     throw GradleException("❌ ERROR: 'release' component not found. Check if the correct component is being published.")
                 }
 
-                // ✅ Configure POM with safe dependency resolution
-                pom.withXml {
-                    val dependenciesNode = asNode().appendNode("dependencies")
-                    listOf("api", "implementation").forEach { configName ->
-                        configurations.findByName(configName)?.dependencies?.forEach { dep ->
-                            if (dep.group != null && dep.name != null && dep.version != null) {
-                                val dependencyNode = dependenciesNode.appendNode("dependency")
-                                dependencyNode.appendNode("groupId", dep.group)
-                                dependencyNode.appendNode("artifactId", dep.name)
-                                dependencyNode.appendNode("version", dep.version)
-                                dependencyNode.appendNode("scope", if (configName == "api") "compile" else "runtime")
-                            } else {
-                                println("⚠️ WARNING: Skipping dependency $dep because it has missing values.")
-                            }
+                pom {
+                    name.set("ComposeField")
+                    description.set("A library for handling form fields in Jetpack Compose.")
+                    url.set("https://github.com/imkhalid/composefield")
+
+                    licenses {
+                        license {
+                            name.set("Apache-2.0")
+                            url.set("https://opensource.org/licenses/Apache-2.0")
                         }
+                    }
+
+                    developers {
+                        developer {
+                            id.set("imkhalid")
+                            name.set("Khalid")
+                            email.set("khalidsaeed36@gmail.com")
+                        }
+                    }
+
+                    scm {
+                        url.set("https://github.com/imkhalid/composefield")
+                        connection.set("scm:git:git://github.com/imkhalid/composefield.git")
+                        developerConnection.set("scm:git:ssh://github.com/imkhalid/composefield.git")
                     }
                 }
             }
         }
     }
 }
+
+
 
 
 
