@@ -40,34 +40,45 @@ android {
 afterEvaluate {
     publishing {
         publications {
+            // ✅ Ensure AAR publication is configured correctly
             create<MavenPublication>("aar") {
                 groupId = "com.imkhalid"
-                // The version will be provided by the build environment
                 artifactId = project.name
+                version = "1.0.16" // ✅ Define version explicitly
 
-                // Tell maven to prepare the generated "*.aar" file for publishing
+                // Publish AAR
                 artifact("${buildDir}/outputs/aar/${project.name}-release.aar") {
                     builtBy(tasks.named("assembleRelease"))
                 }
             }
-            create<MavenPublication>("mavenJava") {
-                // Adjust according to what you are publishing (e.g., 'java', 'androidRelease', etc.)
-                from(components.getByName("release"))
 
-                // Configure the POM file
+            // ✅ Ensure Java/Android publication is properly defined
+            create<MavenPublication>("mavenJava") {
+                groupId = "com.imkhalid"
+                artifactId = project.name
+                version = "1.0.16" // ✅ Define version explicitly
+
+                // Ensure "release" component exists
+                if (components.findByName("release") != null) {
+                    from(components.getByName("release"))
+                } else {
+                    throw GradleException("❌ ERROR: 'release' component not found. Check if the correct component is being published.")
+                }
+
+                // ✅ Configure POM with safe dependency resolution
                 pom.withXml {
                     val dependenciesNode = asNode().appendNode("dependencies")
-                    // Ensure all configurations that could contain dependencies are included
-                    arrayOf("api", "implementation").forEach { configName ->
-                        configurations[configName].allDependencies.forEach {
-                            val dependencyNode = dependenciesNode.appendNode("dependency")
-                            dependencyNode.appendNode("groupId", it.group)
-                            dependencyNode.appendNode("artifactId", it.name)
-                            dependencyNode.appendNode("version", it.version)
-                            dependencyNode.appendNode(
-                                "scope",
-                                "compile"
-                            ) // 'compile' for api
+                    listOf("api", "implementation").forEach { configName ->
+                        configurations.findByName(configName)?.dependencies?.forEach { dep ->
+                            if (dep.group != null && dep.name != null && dep.version != null) {
+                                val dependencyNode = dependenciesNode.appendNode("dependency")
+                                dependencyNode.appendNode("groupId", dep.group)
+                                dependencyNode.appendNode("artifactId", dep.name)
+                                dependencyNode.appendNode("version", dep.version)
+                                dependencyNode.appendNode("scope", if (configName == "api") "compile" else "runtime")
+                            } else {
+                                println("⚠️ WARNING: Skipping dependency $dep because it has missing values.")
+                            }
                         }
                     }
                 }
@@ -75,6 +86,7 @@ afterEvaluate {
         }
     }
 }
+
 
 
 dependencies {
