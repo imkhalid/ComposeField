@@ -98,16 +98,6 @@ fun Greeting(
 }
 
 
-fun printCurrentData(viewModel: MainViewModel) {
-    val pair = viewModel.sections.mSections.forEach {
-        it.list.map {
-            it.value.field.name to it.value.text
-        }
-    }
-
-    Log.d("REsult Data", (pair).toString())
-}
-
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
