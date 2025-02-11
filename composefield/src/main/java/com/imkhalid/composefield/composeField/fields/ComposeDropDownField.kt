@@ -81,7 +81,14 @@ class ComposeDropDownField : ComposeField() {
         val dropDownText =
             if (state.text.isEmpty()) ComposeFieldTheme.dropDownHint
             else {
-                values.indexOf(state.text).takeIf { it != -1 }?.let { options[it] } ?: ""
+                values
+                    .indexOf(state.text)
+                    .takeIf { it != -1 }
+                    ?.let { options[it] }
+                    ?: kotlin.run {
+                        newValue.invoke(Pair(true,""),"")
+                        ""
+                    }
             }
 
         val label = buildAnnotatedString {
