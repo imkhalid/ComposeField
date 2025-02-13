@@ -215,7 +215,7 @@ open class Sections(
         onValueChange: ((name: String, newValue: String) -> Unit)? = null,
         button: @Composable (BoxScope.(onClick: () -> Unit) -> Unit)?,
         tableAddButton: @Composable (BoxScope.(onClick: () -> Unit) -> Unit)?,
-        tablePopupButton: @Composable (BoxScope.(onClick: () -> Unit) -> Unit)?,
+        tablePopupButton: @Composable (BoxScope.(onClick: () -> Unit,data:HashMap<String,List<ComposeFieldStateHolder>>) -> Unit)?,
         tableColors: TableColors = TableColors(),
         valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
         onLastPageReach: ((Sections) -> Unit)? = null,
@@ -618,7 +618,7 @@ private fun Sections.TabSections(
     valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
     button: (@Composable BoxScope.(onClick: () -> Unit) -> Unit)?,
     tableAddButton: (@Composable BoxScope.(onClick: () -> Unit) -> Unit)?,
-    tablePopupButton: (@Composable BoxScope.(onClick: () -> Unit) -> Unit)?,
+    tablePopupButton: (@Composable BoxScope.(onClick: () -> Unit,data:HashMap<String,List<ComposeFieldStateHolder>>) -> Unit)?,
     tableColors: TableColors = TableColors(),
     onLastPageReach: ((Sections) -> Unit)? = null
 ) {

@@ -73,7 +73,7 @@ class TableSection(
         onValueChange: ((name: String, newValue: String) -> Unit)? = null,
         valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
         AddButton: (@Composable ColumnScope.(onClick: () -> Unit) -> Unit)? = null,
-        DoneButton: (@Composable ColumnScope.(onClick: () -> Unit) -> Unit)? = null,
+        DoneButton: (@Composable ColumnScope.(onClick: () -> Unit,data:HashMap<String, List<ComposeFieldStateHolder>>) -> Unit)? = null,
         SingleItemHeader:
             @Composable
             (
@@ -179,7 +179,7 @@ class TableSection(
                 sections = sections,
                 valueChangeForChild = valueChangeForChild,
                 onValueChange = onValueChange,
-                DoneButton = DoneButton ?: AddButton,
+                DoneButton = DoneButton,
                 onDismiss = {
                     showDialog = false
                     editItem = -1
@@ -291,7 +291,7 @@ class TableSection(
         preState: HashMap<String, List<ComposeFieldStateHolder>>?,
         onValueChange: ((name: String, newValue: String) -> Unit)? = null,
         valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
-        DoneButton: (@Composable ColumnScope.(onClick: () -> Unit) -> Unit)?,
+        DoneButton: (@Composable ColumnScope.(onClick: () -> Unit,data:HashMap<String, List<ComposeFieldStateHolder>>) -> Unit)?,
         sections: List<ComposeSectionModule>,
         onDismiss: () -> Unit,
         onDone: (HashMap<String, List<ComposeFieldStateHolder>>) -> Unit,
@@ -328,7 +328,7 @@ class TableSection(
                     onValueChange = onValueChange,
                     valueChangeForChild = valueChangeForChild
                 )
-                DoneButton?.invoke(this) { onDone.invoke(sectionState) }
+                DoneButton?.invoke(this,{onDone.invoke(sectionState)},sectionState)
             }
         }
     }
