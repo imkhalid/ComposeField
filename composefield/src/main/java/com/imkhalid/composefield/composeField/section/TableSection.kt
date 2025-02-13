@@ -39,6 +39,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
 import com.imkhalid.composefield.composeField.ComposeFieldStateHolder
 import com.imkhalid.composefield.composeField.TableColors
+import com.imkhalid.composefield.composeField.TableConfig
 import com.imkhalid.composefield.composeField.fieldTypes.SectionType
 import com.imkhalid.composefield.composeField.model.ChildValueModel
 import com.imkhalid.composefield.composeField.model.ComposeSectionModule
@@ -61,7 +62,7 @@ class TableSection(
     fun TableBuild(
         modifier: Modifier = Modifier,
         sections: List<ComposeSectionModule>,
-        tableColors: TableColors = TableColors(),
+        tableConfig: TableConfig = TableConfig(),
         tableName: String,
         description: String,
         tableDataList: SnapshotStateList<HashMap<String, List<ComposeFieldStateHolder>>> =
@@ -72,8 +73,6 @@ class TableSection(
         onItemEdited: (HashMap<String, List<ComposeFieldStateHolder>>, index: Int) -> Unit,
         onValueChange: ((name: String, newValue: String) -> Unit)? = null,
         valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
-        AddButton: (@Composable ColumnScope.(onClick: () -> Unit) -> Unit)? = null,
-        DoneButton: (@Composable ColumnScope.(onClick: () -> Unit,data:HashMap<String, List<ComposeFieldStateHolder>>) -> Unit)? = null,
         SingleItemHeader:
             @Composable
             (
@@ -104,30 +103,41 @@ class TableSection(
 
         var editItem by remember { mutableStateOf(-1) }
         var expandedItem by remember { mutableStateOf(-1) }
-        Column(modifier = modifier.fillMaxSize().padding(responsiveSize(size = 20))) {
-            Text(
-                text = tableName,
-                fontSize = responsiveTextSize(size = 16).sp,
-                color = tableColors.sectionTitleColor
-            )
-            Text(
-                text =
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(responsiveSize(size = 20)),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            if (tableConfig.showTitle) {
+                Text(
+                    text = tableName,
+                    fontSize = responsiveTextSize(size = 16).sp,
+                    color = tableConfig.tableColors.sectionTitleColor
+                )
+            }
+            if (tableConfig.showLimit) {
+                Text(
+                    text =
                     if (min == max && min > 0) "Add at least $min Item(s)"
                     else if (min == 0 && max > 0) "Max $max Item(s) can be Added"
                     else "Items should be between $min to $max",
-                fontSize = responsiveTextSize(size = 12).sp,
-                color = tableColors.sectionDesColor
-            )
+                    fontSize = responsiveTextSize(size = 12).sp,
+                    color = tableConfig.tableColors.sectionLimitColor
+                )
+            }
 
-            Spacer(modifier = Modifier.height(responsiveHeight(size = 10)))
-            Text(
-                text = description,
-                fontSize = responsiveTextSize(size = 13).sp,
-                color = tableColors.sectionLimitColor,
-                minLines = 2
-            )
+            if(tableConfig.showDescription){
+                Spacer(modifier = Modifier.height(responsiveHeight(size = 10)))
+                Text(
+                    text = description,
+                    fontSize = responsiveTextSize(size = 13).sp,
+                    color = tableConfig.tableColors.sectionLimitColor,
+                    minLines = 2
+                )
+            }
             if (tableDataList.size < max) {
-                AddButton?.invoke(this) { showDialog = true }
+                tableConfig.tableAddButton?.invoke(this) { showDialog = true }
             }
 
             Spacer(modifier = Modifier.height(responsiveHeight(size = 10)))
@@ -151,7 +161,7 @@ class TableSection(
                             }
                         }
                     TableItem(
-                        tableColors,
+                        tableConfig.tableColors,
                         tableName,
                         it,
                         item,
@@ -179,7 +189,7 @@ class TableSection(
                 sections = sections,
                 valueChangeForChild = valueChangeForChild,
                 onValueChange = onValueChange,
-                DoneButton = DoneButton,
+                DoneButton = tableConfig.tablePopupButton,
                 onDismiss = {
                     showDialog = false
                     editItem = -1
@@ -209,7 +219,8 @@ class TableSection(
             if (expandedItem == index) {
                 Column(
                     modifier =
-                        Modifier.fillMaxWidth()
+                        Modifier
+                            .fillMaxWidth()
                             .border(
                                 1.dp,
                                 Color.Gray,
@@ -236,7 +247,8 @@ class TableSection(
             if (SingleItemHeader == null) {
                 Row(
                     modifier =
-                        Modifier.fillMaxWidth()
+                        Modifier
+                            .fillMaxWidth()
                             .background(
                                 color = ComposeFieldTheme.focusedBorderColor.copy(alpha = 0.3f),
                                 shape = RoundedCornerShape(responsiveSize(size = 12))
@@ -298,7 +310,8 @@ class TableSection(
     ) {
         Dialog(onDismissRequest = onDismiss) {
             Column(
-                Modifier.background(
+                Modifier
+                    .background(
                         color = Color(0xFFF5F5F5),
                         shape = RoundedCornerShape(responsiveSize(12))
                     )
@@ -306,7 +319,9 @@ class TableSection(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 sectionNames.clear()
-                Box(modifier = Modifier.fillMaxWidth().padding(responsiveSize(size = 20))) {
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(responsiveSize(size = 20))) {
                     Text(
                         text = name,
                         fontSize = responsiveTextSize(size = 18).sp,
@@ -318,7 +333,9 @@ class TableSection(
                         painter = painterResource(android.R.drawable.ic_menu_close_clear_cancel),
                         contentDescription = null,
                         modifier =
-                            Modifier.align(Alignment.CenterEnd).clickable { onDismiss.invoke() }
+                            Modifier
+                                .align(Alignment.CenterEnd)
+                                .clickable { onDismiss.invoke() }
                     )
                 }
                 Build(
