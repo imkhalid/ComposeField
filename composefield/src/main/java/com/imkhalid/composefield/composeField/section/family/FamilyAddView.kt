@@ -31,7 +31,7 @@ import com.imkhalid.composefield.R
 import com.imkhalid.composefield.composeField.ComposeFieldStateHolder
 import com.imkhalid.composefield.composeField.fields.changeDateFormat
 import com.imkhalid.composefield.composeField.model.FamilyData
-import com.imkhalid.composefield.composeField.section.getFieldByFieldName
+import com.imkhalid.composefield.composeField.util.getFieldByFieldName
 import com.imkhalid.composefield.composeField.section.textColor
 import com.imkhalid.composefield.composeField.section.titleColor
 import com.imkhalid.composefield.composeField.validate
