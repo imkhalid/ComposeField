@@ -48,6 +48,8 @@ import com.imkhalid.composefield.R
 import com.imkhalid.composefield.composeField.ComposeFieldStateHolder
 import com.imkhalid.composefield.composeField.MyNavHost
 import com.imkhalid.composefield.composeField.TableColors
+import com.imkhalid.composefield.composeField.TableConfig
+import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
 import com.imkhalid.composefield.composeField.fieldTypes.SectionType
 import com.imkhalid.composefield.composeField.model.ChildValueModel
 import com.imkhalid.composefield.composeField.model.ComposeSectionModule
@@ -144,7 +146,6 @@ open class Sections(
                             }
                         }
 
-                }
             }
         }
         val myNav = MyNavHost(nav,sectionNames,this,onLastPageReach)
@@ -179,8 +180,7 @@ open class Sections(
                     familyData = familyData,
                     valueChangeForChild = valueChangeForChild,
                     button = button,
-                    tablePopupButton = null,
-                    tableAddButton = null,
+                    tableConfig = TableConfig(),
                     onLastPageReach = onLastPageReach
                 )
             SectionType.Step ->
@@ -205,9 +205,7 @@ open class Sections(
         familyData: FamilyData? = null,
         onValueChange: ((name: String, newValue: String) -> Unit)? = null,
         button: @Composable (BoxScope.(onClick: () -> Unit) -> Unit)?,
-        tableAddButton: @Composable (BoxScope.(onClick: () -> Unit) -> Unit)?,
-        tablePopupButton: @Composable (BoxScope.(onClick: () -> Unit,data:HashMap<String,List<ComposeFieldStateHolder>>) -> Unit)?,
-        tableColors: TableColors = TableColors(),
+        tableConfig: TableConfig = TableConfig(),
         valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
         onLastPageReach: ((Sections) -> Unit)? = null,
     ) {
@@ -237,9 +235,7 @@ open class Sections(
             onValueChange=onValueChange,
             valueChangeForChild = valueChangeForChild,
             button = button,
-            tableAddButton = tableAddButton,
-            tablePopupButton = tablePopupButton,
-            tableColors=tableColors,
+            tableConfig = tableConfig,
             onLastPageReach = onLastPageReach
         )
     }
@@ -550,9 +546,7 @@ private fun Sections.TabSections(
     onValueChange: ((name: String, newValue: String) -> Unit)? = null,
     valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
     button: (@Composable BoxScope.(onClick: () -> Unit) -> Unit)?,
-    tableAddButton: (@Composable BoxScope.(onClick: () -> Unit) -> Unit)?,
-    tablePopupButton: (@Composable BoxScope.(onClick: () -> Unit,data:HashMap<String,List<ComposeFieldStateHolder>>) -> Unit)?,
-    tableColors: TableColors = TableColors(),
+    tableConfig: TableConfig = TableConfig(),
     onLastPageReach: ((Sections) -> Unit)? = null
 ) {
     var currentSection by remember { mutableStateOf("") }
@@ -582,7 +576,7 @@ private fun Sections.TabSections(
                                 .TableBuild(
                                     modifier = Modifier,
                                     sections = listOf(section),
-                                    tableColors = tableColors,
+                                    tableConfig = tableConfig,
                                     tableName = section.name.replace("_", " "),
                                     description = "",
                                     tableDataList =
@@ -610,12 +604,6 @@ private fun Sections.TabSections(
                                     },
                                     valueChangeForChild = valueChangeForChild,
                                     onValueChange = onValueChange,
-                                    AddButton = { onClick ->
-                                        tableAddButton?.invoke(this@Box, onClick)
-                                    },
-                                    DoneButton = { onDone,data ->
-                                        tablePopupButton?.invoke(this@Box, onDone,data)
-                                    },
                                     SingleItemHeader = {
                                         onEditClick,
                                         onDeleteClick,
@@ -626,7 +614,7 @@ private fun Sections.TabSections(
                                             onDeleteClick = onDeleteClick,
                                             onExpandClick = onExpandClick,
                                             textTitle = textTitle,
-                                            tableColors = tableColors,
+                                            tableColors = tableConfig.tableColors,
                                         )
                                     },
                                 )
