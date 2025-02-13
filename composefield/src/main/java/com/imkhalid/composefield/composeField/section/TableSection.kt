@@ -322,7 +322,7 @@ class TableSection(
                     )
                 }
                 Build(
-                    modifier = modifier,
+                    modifier = modifier.weight(1f),
                     sections = sections,
                     preState = preState,
                     onValueChange = onValueChange,
