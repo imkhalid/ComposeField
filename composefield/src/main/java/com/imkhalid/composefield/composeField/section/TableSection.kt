@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
 import com.imkhalid.composefield.composeField.ComposeFieldStateHolder
+import com.imkhalid.composefield.composeField.TableColors
 import com.imkhalid.composefield.composeField.fieldTypes.SectionType
 import com.imkhalid.composefield.composeField.model.ChildValueModel
 import com.imkhalid.composefield.composeField.model.ComposeSectionModule
@@ -60,6 +61,7 @@ class TableSection(
     fun TableBuild(
         modifier: Modifier = Modifier,
         sections: List<ComposeSectionModule>,
+        tableColors: TableColors = TableColors(),
         tableName: String,
         description: String,
         tableDataList: SnapshotStateList<HashMap<String, List<ComposeFieldStateHolder>>> =
@@ -103,21 +105,25 @@ class TableSection(
         var editItem by remember { mutableStateOf(-1) }
         var expandedItem by remember { mutableStateOf(-1) }
         Column(modifier = Modifier.fillMaxSize().padding(responsiveSize(size = 20))) {
-            Text(text = tableName, fontSize = responsiveTextSize(size = 16).sp)
+            Text(
+                text = tableName,
+                fontSize = responsiveTextSize(size = 16).sp,
+                color = tableColors.sectionTitleColor
+            )
             Text(
                 text =
                     if (min == max && min > 0) "Add at least $min Item(s)"
                     else if (min == 0 && max > 0) "Max $max Item(s) can be Added"
                     else "Items should be between $min to $max",
                 fontSize = responsiveTextSize(size = 12).sp,
-                color = Color.Gray.copy(alpha = 0.5f)
+                color = tableColors.sectionDesColor
             )
 
             Spacer(modifier = Modifier.height(responsiveHeight(size = 10)))
             Text(
                 text = description,
                 fontSize = responsiveTextSize(size = 13).sp,
-                color = ComposeFieldTheme.textColor,
+                color = tableColors.sectionLimitColor,
                 minLines = 2
             )
             if (tableDataList.size < max) {
@@ -126,7 +132,8 @@ class TableSection(
 
             Spacer(modifier = Modifier.height(responsiveHeight(size = 10)))
 
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
+            LazyColumn(modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(responsiveHeight(10))) {
                 items(tableDataList.size) {
                     val item =
                         LinkedHashMap<String, Pair<String, String>>().apply {
@@ -144,6 +151,7 @@ class TableSection(
                             }
                         }
                     TableItem(
+                        tableColors,
                         tableName,
                         it,
                         item,
@@ -190,13 +198,14 @@ class TableSection(
     }
 
     private @Composable fun TableItem(
+        tableColors: TableColors,
         tableName: String,
         index: Int,
         item: Map<String, Pair<String, String>>,
         SingleItemHeader: @Composable () -> Unit,
         expandedItem: Int
     ) {
-        Box(modifier = Modifier.fillMaxWidth().padding(top = responsiveHeight(size = 10))) {
+        Box(modifier = Modifier.fillMaxWidth()) {
             if (expandedItem == index) {
                 Column(
                     modifier =
@@ -217,7 +226,9 @@ class TableSection(
                         DetailItem(
                             modifier = Modifier.fillMaxWidth(),
                             label = it.value.first,
-                            value = it.value.second
+                            value = it.value.second,
+                            labelColor = tableColors.itemsLabelColor,
+                            valueColor = tableColors.itemsValueColor,
                         )
                     }
                 }
@@ -258,16 +269,16 @@ class TableSection(
     }
 
     @Composable
-    fun DetailItem(modifier: Modifier = Modifier, label: String, value: String) {
+    fun DetailItem(modifier: Modifier = Modifier, label: String, value: String,labelColor:Color,valueColor:Color) {
         Row(modifier = modifier, horizontalArrangement = Arrangement.SpaceBetween) {
             Text(
                 text = label,
-                color = ComposeFieldTheme.textColor.copy(alpha = 0.7f),
+                color = labelColor,
                 fontSize = responsiveTextSize(size = 15).sp
             )
             Text(
                 text = value,
-                color = ComposeFieldTheme.textColor,
+                color = valueColor,
                 fontSize = responsiveTextSize(size = 15).sp
             )
         }

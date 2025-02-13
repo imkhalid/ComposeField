@@ -46,6 +46,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.imkhalid.composefield.R
 import com.imkhalid.composefield.composeField.ComposeFieldStateHolder
+import com.imkhalid.composefield.composeField.TableColors
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldType
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
 import com.imkhalid.composefield.composeField.fieldTypes.SectionType
@@ -215,6 +216,7 @@ open class Sections(
         button: @Composable (BoxScope.(onClick: () -> Unit) -> Unit)?,
         tableAddButton: @Composable (BoxScope.(onClick: () -> Unit) -> Unit)?,
         tablePopupButton: @Composable (BoxScope.(onClick: () -> Unit) -> Unit)?,
+        tableColors: TableColors = TableColors(),
         valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
         onLastPageReach: ((Sections) -> Unit)? = null,
     ) {
@@ -245,6 +247,7 @@ open class Sections(
             button = button,
             tableAddButton = tableAddButton,
             tablePopupButton = tablePopupButton,
+            tableColors=tableColors,
             onLastPageReach = onLastPageReach
         )
     }
@@ -616,6 +619,7 @@ private fun Sections.TabSections(
     button: (@Composable BoxScope.(onClick: () -> Unit) -> Unit)?,
     tableAddButton: (@Composable BoxScope.(onClick: () -> Unit) -> Unit)?,
     tablePopupButton: (@Composable BoxScope.(onClick: () -> Unit) -> Unit)?,
+    tableColors: TableColors = TableColors(),
     onLastPageReach: ((Sections) -> Unit)? = null
 ) {
     var currentSection by remember { mutableStateOf("") }
@@ -645,6 +649,7 @@ private fun Sections.TabSections(
                                 .TableBuild(
                                     modifier = Modifier,
                                     sections = listOf(section),
+                                    tableColors = tableColors,
                                     tableName = section.name.replace("_", " "),
                                     description = "",
                                     tableDataList =
@@ -687,7 +692,8 @@ private fun Sections.TabSections(
                                             onEditClick = onEditClick,
                                             onDeleteClick = onDeleteClick,
                                             onExpandClick = onExpandClick,
-                                            textTitle = textTitle
+                                            textTitle = textTitle,
+                                            tableColors = tableColors,
                                         )
                                     },
                                 )
@@ -796,13 +802,13 @@ fun TableItemHeader(
             .height(responsiveHeight(size = 60))
             .dashedBorder(
                 1.dp,
-                ComposeFieldTheme.focusedLabelColor,
+                tableColors.headerBorderColor,
                 RoundedCornerShape(responsiveSize(size = 12)),
                 5.dp,
                 5.dp
             )
             .background(
-                color = ComposeFieldTheme.focusedLabelColor,
+                color = tableColors.headerBackgroundColor,
                 shape = RoundedCornerShape(responsiveSize(size = 12))
             )
             .clickable { onExpandClick.invoke() }
@@ -812,7 +818,7 @@ fun TableItemHeader(
     ) {
         Text(
             text = textTitle,
-            color = ComposeFieldTheme.focusedBorderColor,
+            color = tableColors.headerTextColor,
             fontSize = responsiveTextSize(size = 15).sp
         )
 
