@@ -121,17 +121,20 @@ open class Sections(
             sections.forEach {sec->
                 if (sec.isTable) {
                     tableData[sec.name] = SnapshotStateList()
-                } else {
-                    if (sec.fields.isNotEmpty())
-                        sectionState[sec.name] = sec.fields.map { field ->
-                            val preFieldState =
-                                preState?.getOrDefault(sec.name, emptyList())?.find { x ->
-                                    x.state.field.name == field.name
-                                }
-                            rememberFieldState(fieldModule = field, stateHolder = preFieldState)
-                        }
-                    else
-                        sectionState[sec.name] = sec.subSections.flatMap {
+                }
+                // Removed else and ReGenerating states as it picks old
+                // item state for table in case of TabView
+                //in normal table it was working file
+                if (sec.fields.isNotEmpty())
+                    sectionState[sec.name] = sec.fields.map { field ->
+                        val preFieldState =
+                            preState?.getOrDefault(sec.name, emptyList())?.find { x ->
+                                x.state.field.name == field.name
+                            }
+                        rememberFieldState(fieldModule = field, stateHolder = preFieldState)
+                    }
+                else
+                    sectionState[sec.name] = sec.subSections.flatMap {
                             it.fields.map { field ->
                                 val preFieldState =
                                     preState?.getOrDefault(sec.name, emptyList())?.find { x ->
