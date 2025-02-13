@@ -582,10 +582,14 @@ private fun Sections.TabSections(
                                     tableDataList =
                                         tableData.getOrDefault(section.name, SnapshotStateList()),
                                     preState = null,
-                                    onItemAdded = {
+                                    onItemAdded = {data->
+                                        //Here First Filter only fields that are not hidden so it does not show empty values
+                                        val map = data.mapValues {
+                                            it.value.filter { x->x.state.field.hidden==ComposeFieldYesNo.NO }
+                                        }
                                         tableData
                                             .getOrDefault(section.name, SnapshotStateList())
-                                            .apply { add(it) }
+                                            .apply { add(HashMap(map)) }
                                     },
                                     onDeleteItem = {
                                         tableData
