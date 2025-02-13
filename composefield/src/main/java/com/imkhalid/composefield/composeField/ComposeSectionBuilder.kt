@@ -143,14 +143,29 @@ fun ArrayList<MutableStateFlow<ComposeFieldState>>.validateSection(): Boolean {
     }
 }
 
-fun HashMap<String, List<ComposeFieldStateHolder>>.validate(): Boolean {
-    return this.all { x ->
+fun HashMap<String, List<ComposeFieldStateHolder>>.validate(showError: Boolean=false): Boolean {
+    val res = this.all { x ->
         x.value.all {
             it.state.field.required == ComposeFieldYesNo.YES &&
-                (it.state.text.isNotEmpty() && it.state.hasError.not()) ||
-                (it.state.field.required == ComposeFieldYesNo.NO && it.state.hasError.not())
+                    (it.state.text.isNotEmpty() && it.state.hasError.not()) ||
+                    (it.state.field.required == ComposeFieldYesNo.NO && it.state.hasError.not())
         }
     }
+        if (res.not() && showError) {
+            this.flatMap {
+                it.value
+            }.firstOrNull {
+                it.state.field.required == ComposeFieldYesNo.YES &&
+                        (it.state.text.isEmpty() || it.state.hasError)
+            }?.let { err ->
+                    val message =
+                        if (err.state.errorMessage.isEmpty()) {
+                            "Required Field"
+                        } else err.state.errorMessage
+                    err.updateValidation(Pair(false, message))
+                }
+        }
+    return res
 }
 
 fun List<ComposeFieldStateHolder>.validate(showError: Boolean = false): Boolean {
