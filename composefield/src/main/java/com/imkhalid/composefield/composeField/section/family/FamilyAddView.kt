@@ -56,7 +56,7 @@ internal fun LazyListScope.FamilyAddView(
         Column(modifier = modifier.padding(responsiveSize(size = 20))) {
             Row(modifier = Modifier, horizontalArrangement = Arrangement.SpaceBetween) {
                 Text(
-                    text = "Family's Detail",
+                    text = familyData.title,
                     fontSize = responsiveTextSize(size = 20).sp,
                     color = titleColor,
                     modifier = Modifier.weight(1f)

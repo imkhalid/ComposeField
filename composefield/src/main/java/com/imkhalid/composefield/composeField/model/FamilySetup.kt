@@ -13,6 +13,7 @@ import com.imkhalid.composefield.model.DefaultValues
 data class FamilyData(
     val isEditView: Boolean = false,
     val familySetup: FamilySetup,
+    val title:String="",
     val snapshotStateList: SnapshotStateList<Map<String, String>>,
     var AddButton: (@Composable (onClick: () -> Unit) -> Unit) = {},
     var PopupButton: (@Composable BoxScope.(onClick: () -> Unit) -> Unit) = {},
