@@ -680,8 +680,8 @@ private fun Sections.TabSections(
                                     AddButton = { onClick ->
                                         tableAddButton?.invoke(this@Box, onClick)
                                     },
-                                    DoneButton = { onDone ->
-                                        tablePopupButton?.invoke(this@Box, onDone)
+                                    DoneButton = { onDone,data ->
+                                        tablePopupButton?.invoke(this@Box, onDone,data)
                                     },
                                     SingleItemHeader = {
                                         onEditClick,
@@ -793,6 +793,7 @@ fun TableItemHeader(
     onDeleteClick: () -> Unit,
     onExpandClick: () -> Unit,
     textTitle: String,
+    tableColors: TableColors = TableColors(),
     modifier: Modifier = Modifier
 ) {
     Row(
