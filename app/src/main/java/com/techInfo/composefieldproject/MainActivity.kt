@@ -89,7 +89,7 @@ fun Greeting(
                     }
                 },
                 tableAddButton = null,
-                tablePopupButton = {
+                tablePopupButton = {it,data->
                     Button(onClick = { it.invoke() }) {
                         Text(text = "+ Add")
                     }
