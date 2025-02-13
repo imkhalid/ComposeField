@@ -526,6 +526,7 @@ open class Sections(
                             )
                         )
                     } else {
+                        it.updatedState(Pair(true,""),"")
                         it.updatedField(
                             it.state.field.copy(
                                 required = ComposeFieldYesNo.NO,
