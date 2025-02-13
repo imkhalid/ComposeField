@@ -104,7 +104,7 @@ class TableSection(
 
         var editItem by remember { mutableStateOf(-1) }
         var expandedItem by remember { mutableStateOf(-1) }
-        Column(modifier = Modifier.fillMaxSize().padding(responsiveSize(size = 20))) {
+        Column(modifier = modifier.fillMaxSize().padding(responsiveSize(size = 20))) {
             Text(
                 text = tableName,
                 fontSize = responsiveTextSize(size = 16).sp,
