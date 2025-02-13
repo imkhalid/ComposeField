@@ -20,6 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.imkhalid.composefield.composeField.TableConfig
 import com.imkhalid.composefield.composeField.fieldTypes.SectionType
 import com.imkhalid.composefield.composeField.model.ComposeSectionModule
 import com.imkhalid.composefield.composeField.section.Sections
@@ -88,12 +89,14 @@ fun Greeting(
                         Text(text = "Add")
                     }
                 },
-                tableAddButton = null,
-                tablePopupButton = {it,data->
-                    Button(onClick = { it.invoke() }) {
-                        Text(text = "+ Add")
+                tableConfig = TableConfig(
+                    tableAddButton = null,
+                    tablePopupButton = {it,data->
+                        Button(onClick = { it.invoke() }) {
+                            Text(text = "+ Add")
+                        }
                     }
-                }
+                ),
             )
 }
 
