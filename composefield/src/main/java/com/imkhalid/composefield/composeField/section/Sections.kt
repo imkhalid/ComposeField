@@ -63,7 +63,9 @@ import com.imkhalid.composefield.composeField.responsiveHeight
 import com.imkhalid.composefield.composeField.responsiveSize
 import com.imkhalid.composefield.composeField.responsiveTextSize
 import com.imkhalid.composefield.composeField.responsiveWidth
+import com.imkhalid.composefield.composeField.util.ExpressionEvaluator
 import kotlinx.coroutines.launch
+import java.util.Calendar
 
 class  MyNavHost(val nav:NavHostController,val sections:List<String>,val section:Sections,val onLastPageReach: ((Sections) -> Unit)?) {
 
@@ -497,6 +499,42 @@ open class Sections(
                 }
             }
         }
+        else if (
+            stateHolder.state.field.defaultValues.size==1 &&
+            stateHolder.state.field.defaultValues.first().dependent_child_fields.isNotEmpty()
+            ){
+            val defVal = stateHolder.state.field.defaultValues.first()
+            val checkValue = if (stateHolder.state.field.type==ComposeFieldType.DATE_PICKER){
+                val year = (stateHolder.state.text.split("-").getOrNull(0)?:"")
+                stateHolder.state.text.getAgeFromDOBYear(year.toIntOrNull()?:0)
+            }else{
+                stateHolder.state.text
+            }
+            val isValueMatch = ExpressionEvaluator.evaluateCondition(defVal.text,checkValue)
+            val currentChildName = defVal.dependent_child_fields.map {
+                it.field_name
+            }
+            fields.onEach {
+                if (currentChildName.contains(it.state.field.name)) {
+                    if (isValueMatch) {
+                        it.updatedField(
+                            it.state.field.copy(
+                                required = ComposeFieldYesNo.YES,
+                                hidden = ComposeFieldYesNo.NO
+                            )
+                        )
+                    } else {
+                        it.updatedField(
+                            it.state.field.copy(
+                                required = ComposeFieldYesNo.NO,
+                                hidden = ComposeFieldYesNo.YES
+                            )
+                        )
+                    }
+                }
+            }
+
+        }
     }
 
     internal fun updatedChildValues(
@@ -843,4 +881,19 @@ fun TableItemHeader(
             )
         }
     }
+}
+
+
+
+fun String.getAgeFromDOBYear(year:Int): String {
+    var age = ""
+    try {
+        this.takeIf { it.isNotEmpty() }?.let {
+            val today = Calendar.getInstance()
+            age = "${today.get(Calendar.YEAR) - year}"
+        }
+    } catch (e: Exception) {
+        age = ""
+    }
+    return age
 }
