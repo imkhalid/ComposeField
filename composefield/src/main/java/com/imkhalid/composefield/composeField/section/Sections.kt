@@ -212,6 +212,7 @@ open class Sections(
 
     @Composable
     fun TabBuild(
+        modifier: Modifier=Modifier,
         sections: List<ComposeSectionModule>,
         familyData: FamilyData? = null,
         onValueChange: ((name: String, newValue: String) -> Unit)? = null,
@@ -241,6 +242,7 @@ open class Sections(
             }
         }
         TabSections(
+            modifier=modifier,
             nav = MyNavHost(nav,sectionNames,this,onLastPageReach),
             sections = sections,
             familyData = familyData,
@@ -649,6 +651,7 @@ open class Sections(
 
 @Composable
 private fun Sections.TabSections(
+    modifier: Modifier = Modifier,
     nav: MyNavHost,
     sections: List<ComposeSectionModule>,
     familyData: FamilyData?,
@@ -664,7 +667,7 @@ private fun Sections.TabSections(
     var familyExpandItem = remember {
         mutableIntStateOf(-1)
     }
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
