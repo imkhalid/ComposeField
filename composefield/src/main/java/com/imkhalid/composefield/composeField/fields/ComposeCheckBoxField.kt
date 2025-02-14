@@ -56,12 +56,14 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.imkhalid.composefield.composeField.ComposeFieldState
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldType
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardTypeAdv
+import com.imkhalid.composefield.composeField.model.ComposeFieldModule
 import com.imkhalid.composefield.composeField.states.rememberFieldState
 import com.imkhalid.composefield.theme.ComposeFieldTheme
 import com.imkhalid.composefieldproject.composeField.fields.ComposeField
@@ -127,56 +129,57 @@ class ComposeCheckBoxField : ComposeField() {
                     onClick = toggleDropdown,
                     enabled = state.field.isEditable==ComposeFieldYesNo.YES
                 ) {
-                    Row(
-                        modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .align(Alignment.CenterStart)
-                            .horizontalScroll(scrollState)
-                            .padding(start = 20.dp, top = 7.dp),
-                    ) {
-                        if (selectedvalues.isNotEmpty()) {
-                            for (element in selectedvalues) {
-                                ElevatedFilterChip(
-                                    modifier = Modifier.height(20.dp),
-                                    selected = false,
-                                    onClick = toggleDropdown,
-                                    colors =
-                                        FilterChipDefaults.elevatedFilterChipColors(
-                                            containerColor = ComposeFieldTheme.unfocusedBorderColor,
-                                            selectedContainerColor =
-                                                ComposeFieldTheme.unfocusedBorderColor,
-                                            disabledSelectedContainerColor =
-                                                ComposeFieldTheme.unfocusedBorderColor,
-                                            selectedLabelColor = ComposeFieldTheme.textColor,
-                                        ),
-                                    label = {
-                                        Text(
-                                            text = element,
-                                            fontSize = 10.sp,
-                                            fontWeight = FontWeight.Medium,
-                                            color = ComposeFieldTheme.textColor
-                                        )
-                                    }
-                                )
-                                Spacer(modifier = Modifier.padding(3.dp))
-                            }
-                        } else {
-                            Text(
-                                modifier = Modifier.fillMaxWidth(),
-                                text = state.field.label,
-                                color = ComposeFieldTheme.textColor
-                            )
-                        }
-                    }
                     Icon(
                         imageVector = Icons.Default.ArrowDropDown,
                         contentDescription = null,
                         modifier = Modifier
                             .align(Alignment.CenterEnd)
-                            .padding(10.dp)
+                            .padding(5.dp)
                     )
-                    Text(text = label, modifier = Modifier.padding(start = 20.dp, top = 7.dp))
+                    Column {
+                        Text(text = label, modifier = Modifier.padding(start = 20.dp, top = 7.dp, end = 10.dp))
+                        Row(
+                            modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .horizontalScroll(scrollState)
+                                .padding(start = 20.dp, top = 2.dp, bottom = 7.dp),
+                        ) {
+                            if (selectedvalues.isNotEmpty()) {
+                                for (element in selectedvalues) {
+                                    ElevatedFilterChip(
+                                        modifier = Modifier.height(20.dp),
+                                        selected = false,
+                                        onClick = toggleDropdown,
+                                        colors =
+                                        FilterChipDefaults.elevatedFilterChipColors(
+                                            containerColor = ComposeFieldTheme.unfocusedBorderColor,
+                                            selectedContainerColor =
+                                            ComposeFieldTheme.unfocusedBorderColor,
+                                            disabledSelectedContainerColor =
+                                            ComposeFieldTheme.unfocusedBorderColor,
+                                            selectedLabelColor = ComposeFieldTheme.textColor,
+                                        ),
+                                        label = {
+                                            Text(
+                                                text = element,
+                                                fontSize = 10.sp,
+                                                fontWeight = FontWeight.Medium,
+                                                color = ComposeFieldTheme.textColor
+                                            )
+                                        }
+                                    )
+                                    Spacer(modifier = Modifier.padding(3.dp))
+                                }
+                            } else {
+                                Text(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    text = state.field.label,
+                                    color = ComposeFieldTheme.textColor
+                                )
+                            }
+                        }
+                    }
                     if (expanded && options.size > 3) {
                         CheckboxDialog(
                             options = options,
@@ -277,7 +280,7 @@ class ComposeCheckBoxField : ComposeField() {
                     Modifier
                         .padding(5.dp)
                         .fillMaxWidth()
-                        .height(TextFieldDefaults.MinHeight)
+                        .heightIn(min = TextFieldDefaults.MinHeight)
                         .focusRequester(focusRequester)
                         .onFocusChanged { s -> isFocused = s.isFocused }
                         .shadow(elevation = 5.dp, shape = RoundedCornerShape(8.dp))
@@ -454,5 +457,26 @@ private fun CheckBoxField3Options(modifier: Modifier = Modifier,enabled: Boolean
                     .padding(5.dp),
                 content = { content.invoke() }
             )
+    }
+}
+
+
+@Preview
+@Composable
+fun PreviewCheckBOx(){
+    ComposeCheckBoxField()
+        .Build(
+            modifier = Modifier,
+            state = ComposeFieldState(
+                field = ComposeFieldModule(
+                    label ="Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,",
+                    type = ComposeFieldType.CHECK_BOX,
+                    keyboardType = ComposeKeyboardTypeAdv.TEXT,
+                    isEditable = ComposeFieldYesNo.YES,
+                    required = ComposeFieldYesNo.YES
+                )
+            )
+        ) { pair, value->
+
     }
 }
