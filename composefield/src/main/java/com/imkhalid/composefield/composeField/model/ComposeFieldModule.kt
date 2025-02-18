@@ -83,10 +83,10 @@ data class ComposeFieldModule(
     private fun getHiddenValue(field: Int,parentFieldValueId:String?): ComposeFieldYesNo {
         //parent id null or empty means it should not hide,
         // field == 1 means it should not hide.
-        return if (parentFieldValueId.isNullOrEmpty() || field==1)
-            ComposeFieldYesNo.NO
-        else
+        return if (parentFieldValueId.isNullOrEmpty().not() || field==0)
             ComposeFieldYesNo.YES
+        else
+            ComposeFieldYesNo.NO
     }
 
     private fun getInitialValue(customField: CustomFields, selectedValue: String): String {
