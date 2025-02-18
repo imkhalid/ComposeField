@@ -308,43 +308,47 @@ class TableSection(
         onDone: (HashMap<String, List<ComposeFieldStateHolder>>) -> Unit,
     ) {
         Dialog(onDismissRequest = onDismiss) {
-            Column(
-                Modifier
-                    .background(
-                        color = Color(0xFFF5F5F5),
-                        shape = RoundedCornerShape(responsiveSize(12))
-                    )
-                    .padding(responsiveSize(size = 10)),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                sectionNames.clear()
-                Box(modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(responsiveSize(size = 20))) {
-                    Text(
-                        text = name,
-                        fontSize = responsiveTextSize(size = 18).sp,
-                        fontWeight = FontWeight.Medium,
-                        color = ComposeFieldTheme.focusedLabelColor,
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                    Image(
-                        painter = painterResource(android.R.drawable.ic_menu_close_clear_cancel),
-                        contentDescription = null,
-                        modifier =
+            Box(modifier=Modifier.fillMaxSize()) {
+                Column(
+                    Modifier
+                        .background(
+                            color = Color(0xFFF5F5F5),
+                            shape = RoundedCornerShape(responsiveSize(12))
+                        ).align(Alignment.Center)
+                        .padding(responsiveSize(size = 10)),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    sectionNames.clear()
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(responsiveSize(size = 20))
+                    ) {
+                        Text(
+                            text = name,
+                            fontSize = responsiveTextSize(size = 18).sp,
+                            fontWeight = FontWeight.Medium,
+                            color = ComposeFieldTheme.focusedLabelColor,
+                            modifier = Modifier.align(Alignment.Center)
+                        )
+                        Image(
+                            painter = painterResource(android.R.drawable.ic_menu_close_clear_cancel),
+                            contentDescription = null,
+                            modifier =
                             Modifier
                                 .align(Alignment.CenterEnd)
                                 .clickable { onDismiss.invoke() }
+                        )
+                    }
+                    Build(
+                        modifier = modifier,
+                        sections = sections,
+                        preState = preState,
+                        onValueChange = onValueChange,
+                        valueChangeForChild = valueChangeForChild
                     )
+                    DoneButton?.invoke(this, { onDone.invoke(sectionState) }, sectionState)
                 }
-                Build(
-                    modifier = modifier.weight(1f),
-                    sections = sections,
-                    preState = preState,
-                    onValueChange = onValueChange,
-                    valueChangeForChild = valueChangeForChild
-                )
-                DoneButton?.invoke(this,{onDone.invoke(sectionState)},sectionState)
             }
         }
     }
