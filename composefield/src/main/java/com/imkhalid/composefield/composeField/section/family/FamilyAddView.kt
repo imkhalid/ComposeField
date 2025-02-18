@@ -238,7 +238,7 @@ fun FamilyPopup(
                                         it.state.field.copy(
                                             minValue = maxValue,
                                             maxValue = minValue,
-                                            helperText =
+                                            /*helperText =
                                             if (
                                                 minValue.isNotEmpty() &&
                                                 maxValue.isNotEmpty()
@@ -272,7 +272,7 @@ fun FamilyPopup(
                                                         minValue
                                                     )
                                                 }"
-                                            } else ""
+                                            } else ""*/
                                         )
                                     )
                                 }
