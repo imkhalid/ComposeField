@@ -33,7 +33,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ElevatedFilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -175,7 +174,8 @@ class ComposeCheckBoxField : ComposeField() {
                                 Text(
                                     modifier = Modifier.fillMaxWidth(),
                                     text = state.field.label,
-                                    color = ComposeFieldTheme.textColor
+                                    color = ComposeFieldTheme.unfocusedLabelColor,
+                                    fontSize = responsiveTextSize(size = 15).sp,
                                 )
                             }
                         }
