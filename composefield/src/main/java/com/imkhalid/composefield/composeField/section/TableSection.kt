@@ -119,9 +119,8 @@ class TableSection(
             if (tableConfig.showLimit) {
                 Text(
                     text =
-                    if (min == max && min > 0) "Add at least $min Item(s)"
-                    else if (min == 0 && max > 0) "Max $max Item(s) can be Added"
-                    else "Items should be between $min to $max",
+                    if ((min == max && min > 0)||(min == 0 && max > 0)) "Maximum $max ${tableConfig.validationName}  can be Added"
+                    else "You can add between  $min and $max ${tableConfig.validationName}.",
                     fontSize = responsiveTextSize(size = 12).sp,
                     color = tableConfig.tableColors.sectionLimitColor
                 )

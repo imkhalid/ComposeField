@@ -9,6 +9,7 @@ data class TableConfig(
     val showTitle: Boolean = false,
     val showLimit: Boolean = false,
     val showDescription:Boolean = false,
+    val validationName:String = "Record(s)",
     val tableAddButton: @Composable (ColumnScope.(onClick: () -> Unit) -> Unit)? = null,
     val tablePopupButton: @Composable (ColumnScope.(onClick: () -> Unit, data:HashMap<String,List<ComposeFieldStateHolder>>) -> Unit)?=null,
 )
