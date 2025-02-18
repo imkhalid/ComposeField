@@ -268,6 +268,32 @@ class ComposeDatePickerField : ComposeField() {
         }
     }
 
+    private @Composable
+    fun BoxScope.EndIcons(state: ComposeFieldState,onClearCallback:()->Unit) {
+        Row(
+            modifier =  Modifier
+            .align(Alignment.CenterEnd)
+            .padding(horizontal = 10.dp)
+        ) {
+            if (
+                state.field.keyboardType is ComposeKeyboardTypeAdv.DATE &&
+                state.field.keyboardType.showEndClear && state.text.isNotEmpty()
+                ){
+                Image(
+                    imageVector =  Icons.Rounded.Clear,
+                    contentDescription = "",
+                    modifier =Modifier.padding(horizontal = responsiveHPaddings(5))
+                        .clickable { onClearCallback.invoke() }
+                )
+            }
+            Image(
+                painter = painterResource(id = R.drawable.ic_calendar),
+                contentDescription = "",
+                modifier =Modifier.padding(start = responsiveHPaddings(5))
+            )
+        }
+    }
+
     @Composable
     private fun DatePickerField(
         modifier: Modifier,
@@ -315,6 +341,48 @@ class ComposeDatePickerField : ComposeField() {
                 ) {
                     content?.invoke(this)
                 }
+        }
+    }
+    @Composable
+    private fun HelperText(state:ComposeFieldState){
+        var showText:Boolean by remember{ mutableStateOf(false) }
+        val helperText = buildAnnotatedString {
+            if (state.field.keyboardType is ComposeKeyboardTypeAdv.DATE){
+                if (state.field.keyboardType.ageCalculation && state.text.isNotEmpty()) {
+                    showText=true
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color.Black,
+                            fontSize = responsiveTextSize(size = 12).sp
+                        )
+                    ) {
+                        append(getAgeStr(state.text)+"\n")
+                    }
+                }
+                val helperText = state.field.keyboardType.helperText.ifEmpty {state.field.helperText}
+                if (helperText.isNotEmpty()){
+                    if (showText.not()) showText=true
+                    withStyle(style = SpanStyle(
+                        color = Color.Gray.copy(0.8f),
+                        fontSize = responsiveTextSize(size = 11).sp
+                    )){
+                        append(helperText)
+                    }
+                }
+
+            }
+        }
+        if (showText) {
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 20.dp, top = 2.dp),
+                text = helperText,
+                style = TextStyle(
+                    lineHeight = 10.sp
+                ),
+                fontWeight = FontWeight.Normal,
+            )
         }
     }
 }

@@ -152,5 +152,30 @@ sealed class ComposeKeyboardTypeAdv : Parcelable {
             override fun newArray(size: Int): Array<NONE?> = arrayOfNulls(size)
         }
     }
+
+    data class DATE(val showEndClear:Boolean = false,val ageCalculation:Boolean = false,val helperText:String="") : ComposeKeyboardTypeAdv() {
+        constructor(parcel: Parcel) : this(
+            parcel.readByte() != 0.toByte(), // Read boolean
+            parcel.readByte() != 0.toByte(), // Read boolean
+            parcel.readString() ?: "" // Read string
+        )
+        override fun writeToParcel(parcel: Parcel, flags: Int) {
+            parcel.writeByte(if (showEndClear) 1 else 0) // Write boolean
+            parcel.writeByte(if (ageCalculation) 1 else 0) // Write boolean
+            parcel.writeString(helperText)
+        }
+        override fun describeContents() = 0
+
+
+        companion object CREATOR : Parcelable.Creator<DATE> {
+            override fun createFromParcel(parcel: Parcel): DATE {
+                return DATE(parcel)
+            }
+
+            override fun newArray(size: Int): Array<DATE?> {
+                return arrayOfNulls(size)
+            }
+        }
+    }
 }
 

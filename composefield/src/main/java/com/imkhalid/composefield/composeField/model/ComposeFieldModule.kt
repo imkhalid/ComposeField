@@ -66,8 +66,18 @@ data class ComposeFieldModule(
             hidden = getHiddenValue(customField.visible,customField.parent_field_value_id),
             hideInitial = getHiddenValue(customField.visible,customField.parent_field_value_id),
             pattern = customField.regex.orEmpty(),
+            helperText = getHelperText(customField.field_hint,customField.field_name),
             patternMessage = if (customField.regex.isNullOrEmpty().not()) customField.field_hint.orEmpty() else ""
         )
+    }
+
+    private fun getHelperText(hint: String?,name:String):String{
+        return if (hint.isNullOrEmpty().not())
+            hint?:""
+        else if(name.contains("dob",true)|| name.contains("date_of_birth",true)){
+            "DOB should be same as National ID Card"
+        }else
+            ""
     }
 
     private fun getHiddenValue(field: Int,parentFieldValueId:String?): ComposeFieldYesNo {

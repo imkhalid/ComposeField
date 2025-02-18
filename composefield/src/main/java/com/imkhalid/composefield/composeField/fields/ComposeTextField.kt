@@ -424,6 +424,7 @@ class ComposeTextField : ComposeField() {
                 is ComposeKeyboardTypeAdv.EMAIL -> KeyboardType.Email
                 is ComposeKeyboardTypeAdv.TEXT,
                 is ComposeKeyboardTypeAdv.SENSITIVE,
+                is ComposeKeyboardTypeAdv.DATE,
                 is ComposeKeyboardTypeAdv.NONE -> KeyboardType.Text
                 is ComposeKeyboardTypeAdv.PASSWORD -> KeyboardType.Password
             }
