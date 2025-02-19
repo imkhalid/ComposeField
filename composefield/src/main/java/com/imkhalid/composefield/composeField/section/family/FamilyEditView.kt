@@ -39,11 +39,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.imkhalid.composefield.composeField.ComposeFieldStateHolder
 import com.imkhalid.composefield.composeField.model.FamilyData
-import com.imkhalid.composefield.composeField.validate
 import com.imkhalid.composefieldproject.composeField.fields.ComposeFieldBuilder
 import com.imkhalid.composefield.composeField.responsiveHeight
 import com.imkhalid.composefield.composeField.responsiveSize
 import com.imkhalid.composefield.composeField.responsiveTextSize
+import com.imkhalid.composefield.composeField.util.validate
 
 internal fun LazyListScope.FamilyEditView(
     userCountry:String,

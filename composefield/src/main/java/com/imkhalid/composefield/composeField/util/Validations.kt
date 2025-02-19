@@ -1,11 +1,13 @@
 package com.imkhalid.composefield.composeField.util
 
+import com.imkhalid.composefield.composeField.ComposeFieldState
 import com.imkhalid.composefield.composeField.ComposeFieldStateHolder
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldType
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
 import com.imkhalid.composefield.composeField.model.FamilyData
 import com.imkhalid.composefield.composeField.section.Sections
 import com.imkhalid.composefield.model.DefaultValues
+import kotlinx.coroutines.flow.MutableStateFlow
 import java.util.Calendar
 
 
@@ -149,4 +151,64 @@ fun String.getAgeFromDOBYear(year:Int): String {
         age = ""
     }
     return age
+}
+
+
+
+fun ArrayList<MutableStateFlow<ComposeFieldState>>.validateSection(): Boolean {
+    return this.all { x ->
+        val state = x.value
+        (state.field.required == ComposeFieldYesNo.YES &&
+                (state.text.isNotEmpty() && state.hasError.not())) ||
+                (state.field.required == ComposeFieldYesNo.NO && state.hasError.not())
+    }
+}
+
+fun java.util.HashMap<String, List<ComposeFieldStateHolder>>.validate(showError: Boolean=false): Boolean {
+    val res = this.all { x ->
+        x.value.all {
+            it.state.field.required == ComposeFieldYesNo.YES &&
+                    (it.state.text.isNotEmpty() && it.state.hasError.not()) ||
+                    (it.state.field.required == ComposeFieldYesNo.NO && it.state.hasError.not())
+        }
+    }
+    if (res.not() && showError) {
+        this.flatMap {
+            it.value
+        }.firstOrNull {
+            it.state.field.required == ComposeFieldYesNo.YES &&
+                    (it.state.text.isEmpty() || it.state.hasError)
+        }?.let { err ->
+            val message =
+                if (err.state.errorMessage.isEmpty()) {
+                    "Required Field"
+                } else err.state.errorMessage
+            err.updateValidation(Pair(false, message))
+        }
+    }
+    return res
+}
+
+fun List<ComposeFieldStateHolder>.validate(showError: Boolean = false): Boolean {
+    val res =
+        this.all {
+            it.state.field.required == ComposeFieldYesNo.YES &&
+                    (it.state.text.isNotEmpty() && it.state.hasError.not()) ||
+                    (it.state.field.required == ComposeFieldYesNo.NO && it.state.hasError.not())
+        }
+    if (res.not() && showError) {
+        this.firstOrNull {
+            it.state.field.required == ComposeFieldYesNo.YES &&
+                    (it.state.text.isEmpty() || it.state.hasError)
+        }
+            ?.let { err ->
+                val message =
+                    if (err.state.errorMessage.isEmpty()) {
+                        "Required Field"
+                    } else err.state.errorMessage
+                err.updateValidation(Pair(false, message))
+            }
+    }
+
+    return res
 }

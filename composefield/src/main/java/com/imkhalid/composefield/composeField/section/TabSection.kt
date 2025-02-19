@@ -36,7 +36,7 @@ import com.imkhalid.composefield.composeField.rememberFieldState
 import com.imkhalid.composefield.composeField.responsiveHeight
 import com.imkhalid.composefield.composeField.responsiveSize
 import com.imkhalid.composefield.composeField.util.invalidFamily
-import com.imkhalid.composefield.composeField.validate
+import com.imkhalid.composefield.composeField.util.validate
 import kotlinx.coroutines.launch
 
 @Composable
