@@ -70,9 +70,16 @@ fun Greeting(
 
         Sections(
             rememberNavController(),
-            sectionType = SectionType.TAB(tableConfig = TableConfig())
+            sectionType = SectionType.TAB(tableConfig = TableConfig(
+                tableAddButton = null,
+                tablePopupButton = {it,data->
+                    Button(onClick = { it.invoke() }) {
+                        Text(text = "+ Add")
+                    }
+                }
+            ),)
         )
-            .TabBuild(
+            .Build(
                 sections = ArrayList(state.section?.data?.risk_sections?.map {
                     ComposeSectionModule(isTable = true, max = 5).parseSectionToComposeSec(it)
                 } ?: emptyList()).apply {
@@ -89,14 +96,6 @@ fun Greeting(
                         Text(text = "Add")
                     }
                 },
-                tableConfig = TableConfig(
-                    tableAddButton = null,
-                    tablePopupButton = {it,data->
-                        Button(onClick = { it.invoke() }) {
-                            Text(text = "+ Add")
-                        }
-                    }
-                ),
             )
 }
 
