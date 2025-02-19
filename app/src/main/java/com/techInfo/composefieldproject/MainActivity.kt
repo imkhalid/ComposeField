@@ -70,7 +70,7 @@ fun Greeting(
 
         Sections(
             rememberNavController(),
-            sectionType = SectionType.Tab
+            sectionType = SectionType.TAB(tableConfig = TableConfig())
         )
             .TabBuild(
                 sections = ArrayList(state.section?.data?.risk_sections?.map {
