@@ -3,6 +3,7 @@ package com.imkhalid.composefield.composeField.model
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldType
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardTypeAdv
+import com.imkhalid.composefield.composeField.util.isMatchingAny
 import com.imkhalid.composefield.model.CustomFields
 import com.imkhalid.composefield.model.DefaultValues
 
@@ -52,7 +53,11 @@ data class ComposeFieldModule(
             name = customField.field_name,
             childID = customField.child_id.toString(),
             type = customField.type.fieldType(),
-            keyboardType = customField.inputType.keyboardType(),
+            keyboardType = customField.inputType.keyboardType(
+                customField.type.fieldType(),
+                customField.field_name,
+                customField.field_hint
+            ),
             value = getInitialValue(customField, selected_value),
             label = customField.label,
             hint = customField.field_hint ?: "",
@@ -189,9 +194,18 @@ fun String.fieldType(): ComposeFieldType {
     }
 }
 
-fun String.keyboardType(): ComposeKeyboardTypeAdv {
+fun String.keyboardType(type:ComposeFieldType,fieldName:String,hint: String?): ComposeKeyboardTypeAdv {
     return when (this.lowercase()) {
-        "text" -> ComposeKeyboardTypeAdv.TEXT
+        "text" ->{
+            if (type==ComposeFieldType.DATE_PICKER){
+                val isDob = fieldName.isMatchingAny("dob","date_of_birth")
+                ComposeKeyboardTypeAdv.DATE(
+                    ageCalculation = isDob,
+                    helperText = hint?:if (isDob)"DOB should be same as National ID Card." else ""
+                )
+            }else
+                ComposeKeyboardTypeAdv.TEXT
+        }
         "cnic" -> ComposeKeyboardTypeAdv.CNIC
         "email" -> ComposeKeyboardTypeAdv.EMAIL
         "mobile",

@@ -10,6 +10,11 @@ import com.imkhalid.composefield.model.DefaultValues
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.util.Calendar
 
+/**isMatchingAny is Used to check Contains with Ignore case true,
+ *  but it can take as much matching conditions*/
+internal fun String.isMatchingAny(vararg with:String) =
+    with.any { this.contains(it,true) }
+
 
 internal fun updateDependantChildren(fields: List<ComposeFieldStateHolder>, stateHolder: ComposeFieldStateHolder, newValue:String){
     if (
