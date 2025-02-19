@@ -75,12 +75,6 @@ import java.util.Calendar
 open class Sections(
     internal val nav: NavHostController,
     private val sectionType: SectionType,
-    private val stepSectionContentItem:
-    @Composable() (LazyItemScope.(name: String, clickCallback: (sectionName: String) -> Unit) -> Unit)? =
-        null,
-    private val tabContentItem:
-    @Composable() (LazyItemScope.(name: String, isSelected: Boolean, clickCallback: (() -> Unit)?) -> Unit)? =
-        null,
     val userCountry:String="2"
 ) {
     val sectionState: HashMap<String, List<ComposeFieldStateHolder>> = LinkedHashMap()
@@ -108,10 +102,6 @@ open class Sections(
         onValueChange: ((name: String, newValue: String) -> Unit)? = null,
         valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
         onLastPageReach: ((Sections) -> Unit)? = null,
-        errorDialog:
-            (@Composable
-            (onClick: (positive: Boolean) -> Unit, onDismiss: () -> Unit) -> Unit)? =
-            null
     ) {
         if (sectionNames.isEmpty()) {
             sections.mapTo(sectionNames) { it.name }
@@ -150,40 +140,42 @@ open class Sections(
         }
         val myNav = MyNavHost(nav,sectionNames,this,onLastPageReach)
         when (sectionType) {
-            SectionType.Simple ->
-                SimpleSections(
-                    nav = myNav,
-                    modifier = modifier,
-                    sections = sections,
-                    showTitle = showTitle,
-                    valueChangeForChild = valueChangeForChild,
-                    button = button,
-                    onLastPageReach = onLastPageReach,
-                    onValueChange = onValueChange
-                )
-            SectionType.SIMPLE_VERTICAL ->
-                SimpleVertical(
-                    nav = myNav,
-                    modifier = modifier,
-                    sections = sections,
-                    showTitle = showTitle,
-                    familyData = familyData,
-                    valueChangeForChild = valueChangeForChild,
-                    button = button,
-                    onLastPageReach = onLastPageReach,
-                    onValueChange = onValueChange
-                )
-            SectionType.Tab ->
+            is SectionType.SIMPLE ->
+                if (sectionType.horizontalSection) {
+                    SimpleSections(
+                        nav = myNav,
+                        modifier = modifier,
+                        sections = sections,
+                        showTitle = showTitle,
+                        valueChangeForChild = valueChangeForChild,
+                        button = button,
+                        onLastPageReach = onLastPageReach,
+                        onValueChange = onValueChange
+                    )
+                }else{
+                    SimpleVertical(
+                        nav = myNav,
+                        modifier = modifier,
+                        sections = sections,
+                        showTitle = showTitle,
+                        familyData = familyData,
+                        valueChangeForChild = valueChangeForChild,
+                        button = button,
+                        onLastPageReach = onLastPageReach,
+                        onValueChange = onValueChange
+                    )
+                }
+            is SectionType.TAB ->
                 TabSections(
                     nav = myNav,
                     sections = sections,
                     familyData = familyData,
                     valueChangeForChild = valueChangeForChild,
                     button = button,
-                    tableConfig = TableConfig(),
+                    tableConfig = sectionType.tableConfig,
                     onLastPageReach = onLastPageReach
                 )
-            SectionType.Step ->
+            is SectionType.STEP ->
                 StepsSections(
                     nav = myNav,
                     modifier = modifier,
@@ -192,8 +184,8 @@ open class Sections(
                     valueChangeForChild = valueChangeForChild,
                     sectionNames = sectionNames,
                     sectionState = sectionState,
-                    stepSectionContentItem = stepSectionContentItem,
-                    errorDialog = errorDialog
+                    stepSectionContentItem = sectionType.stepSectionContentItem,
+                    errorDialog = sectionType.errorDialog
                 )
         }
     }
@@ -351,12 +343,14 @@ open class Sections(
                 )
         ) {
             items(sectionNames.size) {
-                tabContentItem?.invoke(
-                    this@items,
-                    sectionNames[it],
-                    sectionNames[it] == currentSection,
-                    clickCallback
-                )
+                if (sectionType is SectionType.TAB) {
+                    sectionType.tabContentItem?.invoke(
+                        this@items,
+                        sectionNames[it],
+                        sectionNames[it] == currentSection,
+                        clickCallback
+                    )
+                }
             }
         }
         coroutineScope.launch {
@@ -569,7 +563,7 @@ private fun Sections.TabSections(
 
                             TableSection(
                                     nav = rememberNavController(),
-                                    sectionType = SectionType.SIMPLE_VERTICAL,
+                                    sectionType = SectionType.SIMPLE(false),
                                     min = section.min,
                                     max = section.max
                                 )
