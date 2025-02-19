@@ -105,7 +105,7 @@ class ComposeTextField : ComposeField() {
             errorTextColor = ComposeFieldTheme.textColor
         )
 
-        Column(modifier = modifier) {
+        Column(modifier = modifier.bringIntoViewRequester(localRequester)) {
             CompositionLocalProvider(toolbar) {
                 when (ComposeFieldTheme.fieldStyle) {
                     ComposeFieldTheme.FieldStyle.OUTLINE ->
