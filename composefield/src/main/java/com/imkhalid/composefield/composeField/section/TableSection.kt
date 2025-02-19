@@ -31,12 +31,14 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
+import com.imkhalid.composefield.R
 import com.imkhalid.composefield.composeField.ComposeFieldStateHolder
 import com.imkhalid.composefield.composeField.TableColors
 import com.imkhalid.composefield.composeField.TableConfig
@@ -49,6 +51,7 @@ import com.imkhalid.composefield.composeField.responsiveHeight
 import com.imkhalid.composefield.composeField.responsiveSize
 import com.imkhalid.composefield.composeField.responsiveTextSize
 import com.imkhalid.composefield.composeField.responsiveWidth
+import com.imkhalid.composefield.theme.dashedBorder
 
 class TableSection(
     nav: NavHostController,
@@ -350,6 +353,66 @@ class TableSection(
                     DoneButton?.invoke(this, { onDone.invoke(sectionState) }, sectionState)
                 }
             }
+        }
+    }
+}
+
+
+
+@Composable
+fun TableItemHeader(
+    onEditClick: () -> Unit,
+    onDeleteClick: () -> Unit,
+    onExpandClick: () -> Unit,
+    textTitle: String,
+    tableColors: TableColors = TableColors(),
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier =
+        Modifier
+            .fillMaxWidth()
+            .height(responsiveHeight(size = 60))
+            .dashedBorder(
+                1.dp,
+                tableColors.headerBorderColor,
+                RoundedCornerShape(responsiveSize(size = 12)),
+                5.dp,
+                5.dp
+            )
+            .background(
+                color = tableColors.headerBackgroundColor,
+                shape = RoundedCornerShape(responsiveSize(size = 12))
+            )
+            .clickable { onExpandClick.invoke() }
+            .padding(responsiveSize(size = 15)),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.Top
+    ) {
+        Text(
+            text = textTitle,
+            color = tableColors.headerTextColor,
+            fontSize = responsiveTextSize(size = 15).sp
+        )
+
+        Row {
+            Image(
+                painter = painterResource(id = R.drawable.ic_edit_table),
+                contentDescription = "",
+                modifier = Modifier.clickable { onEditClick.invoke() }
+            )
+            Spacer(modifier = Modifier.width(responsiveWidth(size = 10)))
+            Image(
+                painter = painterResource(id = R.drawable.ic_delete_table),
+                contentDescription = "",
+                modifier = Modifier.clickable { onDeleteClick.invoke() }
+            )
+            Spacer(modifier = Modifier.width(responsiveWidth(size = 10)))
+            Image(
+                imageVector = Icons.Default.KeyboardArrowDown,
+                contentDescription = "",
+                colorFilter = ColorFilter.tint(ComposeFieldTheme.focusedLabelColor),
+            )
         }
     }
 }
