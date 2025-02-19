@@ -213,6 +213,9 @@ private fun Sections.TabSections(
                 if (
                     (dataList.size) >= currentSectionOf.min && dataList.size <= currentSectionOf.max
                 ) {
+                    if(sectionType is SectionType.TAB ){
+                        sectionType.sectionValidated?.invoke()
+                    }
                     navigateToNext(nav, onLastPageReach)
                 }
             } else {
@@ -221,6 +224,9 @@ private fun Sections.TabSections(
                         .getOrDefault(currentSection, emptyList())
                         .validate(showError = true)
                 ) {
+                    if(sectionType is SectionType.TAB ){
+                        sectionType.sectionValidated?.invoke()
+                    }
                     navigateToNext(nav, onLastPageReach)
                 }
             }

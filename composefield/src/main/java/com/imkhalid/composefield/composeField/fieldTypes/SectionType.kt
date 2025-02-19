@@ -30,6 +30,7 @@ sealed class SectionType {
         val tableConfig: TableConfig,
         val tabContentItem: @Composable (LazyItemScope.(name: String, isSelected: Boolean, clickCallback: (() -> Unit)?) -> Unit)? =
             null,
+        val sectionValidated:(()->Unit)?=null,
     ) : SectionType()
 
     data class STEP(
