@@ -5,6 +5,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -17,14 +18,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -41,7 +40,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.imkhalid.composefield.composeField.ComposeFieldState
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
-import com.imkhalid.composefield.composeField.section.textColor
 import com.imkhalid.composefield.theme.ComposeFieldTheme
 import com.imkhalid.composefieldproject.composeField.fields.ComposeField
 import com.imkhalid.composefield.composeField.responsiveTextSize
@@ -57,6 +55,7 @@ class ComposeRadioGroupField : ComposeField() {
         MyBuild(state = state, newValue = newValue, modifier = modifier)
     }
 
+    @OptIn(ExperimentalFoundationApi::class)
     @Composable
     private fun MyBuild(
         state: ComposeFieldState,
@@ -66,7 +65,7 @@ class ComposeRadioGroupField : ComposeField() {
         val twoOption =
             state.field.defaultValues.size == 2 &&
                 state.field.defaultValues.all { x -> x.text.length <= 30 }
-        RadioGroupField(modifier = modifier) {
+        RadioGroupField(modifier = modifier.bringIntoViewRequester(localRequester)) {
             val label = buildAnnotatedString {
                 withStyle(
                     style =

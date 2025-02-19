@@ -1,8 +1,13 @@
 package com.imkhalid.composefieldproject.composeField.fields
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import com.imkhalid.composefield.R
@@ -25,6 +30,8 @@ import com.imkhalid.composefield.composeField.states.rememberFieldState
 abstract class ComposeField {
     var currentUserCountryCode = ""
     var focusCallback: ((isValidated: Boolean, fieldName: String) -> Unit)? = null
+    @OptIn(ExperimentalFoundationApi::class)
+    lateinit var localRequester:BringIntoViewRequester
 
     @Composable
     fun TrailingIcon(
@@ -40,6 +47,25 @@ abstract class ComposeField {
                 contentDescription = "Toggle password visibility",
                 modifier = Modifier.clickable { onClick?.invoke() }
             )
+        }
+    }
+
+    @OptIn(ExperimentalFoundationApi::class)
+    @Composable
+    fun PreBuild(
+        modifier: Modifier,
+        state: ComposeFieldState,
+        newValue: (Pair<Boolean, String>, String) -> Unit
+    ) {
+        // ✅ Common logic that must run before any child implementation
+        localRequester = remember { BringIntoViewRequester() }
+
+        // Call the abstract method which will be implemented by child classes
+        Build(modifier, state, newValue)
+        LaunchedEffect(state.hasError) {
+            if (state.hasError) {
+                localRequester.bringIntoView()
+            }
         }
     }
 
@@ -85,7 +111,7 @@ class ComposeFieldBuilder {
 
         field.currentUserCountryCode = userCountry
         if (state.field.hidden == ComposeFieldYesNo.NO)
-            field.Build(
+            field.PreBuild(
                 state = state,
                 newValue = { error, newVal ->
                     updateFieldState(error, newVal, stateHolder, onValueChangeForChild)

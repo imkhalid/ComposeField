@@ -1,10 +1,12 @@
 package com.imkhalid.composefield.composeField.fields
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
@@ -193,6 +195,7 @@ class ComposeCurrencyField : ComposeField() {
         }
     }
 
+    @OptIn(ExperimentalFoundationApi::class)
     @Composable
     private fun ContainerField(
         modifier: Modifier = Modifier,
@@ -258,6 +261,7 @@ class ComposeCurrencyField : ComposeField() {
             shape = RoundedCornerShape(8.dp),
             modifier =
             modifier
+                .bringIntoViewRequester(localRequester)
                 .focusRequester(focusRequester)
                 .onFocusChanged { s -> isFocused = s.isFocused }
                 .padding(start = 5.dp, top = 5.dp, end = 5.dp)
