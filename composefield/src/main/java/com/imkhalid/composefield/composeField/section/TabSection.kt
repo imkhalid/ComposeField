@@ -68,7 +68,11 @@ fun Sections.TabBuild(
                             if (value.isNotEmpty()) {
                                 sc.fields.find { x -> x.name == key }?.let { fiel ->
                                     rememberFieldState(
-                                        fieldModule = fiel.copy(value = value),
+                                        fieldModule = fiel.copy(
+                                            value = value,
+                                            hideInitial = ComposeFieldYesNo.NO,
+                                            hidden = ComposeFieldYesNo.NO
+                                        ),
                                         stateHolder = null
                                     )
                                 }
