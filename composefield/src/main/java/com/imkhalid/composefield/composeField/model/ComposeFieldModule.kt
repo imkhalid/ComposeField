@@ -68,8 +68,16 @@ data class ComposeFieldModule(
             maxValue = getMaxValue(customField, customField.type.fieldType()),
             sortNumber = customField.field_sort_number,
             sectionSortNumber = sortNumber,
-            hidden = getHiddenValue(customField.visible,customField.parent_field_value_id),
-            hideInitial = getHiddenValue(customField.visible,customField.parent_field_value_id),
+            hidden = getHiddenValue(
+                customField.visible,
+                customField.parent_field_value_id,
+                customField.selected_value
+            ),
+            hideInitial = getHiddenValue(
+                customField.visible,
+                customField.parent_field_value_id,
+                customField.selected_value
+            ),
             pattern = customField.regex.orEmpty(),
             helperText = getHelperText(customField.field_hint,customField.field_name),
             patternMessage = if (customField.regex.isNullOrEmpty().not()) customField.field_hint.orEmpty() else ""
@@ -85,10 +93,11 @@ data class ComposeFieldModule(
             ""
     }
 
-    private fun getHiddenValue(field: Int,parentFieldValueId:String?): ComposeFieldYesNo {
+    private fun getHiddenValue(field: Int,parentFieldValueId:String?,selectedValue: String?): ComposeFieldYesNo {
         //parent id null or empty means it should not hide,
+        //checking selected value if its prefilled than it should not hide
         // field == 1 means it should not hide.
-        return if (parentFieldValueId.isNullOrEmpty().not() || field==0)
+        return if ((parentFieldValueId.isNullOrEmpty().not() && selectedValue.isNullOrEmpty()) || field==0)
             ComposeFieldYesNo.YES
         else
             ComposeFieldYesNo.NO
