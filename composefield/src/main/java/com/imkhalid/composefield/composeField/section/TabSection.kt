@@ -58,12 +58,28 @@ fun Sections.TabBuild(
                 sectionNames.add("Family Details")
             }
         }
-        sections.forEach {
-            if (it.isTable) {
-                tableData[it.name] = SnapshotStateList()
+        sections.forEach {sc->
+            if (sc.isTable) {
+                tableData[sc.name] = SnapshotStateList<HashMap<String, List<ComposeFieldStateHolder>>>().apply {
+                    sc.prefilledTableData?.onEach {singleRow->
+
+                        val list =singleRow.keys.mapNotNull {key->
+                            val value = singleRow.getOrDefault(key,"")
+                            if (value.isNotEmpty()) {
+                                sc.fields.find { x -> x.name == key }?.let { fiel ->
+                                    rememberFieldState(
+                                        fieldModule = fiel.copy(value = value),
+                                        stateHolder = null
+                                    )
+                                }
+                            }else null
+                        }
+                        this.add(hashMapOf(sc.name to list))
+                    }
+                }
             } else {
-                sectionState[it.name] =
-                    it.fields.map { field ->
+                sectionState[sc.name] =
+                    sc.fields.map { field ->
                         rememberFieldState(fieldModule = field, stateHolder = null)
                     }
             }

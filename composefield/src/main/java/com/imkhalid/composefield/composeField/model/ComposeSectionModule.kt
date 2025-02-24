@@ -13,7 +13,8 @@ data class ComposeSectionModule(
     var subSections: List<ComposeSectionModule> = emptyList(),
     var isTable: Boolean = false,
     var min: Int = 0,
-    var max: Int = 0
+    var max: Int = 0,
+    val prefilledTableData:List<HashMap<String,String>>? =null
 ) {
     fun parseSectionToComposeSec(entry: Map.Entry<String, section>) = apply {
         name = entry.key

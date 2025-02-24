@@ -13,6 +13,7 @@ data class CustomFields(
     val popular_values: List<DefaultValues>,
     var selectedValue: String? = "",
     var selected_value: String? = "",
+    var selected_value_arr: List<String?> = emptyList(),
     var required: Int,
     val min_rule: String,
     val max_rule: String,
