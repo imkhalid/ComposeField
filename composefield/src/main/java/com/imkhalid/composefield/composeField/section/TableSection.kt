@@ -45,6 +45,8 @@ import com.imkhalid.composefield.composeField.TableConfig
 import com.imkhalid.composefield.composeField.fieldTypes.SectionType
 import com.imkhalid.composefield.composeField.model.ChildValueModel
 import com.imkhalid.composefield.composeField.model.ComposeSectionModule
+import com.imkhalid.composefield.composeField.model.SectionState
+import com.imkhalid.composefield.composeField.model.TableSectionState
 import com.imkhalid.composefield.composeField.rememberFieldState
 import com.imkhalid.composefield.theme.ComposeFieldTheme
 import com.imkhalid.composefield.composeField.responsiveHeight
@@ -68,12 +70,12 @@ class TableSection(
         tableConfig: TableConfig = TableConfig(),
         tableName: String,
         description: String,
-        tableDataList: SnapshotStateList<HashMap<String, List<ComposeFieldStateHolder>>> =
+        tableDataList: SnapshotStateList<SectionState> =
             SnapshotStateList(),
         preState: HashMap<String, List<ComposeFieldStateHolder>>? = null,
-        onItemAdded: (HashMap<String, List<ComposeFieldStateHolder>>) -> Unit,
+        onItemAdded: (List<SectionState>) -> Unit,
         onDeleteItem: (index: Int) -> Unit,
-        onItemEdited: (HashMap<String, List<ComposeFieldStateHolder>>, index: Int) -> Unit,
+        onItemEdited: (List<SectionState>, index: Int) -> Unit,
         onValueChange: ((name: String, newValue: String) -> Unit)? = null,
         valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
         SingleItemHeader:
@@ -92,14 +94,19 @@ class TableSection(
         if (sectionNames.isEmpty()) {
             sections.mapTo(sectionNames) { it.name }
             sections.forEach {
-                sectionState[it.name] =
-                    it.fields.map { field ->
-                        val preFieldState =
-                            preState?.getOrDefault(it.name, emptyList())?.find { x ->
-                                x.state.field.name == field.name
-                            }
-                        rememberFieldState(fieldModule = field, stateHolder = preFieldState)
-                    }
+                sectionState.add(
+                    SectionState(
+                        it.name,
+                        it.fields.map { field ->
+                            val preFieldState =
+                                preState?.getOrDefault(it.name, emptyList())?.find { x ->
+                                    x.state.field.name == field.name
+                                }
+                            rememberFieldState(fieldModule = field, stateHolder = preFieldState)
+                        }
+                    )
+                )
+
             }
         }
         var showDialog by remember { mutableStateOf(false) }
@@ -149,9 +156,11 @@ class TableSection(
                 items(tableDataList.size) {
                     val item =
                         LinkedHashMap<String, Pair<String, String>>().apply {
-                            tableDataList[it].forEach { x ->
-                                x.value.sortedBy { y->y.state.field.sortNumber }
-                                    .forEach { y ->
+                            tableDataList
+                                .getOrNull(it)
+                                ?.fieldState
+                                ?.sortedBy { y->y.state.field.sortNumber }
+                                ?.forEach { y ->
                                     put(
                                         y.state.field.name,
                                         Pair(
@@ -160,7 +169,6 @@ class TableSection(
                                         )
                                     )
                                 }
-                            }
                         }
                     TableItem(
                         tableConfig.tableColors,
@@ -302,13 +310,13 @@ class TableSection(
     fun TableItemDialog(
         name: String,
         modifier: Modifier = Modifier,
-        preState: HashMap<String, List<ComposeFieldStateHolder>>?,
+        preState: SectionState?,
         onValueChange: ((name: String, newValue: String) -> Unit)? = null,
         valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
-        DoneButton: (@Composable ColumnScope.(onClick: () -> Unit,data:HashMap<String, List<ComposeFieldStateHolder>>) -> Unit)?,
+        DoneButton: (@Composable ColumnScope.(onClick: () -> Unit,data:List<SectionState>) -> Unit)?,
         sections: List<ComposeSectionModule>,
         onDismiss: () -> Unit,
-        onDone: (HashMap<String, List<ComposeFieldStateHolder>>) -> Unit,
+        onDone: (List<SectionState>) -> Unit,
     ) {
         Dialog(onDismissRequest = onDismiss) {
             Box(modifier=Modifier.fillMaxSize()) {

@@ -17,6 +17,7 @@ import com.imkhalid.composefield.composeField.ComposeFieldStateHolder
 import com.imkhalid.composefield.composeField.MyNavHost
 import com.imkhalid.composefield.composeField.model.ChildValueModel
 import com.imkhalid.composefield.composeField.model.ComposeSectionModule
+import com.imkhalid.composefield.composeField.model.SectionState
 import com.imkhalid.composefield.composeField.util.validatedSection
 
 @Composable
@@ -25,7 +26,7 @@ internal fun Sections.StepsSections(
     modifier: Modifier,
     sectionNames: List<String>,
     sections: List<ComposeSectionModule>,
-    sectionState: HashMap<String, List<ComposeFieldStateHolder>>,
+    sectionState: List<SectionState>,
     stepSectionContentItem:
     (@Composable
     LazyItemScope.(name: String, clickCallback: (sectionName: String) -> Unit) -> Unit)?,
@@ -70,9 +71,7 @@ internal fun Sections.StepsSections(
                                     onClick = {
                                         val isValidated =
                                             it.subSections.map { subSec ->
-                                                validatedSection(
-                                                    sectionState[subSec.name] ?: emptyList()
-                                                )
+                                                validatedSection(sectionState.find { x->x.name==subSec.name}?.fieldState)
                                             }
 
                                         if (isValidated.all { x -> x }) nav.nav.popBackStack()
@@ -91,7 +90,7 @@ internal fun Sections.StepsSections(
                                 valueChangeForChild = valueChangeForChild,
                                 clickCallback = {
                                     val isValidated =
-                                        validatedSection(sectionState[it.name] ?: emptyList())
+                                        validatedSection(sectionState.find { x->x.name==it.name}?.fieldState)
                                     if (isValidated) nav.nav.popBackStack() else showDialog = true
                                 }
                             )

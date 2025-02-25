@@ -18,12 +18,13 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.imkhalid.composefield.composeField.ComposeFieldStateHolder
 import com.imkhalid.composefield.composeField.MyNavHost
 import com.imkhalid.composefield.composeField.fieldTypes.SectionType
 import com.imkhalid.composefield.composeField.model.ChildValueModel
 import com.imkhalid.composefield.composeField.model.ComposeSectionModule
 import com.imkhalid.composefield.composeField.model.FamilyData
+import com.imkhalid.composefield.composeField.model.SectionState
+import com.imkhalid.composefield.composeField.model.TableSectionState
 import com.imkhalid.composefield.composeField.navigateToNext
 import com.imkhalid.composefield.composeField.rememberFieldState
 import com.imkhalid.composefield.composeField.responsiveHeight
@@ -39,10 +40,9 @@ open class Sections(
     internal val sectionType: SectionType,
     val userCountry:String="2"
 ) {
-    val sectionState: HashMap<String, List<ComposeFieldStateHolder>> = LinkedHashMap()
+    val sectionState: ArrayList<SectionState> = arrayListOf()
     val tableData:
-        HashMap<String, SnapshotStateList<HashMap<String, List<ComposeFieldStateHolder>>>> =
-        HashMap()
+        ArrayList<TableSectionState> = arrayListOf()
     val sectionNames: ArrayList<String> = arrayListOf()
 
 
@@ -52,7 +52,7 @@ open class Sections(
         sections: List<ComposeSectionModule>,
         familyData: FamilyData? = null,
         showTitle: Boolean = false,
-        preState: HashMap<String, List<ComposeFieldStateHolder>>? = null,
+        preState: SectionState? = null,
         button: (@Composable BoxScope.(onClick: () -> Unit) -> Unit)? = null,
         onValueChange: ((name: String, newValue: String) -> Unit)? = null,
         valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
@@ -111,7 +111,7 @@ open class Sections(
         sections: List<ComposeSectionModule>,
         familyData: FamilyData? = null,
         showTitle: Boolean = false,
-        preState: HashMap<String, List<ComposeFieldStateHolder>>? = null,
+        preState: SectionState? = null,
         button: (@Composable BoxScope.(onClick: () -> Unit) -> Unit)? = null,
         onValueChange: ((name: String, newValue: String) -> Unit)? = null,
         valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
@@ -126,30 +126,30 @@ open class Sections(
             }
             sections.forEach {sec->
                 if (sec.isTable) {
-                    tableData[sec.name] = SnapshotStateList()
+                    tableData.add(TableSectionState(sec.name, SnapshotStateList()))
                 }
                 // Removed else and ReGenerating states as it picks old
                 // item state for table in case of TabView
                 //in normal table it was working file
                 if (sec.fields.isNotEmpty())
-                    sectionState[sec.name] = sec.fields.map { field ->
+                    sectionState.add(SectionState(sec.name,sec.fields.map { field ->
                         val preFieldState =
-                            preState?.getOrDefault(sec.name, emptyList())?.find { x ->
+                            preState?.fieldState?.find { x ->
                                 x.state.field.name == field.name
                             }
                         rememberFieldState(fieldModule = field, stateHolder = preFieldState)
-                    }
-                else
-                    sectionState[sec.name] = sec.subSections.flatMap {
-                            it.fields.map { field ->
-                                val preFieldState =
-                                    preState?.getOrDefault(sec.name, emptyList())?.find { x ->
-                                        x.state.field.name == field.name
-                                    }
-                                rememberFieldState(fieldModule = field, stateHolder = preFieldState)
-                            }
+                    }))
+                else{
+                    sectionState.add(SectionState(sec.name,sec.subSections.flatMap {
+                        it.fields.map { field ->
+                            val preFieldState =
+                                preState?.fieldState?.find { x ->
+                                    x.state.field.name == field.name
+                                }
+                            rememberFieldState(fieldModule = field, stateHolder = preFieldState)
                         }
-
+                    }))
+                }
             }
         }
         val myNav = MyNavHost(nav,sectionNames,this,onLastPageReach)
@@ -300,14 +300,14 @@ open class Sections(
                     modifier = Modifier.padding(5.dp)
                 )
             section.fields.forEach { field ->
-                val sectionsStateList = this@Sections.sectionState[parentSectionName?:section.name]?: emptyList()
-                val selectedState =sectionsStateList.find { x ->
+                val sectionsStateList = this@Sections.sectionState.find { x->x.name==(parentSectionName?:section.name)}
+                val selectedState =sectionsStateList?.fieldState?.find { x ->
                     x.state.field.name == field.name
                 }
 
 
                 val state =
-                    sectionState[parentSectionName?:section.name]?.find { x -> x.state.field.name == field.name }
+                    sectionState.find { x->x.name==(parentSectionName?:section.name)}?.fieldState?.find { x -> x.state.field.name == field.name }
                         ?: rememberFieldState(fieldModule = field, stateHolder = selectedState)
 
                 ComposeFieldBuilder()
@@ -316,7 +316,7 @@ open class Sections(
                         modifier = modifier,
                         stateHolder = state,
                         onValueChange = {name,value->
-                            updateDependantChildren(sectionsStateList,state,value)
+                            updateDependantChildren(sectionsStateList?.fieldState,state,value)
                             onValueChange?.invoke(name,value)
                         }
                         ,
@@ -329,7 +329,7 @@ open class Sections(
                                         updatedChildValues(
                                             state.state.field.childID,
                                             it,
-                                            sectionState[section.name] ?: emptyList()
+                                            sectionState.find { x->x.name==section.name}?.fieldState
                                         )
                                     }
                                 )

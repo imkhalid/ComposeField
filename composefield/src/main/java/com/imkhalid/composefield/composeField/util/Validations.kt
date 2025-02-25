@@ -16,7 +16,7 @@ internal fun String.isMatchingAny(vararg with:String) =
     with.any { this.contains(it,true) }
 
 
-internal fun updateDependantChildren(fields: List<ComposeFieldStateHolder>, stateHolder: ComposeFieldStateHolder, newValue:String){
+internal fun updateDependantChildren(fields: List<ComposeFieldStateHolder>?, stateHolder: ComposeFieldStateHolder, newValue:String){
     if (
         stateHolder.state.field.type is ComposeFieldType.Dropdown ||
         stateHolder.state.field.type is ComposeFieldType.RadioButton ||
@@ -28,7 +28,7 @@ internal fun updateDependantChildren(fields: List<ComposeFieldStateHolder>, stat
         val allChild = stateHolder.state.field.defaultValues.flatMap {
             it.dependent_child_fields.map { it.field_name }
         }
-        fields.onEach {
+        fields?.onEach {
             if (currentChildName.contains(it.state.field.name)){
                 it.updatedField(
                     it.state.field.copy(
@@ -61,7 +61,7 @@ internal fun updateDependantChildren(fields: List<ComposeFieldStateHolder>, stat
         val currentChildName = defVal.dependent_child_fields.map {
             it.field_name
         }
-        fields.onEach {
+        fields?.onEach {
             if (currentChildName.contains(it.state.field.name)) {
                 if (isValueMatch) {
                     it.updatedField(
@@ -88,22 +88,22 @@ internal fun updateDependantChildren(fields: List<ComposeFieldStateHolder>, stat
 internal fun updatedChildValues(
     childID: String,
     newValues: List<DefaultValues>,
-    sectionState: List<ComposeFieldStateHolder>
+    sectionState: List<ComposeFieldStateHolder>?
 ) {
     val childs = childID.split(",")
     childs.forEach {
         sectionState
-            .find { x -> x.state.field.id == it }
+            ?.find { x -> x.state.field.id == it }
             ?.let { it.updatedFieldDefaultValues(newValues) }
     }
 }
 
-internal fun validatedSection(sectionState: List<ComposeFieldStateHolder>): Boolean {
-    return sectionState.all { x ->
+internal fun validatedSection(sectionState: List<ComposeFieldStateHolder>?): Boolean {
+    return sectionState?.all { x ->
         x.state.field.required == ComposeFieldYesNo.YES &&
                 x.state.text.isNotEmpty() &&
                 x.state.hasError.not()
-    }
+    }?:true
 }
 
 
@@ -133,7 +133,7 @@ fun getFieldByFieldName(
 
 
 fun Sections.getCurrentSection(): List<ComposeFieldStateHolder>? {
-    return sectionState[nav.currentDestination?.route.orEmpty()]
+    return sectionState.find { x->x.name== nav.currentDestination?.route.orEmpty()}?.fieldState
 }
 
 fun List<ComposeFieldStateHolder>.getFieldByFieldName(name: String): ComposeFieldStateHolder? {
