@@ -58,8 +58,8 @@ data class ComposeFieldModule(
             description = customField.description ?: "",
             defaultValues = customField.default_values,
             required = customField.required.toString().CHOICE(),
-            minValue = getMinValue(customField, customField.type.fieldType()),
-            maxValue = getMaxValue(customField, customField.type.fieldType()),
+            minValue = getMinValue(customField, customField.type.fieldType(customField.inputType,customField.field_name,customField.field_hint)),
+            maxValue = getMaxValue(customField, customField.type.fieldType(customField.inputType,customField.field_name,customField.field_hint)),
             sortNumber = customField.field_sort_number,
             sectionSortNumber = sortNumber,
             hidden = getHiddenValue(
@@ -99,7 +99,7 @@ data class ComposeFieldModule(
 
     private fun getInitialValue(customField: CustomFields, selectedValue: String): String {
         return if (selectedValue.isNotEmpty()) selectedValue
-        else if (customField.type.fieldType() == ComposeFieldType.SWITCH) {
+        else if (customField.type.fieldType(customField.inputType,customField.field_name,customField.field_hint) == ComposeFieldType.Switch) {
             val falseValue =
                 customField.default_values
                     .find { x ->
@@ -116,47 +116,50 @@ data class ComposeFieldModule(
 
     fun getMinValue(customField: CustomFields, type: ComposeFieldType): String {
         return when (type) {
-            ComposeFieldType.TEXT_BOX,
-            ComposeFieldType.TEXT_AREA -> customField.min_rule
-            ComposeFieldType.DATE_PICKER,
-            ComposeFieldType.TIME_PICKER,
-            ComposeFieldType.DATE_TIME_PICKER -> customField.min_date
-            ComposeFieldType.DROP_DOWN,
-            ComposeFieldType.SWITCH,
-            ComposeFieldType.CHECK_BOX,
-            ComposeFieldType.RADIO_BUTTON -> ""
+            is ComposeFieldType.TextBox -> customField.min_rule
+            is ComposeFieldType.DatePicker,
+            is ComposeFieldType.TimePicker,
+            is ComposeFieldType.DateTimePicker -> customField.min_date
+            is ComposeFieldType.Dropdown,
+            is ComposeFieldType.Switch,
+            is ComposeFieldType.CheckBox,
+            is ComposeFieldType.RadioButton,
+            is ComposeFieldType.Currency,
+            is ComposeFieldType.MobileNo -> ""
         }
     }
 
     fun getMaxValue(customField: CustomFields, type: ComposeFieldType): String {
         return when (type) {
-            ComposeFieldType.TEXT_BOX -> customField.max_rule
-            ComposeFieldType.TEXT_AREA -> customField.max_rule
-            ComposeFieldType.DATE_PICKER,
-            ComposeFieldType.TIME_PICKER,
-            ComposeFieldType.DATE_TIME_PICKER -> customField.max_date
-            ComposeFieldType.DROP_DOWN,
-            ComposeFieldType.SWITCH,
-            ComposeFieldType.CHECK_BOX,
-            ComposeFieldType.RADIO_BUTTON -> ""
+            is ComposeFieldType.TextBox -> customField.max_rule
+            is ComposeFieldType.DatePicker,
+            is ComposeFieldType.TimePicker,
+            is ComposeFieldType.DateTimePicker -> customField.max_date
+            is ComposeFieldType.Dropdown,
+            is ComposeFieldType.Switch,
+            is ComposeFieldType.CheckBox,
+            is ComposeFieldType.RadioButton,
+            is ComposeFieldType.Currency,
+            is ComposeFieldType.MobileNo -> ""
         }
     }
 
     fun getTextFromValue(value: String): String {
         return when (this.type) {
-            ComposeFieldType.TEXT_BOX,
-            ComposeFieldType.TEXT_AREA,
-            ComposeFieldType.DATE_PICKER,
-            ComposeFieldType.TIME_PICKER,
-            ComposeFieldType.DATE_TIME_PICKER -> {
+            is ComposeFieldType.TextBox,
+            is ComposeFieldType.DatePicker,
+            ComposeFieldType.TimePicker,
+            ComposeFieldType.Currency,
+            is ComposeFieldType.MobileNo,
+            ComposeFieldType.DateTimePicker -> {
                 value
             }
-            ComposeFieldType.SWITCH,
-            ComposeFieldType.DROP_DOWN,
-            ComposeFieldType.RADIO_BUTTON -> {
+            ComposeFieldType.Switch,
+            ComposeFieldType.Dropdown,
+            ComposeFieldType.RadioButton -> {
                 this.defaultValues.find { x -> x.id == value }?.text ?: ""
             }
-            ComposeFieldType.CHECK_BOX -> {
+            ComposeFieldType.CheckBox -> {
                 val finalStr = buildString {
                     value.split("::").forEach { newVal ->
                         if (newVal.isNotEmpty()) {
@@ -195,8 +198,8 @@ fun String.fieldType(inputType:String,fieldName:String,fieldHint:String?): Compo
                 )
             }
         }
-        "textarea" -> ComposeFieldType.TextArea(
-            keyboardType = inputType.lowercase().keyboardType()
+        "textarea" -> ComposeFieldType.TextBox(
+            keyboardType = ComposeKeyboardType.TEXTAREA
         )
         "dropdown" -> ComposeFieldType.Dropdown
         "date" -> ComposeFieldType.DatePicker(
