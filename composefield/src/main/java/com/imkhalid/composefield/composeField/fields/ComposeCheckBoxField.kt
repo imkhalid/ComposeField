@@ -63,9 +63,9 @@ import androidx.compose.ui.unit.sp
 import com.imkhalid.composefield.composeField.ComposeFieldState
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldType
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
-import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardTypeAdv
+import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardType
 import com.imkhalid.composefield.composeField.model.ComposeFieldModule
-import com.imkhalid.composefield.composeField.states.rememberFieldState
+import com.imkhalid.composefield.composeField.rememberFieldState
 import com.imkhalid.composefield.theme.ComposeFieldTheme
 import com.imkhalid.composefieldproject.composeField.fields.ComposeField
 import com.imkhalid.composefieldproject.composeField.fields.ComposeFieldBuilder
@@ -340,8 +340,7 @@ class ComposeCheckBoxField : ComposeField() {
                             name = "search",
                             label = "Search",
                             id = "",
-                            type = ComposeFieldType.TEXT_BOX,
-                            keyboardType = ComposeKeyboardTypeAdv.TEXT,
+                            type = ComposeFieldType.TextBox(keyboardType = ComposeKeyboardType.TEXT),
                             value = "",
                         ),
                         onValueChange = {_,value->
@@ -473,8 +472,7 @@ fun PreviewCheckBOx(){
             state = ComposeFieldState(
                 field = ComposeFieldModule(
                     label ="Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,",
-                    type = ComposeFieldType.CHECK_BOX,
-                    keyboardType = ComposeKeyboardTypeAdv.TEXT,
+                    type = ComposeFieldType.CheckBox,
                     isEditable = ComposeFieldYesNo.YES,
                     required = ComposeFieldYesNo.YES
                 )
