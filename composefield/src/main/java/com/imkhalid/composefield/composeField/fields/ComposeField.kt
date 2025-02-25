@@ -3,7 +3,6 @@ package com.imkhalid.composefieldproject.composeField.fields
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -15,7 +14,7 @@ import com.imkhalid.composefield.composeField.ComposeFieldState
 import com.imkhalid.composefield.composeField.ComposeFieldStateHolder
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldType
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
-import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardTypeAdv
+import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardType
 import com.imkhalid.composefield.composeField.fields.ComposeCheckBoxField
 import com.imkhalid.composefield.composeField.fields.ComposeCurrencyField
 import com.imkhalid.composefield.composeField.fields.ComposeDatePickerField
@@ -25,7 +24,7 @@ import com.imkhalid.composefield.composeField.fields.ComposeRadioGroupField
 import com.imkhalid.composefield.composeField.fields.ComposeSwitchField
 import com.imkhalid.composefield.composeField.fields.ComposeTimePickerField
 import com.imkhalid.composefield.composeField.model.ComposeFieldModule
-import com.imkhalid.composefield.composeField.states.rememberFieldState
+import com.imkhalid.composefield.composeField.rememberFieldState
 
 abstract class ComposeField {
     var currentUserCountryCode = ""
@@ -39,7 +38,8 @@ abstract class ComposeField {
         passwordVisible: Boolean,
         onClick: (() -> Unit)? = null
     ) {
-        if (field.keyboardType is ComposeKeyboardTypeAdv.PASSWORD) {
+        val keyboardType = (field.type as ComposeFieldType.TextBox).keyboardType
+        if (keyboardType is ComposeKeyboardType.PASSWORD) {
             Image(
                 painter =
                     if (passwordVisible) painterResource(id = R.drawable.ic_open_password)
@@ -90,23 +90,16 @@ class ComposeFieldBuilder {
         val state = stateHolder.state
         val field =
             when (state.field.type) {
-                ComposeFieldType.TEXT_BOX,
-                ComposeFieldType.TEXT_AREA -> {
-                    if (state.field.keyboardType is ComposeKeyboardTypeAdv.MOBILE_NO) {
-                        ComposeMobileField()
-                    } else if (state.field.keyboardType is ComposeKeyboardTypeAdv.CURRENCY){
-                      ComposeCurrencyField()
-                    } else {
-                        ComposeTextField().setFocusCallback(focusCallback)
-                    }
-                }
-                ComposeFieldType.DROP_DOWN -> ComposeDropDownField()
-                ComposeFieldType.DATE_PICKER -> ComposeDatePickerField()
-                ComposeFieldType.TIME_PICKER -> ComposeTimePickerField()
-                ComposeFieldType.DATE_TIME_PICKER -> ComposeDatePickerField()
-                ComposeFieldType.SWITCH -> ComposeSwitchField()
-                ComposeFieldType.CHECK_BOX -> ComposeCheckBoxField()
-                ComposeFieldType.RADIO_BUTTON -> ComposeRadioGroupField()
+                is ComposeFieldType.TextBox-> ComposeTextField().setFocusCallback(focusCallback)
+                is ComposeFieldType.MobileNo -> ComposeMobileField()
+                is ComposeFieldType.Currency-> ComposeCurrencyField()
+                is ComposeFieldType.Dropdown -> ComposeDropDownField()
+                is ComposeFieldType.DatePicker -> ComposeDatePickerField()
+                is ComposeFieldType.TimePicker -> ComposeTimePickerField()
+                is ComposeFieldType.DateTimePicker -> ComposeDatePickerField()
+                is ComposeFieldType.Switch -> ComposeSwitchField()
+                is ComposeFieldType.CheckBox -> ComposeCheckBoxField()
+                is ComposeFieldType.RadioButton -> ComposeRadioGroupField()
             }
 
         field.currentUserCountryCode = userCountry
