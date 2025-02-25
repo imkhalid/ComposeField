@@ -10,7 +10,6 @@ import androidx.compose.runtime.setValue
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldType
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardType
-import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardTypeAdv
 import com.imkhalid.composefield.composeField.model.ComposeFieldModule
 import com.imkhalid.composefield.model.DefaultValues
 import com.imkhalid.composefield.model.LoadingModel
@@ -23,28 +22,7 @@ data class ComposeFieldState(
     var errorMessage: String = "",
 ) {}
 
-@Deprecated(
-    message = """
-        This rememberFieldState function is deprecated and replaced with the new version using ComposeKeyboardTypeAdv.
-        
-         Old Usage:
-            val state = rememberFieldState(name = "username", keyboardType = ComposeKeyboardType.TEXT)
-        
-         New Usage:
-            val state = rememberFieldState(name = "username", keyboardType = ComposeKeyboardTypeAdv.TEXT)
-        
-         Changes:
-        - `keyboardType` now uses `ComposeKeyboardTypeAdv`, which allows additional properties.
-        - Improved flexibility by allowing `MOBILE_NO` to support country codes and single-number restrictions.
 
-        Please migrate to the new rememberFieldState function.
-    """,
-    replaceWith = ReplaceWith(
-        expression = "rememberFieldState(name, label, id, type, keyboardType, value, defaultValues)",
-        imports = ["com.imkhalid.composefield.composeField.states.rememberFieldState", "com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardTypeAdv"]
-    ),
-    level = DeprecationLevel.WARNING // Use WARNING if you want a softer deprecation
-)
 @Composable
 fun rememberFieldState(
     name: String,
@@ -59,15 +37,15 @@ fun rememberFieldState(
         ComposeFieldState(
             text = value,
             field =
-                ComposeFieldModule(
-                    id = id,
-                    name = name,
-                    type = type,
-                    keyboardType = keyboardType.getAdvanceKeyboardType(),
-                    value = value,
-                    label = label,
-                    defaultValues = defaultValues
-                )
+            ComposeFieldModule(
+                id = id,
+                name = name,
+                type = type,
+                keyboardType = keyboardType,
+                value = value,
+                label = label,
+                defaultValues = defaultValues
+            )
         )
     return rememberSaveable(
         inputs = arrayOf(id, name, type, keyboardType, value, label, defaultValues),
@@ -197,7 +175,7 @@ class ComposeFieldStateHolder(initialField: ComposeFieldState) {
                                     it[1] as String,
                                     it[2] as String,
                                     it[3] as ComposeFieldType,
-                                    it[4] as ComposeKeyboardTypeAdv,
+                                    it[4] as ComposeKeyboardType,
                                     it[5] as String,
                                     it[6] as String,
                                     defaultValues = it[7] as List<DefaultValues>,
