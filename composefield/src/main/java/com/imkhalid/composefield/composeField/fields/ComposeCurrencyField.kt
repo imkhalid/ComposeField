@@ -37,14 +37,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.imkhalid.composefield.composeField.ComposeFieldState
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
-import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardTypeAdv
+import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardType
 import com.imkhalid.composefield.composeField.mask.rememberCurrencyVisualTransformation
 import com.imkhalid.composefield.composeField.util.EnglishNumberToWords
 import com.imkhalid.composefield.theme.ComposeFieldTheme
 import com.imkhalid.composefieldproject.composeField.fields.ComposeField
 import com.imkhalid.composefield.composeField.responsiveTextSize
 import java.text.DecimalFormat
-import java.util.Locale
 
 
 class ComposeCurrencyField : ComposeField() {
@@ -163,11 +162,6 @@ class ComposeCurrencyField : ComposeField() {
                     newValue.invoke(validated, newVal)
                 }
             },
-            prefix = {
-                if (state.field.keyboardType is ComposeKeyboardTypeAdv.MOBILE_NO)
-                    Text(text = "+1", modifier = Modifier.clickable {})
-                else null
-            },
             keyboardOptions = getKeyboardOptions(),
             isError = state.hasError,
             label = { Text(state.field.label) },
@@ -227,11 +221,6 @@ class ComposeCurrencyField : ComposeField() {
                 ) { validated, newVal ->
                     newValue.invoke(validated, newVal)
                 }
-            },
-            prefix = {
-                if (state.field.keyboardType is ComposeKeyboardTypeAdv.MOBILE_NO)
-                    Text(text = "+1", modifier = Modifier.clickable {})
-                else null
             },
             keyboardOptions = getKeyboardOptions(),
             isError = state.hasError,
