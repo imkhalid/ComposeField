@@ -2,7 +2,7 @@ package com.imkhalid.composefield.composeField.model
 
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldType
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
-import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardTypeAdv
+import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardType
 import com.imkhalid.composefield.composeField.util.isMatchingAny
 import com.imkhalid.composefield.model.CustomFields
 import com.imkhalid.composefield.model.DefaultValues
@@ -11,8 +11,7 @@ import com.imkhalid.composefield.model.DefaultValues
 data class ComposeFieldModule(
     val id: String = "",
     val name: String = "",
-    val type: ComposeFieldType = ComposeFieldType.TEXT_BOX,
-    val keyboardType: ComposeKeyboardTypeAdv = ComposeKeyboardTypeAdv.TEXT,
+    val type: ComposeFieldType = ComposeFieldType.TextBox(keyboardType = ComposeKeyboardType.TEXT),
     val value: String = "",
     val label: String = "",
     val hint: String = "",
@@ -52,12 +51,7 @@ data class ComposeFieldModule(
             parent_field_value_id=customField.parent_field_value_id,
             name = customField.field_name,
             childID = customField.child_id.toString(),
-            type = customField.type.fieldType(),
-            keyboardType = customField.inputType.keyboardType(
-                customField.type.fieldType(),
-                customField.field_name,
-                customField.field_hint
-            ),
+            type = customField.type.fieldType(customField.inputType,customField.field_name, customField.field_hint),
             value = getInitialValue(customField, selected_value),
             label = customField.label,
             hint = customField.field_hint ?: "",
@@ -190,37 +184,53 @@ fun String?.CHOICE(): ComposeFieldYesNo {
     else ComposeFieldYesNo.YES
 }
 
-fun String.fieldType(): ComposeFieldType {
+fun String.fieldType(inputType:String,fieldName:String,fieldHint:String?): ComposeFieldType {
     return when (this.lowercase()) {
-        "textbox" -> ComposeFieldType.TEXT_BOX
-        "textarea" -> ComposeFieldType.TEXT_AREA
-        "dropdown" -> ComposeFieldType.DROP_DOWN
-        "date" -> ComposeFieldType.DATE_PICKER
-        "date_time" -> ComposeFieldType.DATE_TIME_PICKER
-        "radiobutton" -> ComposeFieldType.RADIO_BUTTON
-        "switch" -> ComposeFieldType.SWITCH
-        else -> ComposeFieldType.CHECK_BOX
+        "textbox" -> {
+            if (isCurrencyField(fieldName)){
+                ComposeFieldType.Currency
+            }else {
+                ComposeFieldType.TextBox(
+                    keyboardType = inputType.lowercase().keyboardType()
+                )
+            }
+        }
+        "textarea" -> ComposeFieldType.TextArea(
+            keyboardType = inputType.lowercase().keyboardType()
+        )
+        "dropdown" -> ComposeFieldType.Dropdown
+        "date" -> ComposeFieldType.DatePicker(
+            ageCalculation = shouldCalculateAge(fieldName),
+            helperText = getHelperText(fieldHint,fieldName)
+        )
+        "date_time" -> ComposeFieldType.DateTimePicker
+        "radiobutton" -> ComposeFieldType.RadioButton
+        "switch" -> ComposeFieldType.Switch
+        "time" -> ComposeFieldType.TimePicker
+        else -> ComposeFieldType.CheckBox
     }
 }
 
-fun String.keyboardType(type:ComposeFieldType,fieldName:String,hint: String?): ComposeKeyboardTypeAdv {
+fun isCurrencyField(fieldName:String):Boolean{
+    return fieldName.isMatchingAny("sum_assured,amount,premium")
+}
+
+fun shouldCalculateAge(fieldName: String):Boolean{
+    val isDob = fieldName.isMatchingAny("dob","date_of_birth")
+    return isDob
+}
+
+fun getHelperText(hint: String?,name:String):String{
+    return hint?:if (shouldCalculateAge(name))"DOB should be same as National ID Card." else ""
+}
+
+fun String.keyboardType(): ComposeKeyboardType {
     return when (this.lowercase()) {
-        "text" ->{
-            if (type==ComposeFieldType.DATE_PICKER){
-                val isDob = fieldName.isMatchingAny("dob","date_of_birth")
-                ComposeKeyboardTypeAdv.DATE(
-                    ageCalculation = isDob,
-                    helperText = hint?:if (isDob)"DOB should be same as National ID Card." else ""
-                )
-            }else
-                ComposeKeyboardTypeAdv.TEXT
-        }
-        "cnic" -> ComposeKeyboardTypeAdv.CNIC
-        "email" -> ComposeKeyboardTypeAdv.EMAIL
-        "mobile",
-        "mobile_number" -> ComposeKeyboardTypeAdv.MOBILE_NO()
-        "number" -> ComposeKeyboardTypeAdv.NUMBER
-        else -> ComposeKeyboardTypeAdv.NONE
+        "text" -> ComposeKeyboardType.TEXT
+        "cnic" -> ComposeKeyboardType.CNIC
+        "email" -> ComposeKeyboardType.EMAIL
+        "number" -> ComposeKeyboardType.NUMBER
+        else -> ComposeKeyboardType.NONE
     }
 }
 
