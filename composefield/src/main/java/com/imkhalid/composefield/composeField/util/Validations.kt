@@ -18,9 +18,9 @@ internal fun String.isMatchingAny(vararg with:String) =
 
 internal fun updateDependantChildren(fields: List<ComposeFieldStateHolder>, stateHolder: ComposeFieldStateHolder, newValue:String){
     if (
-        stateHolder.state.field.type== ComposeFieldType.DROP_DOWN ||
-        stateHolder.state.field.type== ComposeFieldType.RADIO_BUTTON ||
-        stateHolder.state.field.type== ComposeFieldType.SWITCH
+        stateHolder.state.field.type is ComposeFieldType.Dropdown ||
+        stateHolder.state.field.type is ComposeFieldType.RadioButton ||
+        stateHolder.state.field.type is ComposeFieldType.Switch
     ){
         val currentChildName = stateHolder.state.field.defaultValues.find { x->x.id==newValue }?.dependent_child_fields?.map {
             it.field_name
@@ -51,7 +51,7 @@ internal fun updateDependantChildren(fields: List<ComposeFieldStateHolder>, stat
         stateHolder.state.field.defaultValues.first().dependent_child_fields.isNotEmpty()
     ){
         val defVal = stateHolder.state.field.defaultValues.first()
-        val checkValue = if (stateHolder.state.field.type== ComposeFieldType.DATE_PICKER){
+        val checkValue = if (stateHolder.state.field.type is ComposeFieldType.DatePicker){
             val year = (stateHolder.state.text.split("-").getOrNull(0)?:"")
             stateHolder.state.text.getAgeFromDOBYear(year.toIntOrNull()?:0)
         }else{
