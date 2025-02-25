@@ -5,8 +5,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldType
-import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardTypeAdv
+import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardType
 import com.imkhalid.composefield.composeField.fields.ComposeCheckBoxField
+import com.imkhalid.composefield.composeField.fields.ComposeCurrencyField
 import com.imkhalid.composefield.composeField.fields.ComposeDatePickerField
 import com.imkhalid.composefield.composeField.fields.ComposeDropDownField
 import com.imkhalid.composefield.composeField.fields.ComposeMobileField
@@ -39,21 +40,18 @@ class ComposeFieldBuilder {
         val state by fieldState.collectAsState()
         val field =
             when (state.field.type) {
-                ComposeFieldType.TEXT_BOX,
-                ComposeFieldType.TEXT_AREA -> {
-                    if (state.field.keyboardType is ComposeKeyboardTypeAdv.MOBILE_NO) {
-                        ComposeMobileField()
-                    } else {
-                        ComposeTextField().setFocusCallback(callback)
-                    }
+                is ComposeFieldType.TextBox -> {
+                    ComposeTextField().setFocusCallback(callback)
                 }
-                ComposeFieldType.DROP_DOWN -> ComposeDropDownField()
-                ComposeFieldType.DATE_PICKER -> ComposeDatePickerField()
-                ComposeFieldType.TIME_PICKER -> ComposeTimePickerField()
-                ComposeFieldType.DATE_TIME_PICKER -> TODO()
-                ComposeFieldType.SWITCH -> TODO()
-                ComposeFieldType.CHECK_BOX -> ComposeCheckBoxField()
-                ComposeFieldType.RADIO_BUTTON -> ComposeRadioGroupField()
+                is ComposeFieldType.MobileNo-> ComposeMobileField()
+                is ComposeFieldType.Dropdown -> ComposeDropDownField()
+                is ComposeFieldType.DatePicker -> ComposeDatePickerField()
+                is ComposeFieldType.TimePicker -> ComposeTimePickerField()
+                is ComposeFieldType.DateTimePicker -> TODO()
+                is ComposeFieldType.Switch -> TODO()
+                is ComposeFieldType.CheckBox -> ComposeCheckBoxField()
+                is ComposeFieldType.RadioButton -> ComposeRadioGroupField()
+                is ComposeFieldType.Currency -> ComposeCurrencyField()
             }
         field.Build(
             state = state,
