@@ -50,8 +50,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.imkhalid.composefield.R
 import com.imkhalid.composefield.composeField.ComposeFieldState
+import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldType
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
-import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardTypeAdv
+import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardType
 import com.imkhalid.composefield.composeField.responsiveHPaddings
 import com.imkhalid.composefield.theme.ComposeFieldTheme
 import com.imkhalid.composefieldproject.composeField.fields.ComposeField
@@ -158,15 +159,13 @@ class ComposeDatePickerField : ComposeField() {
 
     private @Composable
     fun BoxScope.EndIcons(state: ComposeFieldState,onClearCallback:()->Unit) {
+        val keyboardType = (state.field.type as ComposeFieldType.DatePicker)
         Row(
             modifier =  Modifier
             .align(Alignment.CenterEnd)
             .padding(horizontal = 10.dp)
         ) {
-            if (
-                state.field.keyboardType is ComposeKeyboardTypeAdv.DATE &&
-                state.field.keyboardType.showEndClear && state.text.isNotEmpty()
-                ){
+            if (keyboardType.showEndClear && state.text.isNotEmpty()){
                 Image(
                     imageVector =  Icons.Rounded.Clear,
                     contentDescription = "",
@@ -353,21 +352,21 @@ class ComposeDatePickerField : ComposeField() {
     @Composable
     private fun HelperText(state:ComposeFieldState){
         var showText:Boolean by remember{ mutableStateOf(false) }
+        val type = (state.field.type as ComposeFieldType.DatePicker)
         val helperText = buildAnnotatedString {
-            if (state.field.keyboardType is ComposeKeyboardTypeAdv.DATE){
-                if (state.field.keyboardType.ageCalculation && state.text.isNotEmpty()) {
-                    showText=true
-                    withStyle(
-                        style = SpanStyle(
-                            color = Color.Black,
-                            fontSize = responsiveTextSize(size = 12).sp
-                        )
-                    ) {
-                        append(getAgeStr(state.text)+"\n")
-                    }
+            if (type.ageCalculation && state.text.isNotEmpty()) {
+                showText=true
+                withStyle(
+                    style = SpanStyle(
+                        color = Color.Black,
+                        fontSize = responsiveTextSize(size = 12).sp
+                    )
+                ) {
+                    append(getAgeStr(state.text)+"\n")
                 }
-                val helperText = state.field.keyboardType.helperText.ifEmpty {state.field.helperText}
-                if (helperText.isNotEmpty()){
+            }
+            val helperText = type.helperText.ifEmpty {state.field.helperText}
+            if (helperText.isNotEmpty()){
                     if (showText.not()) showText=true
                     withStyle(style = SpanStyle(
                         color = Color.Gray.copy(0.8f),
@@ -376,8 +375,6 @@ class ComposeDatePickerField : ComposeField() {
                         append(helperText)
                     }
                 }
-
-            }
         }
         if (showText) {
             Text(
