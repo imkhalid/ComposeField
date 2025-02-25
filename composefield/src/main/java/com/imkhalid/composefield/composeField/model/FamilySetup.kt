@@ -6,7 +6,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.imkhalid.composefield.composeField.ComposeFieldStateHolder
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldType
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
-import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardTypeAdv
+import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardType
 import com.imkhalid.composefield.composeField.rememberFieldState
 import com.imkhalid.composefield.model.DefaultValues
 
@@ -71,13 +71,19 @@ data class FamilySetup(
                                 when (it.familyDetailField) {
                                     "gender",
                                     "relation" -> {
-                                        ComposeFieldType.DROP_DOWN
+                                        ComposeFieldType.Dropdown
                                     }
+                                    "phone_no"->ComposeFieldType.MobileNo()
                                     "dob" -> {
-                                        ComposeFieldType.DATE_PICKER
+                                        ComposeFieldType.DatePicker(ageCalculation = true, helperText = "DOB should be same as Nation ID Card")
                                     }
                                     else -> {
-                                        ComposeFieldType.TEXT_BOX
+                                        ComposeFieldType.TextBox(
+                                            keyboardType = when (it.familyDetailField) {
+                                                "email" -> ComposeKeyboardType.EMAIL
+                                                else -> ComposeKeyboardType.TEXT
+                                            }
+                                        )
                                     }
                                 },
                             defaultValues =
@@ -137,30 +143,25 @@ data class FamilySetup(
                     ComposeFieldModule(
                         name = it.familyDetailField,
                         label = it.familyDetailField.replace("_", " ").capitalize(),
-                        type =
-                            when (it.familyDetailField) {
-                                "gender",
-                                "relation" -> {
-                                    if (data != null && it.familyDetailField == "relation") {
-                                        ComposeFieldType.TEXT_BOX
-                                    } else ComposeFieldType.DROP_DOWN
-                                }
-                                "dob" -> {
-                                    ComposeFieldType.DATE_PICKER
-                                }
-                                else -> {
-                                    ComposeFieldType.TEXT_BOX
-                                }
-                            },
+                        type =when (it.familyDetailField) {
+                            "gender",
+                            "relation" -> {
+                                ComposeFieldType.Dropdown
+                            }
+                            "phone_no"->ComposeFieldType.MobileNo()
+                            "dob" -> {
+                                ComposeFieldType.DatePicker(ageCalculation = true, helperText = "DOB should be same as Nation ID Card")
+                            }
+                            else -> {
+                                ComposeFieldType.TextBox(
+                                    keyboardType = when (it.familyDetailField) {
+                                        "email" -> ComposeKeyboardType.EMAIL
+                                        else -> ComposeKeyboardType.TEXT
+                                    }
+                                )
+                            }
+                        },
                         sortNumber = orderMap.getOrDefault(it.familyDetailField,1),
-                        keyboardType =
-                            when (it.familyDetailField) {
-                                "email" -> ComposeKeyboardTypeAdv.EMAIL
-                                "mobile_no",
-                                "phone_no" -> ComposeKeyboardTypeAdv.MOBILE_NO()
-                                "dob"-> ComposeKeyboardTypeAdv.DATE(ageCalculation = true, helperText = "DOB should be same as Nation ID Card")
-                                else -> ComposeKeyboardTypeAdv.TEXT
-                            },
                         isEditable =
                             if (data != null && it.familyDetailField.equals("relation"))
                                 ComposeFieldYesNo.NO
