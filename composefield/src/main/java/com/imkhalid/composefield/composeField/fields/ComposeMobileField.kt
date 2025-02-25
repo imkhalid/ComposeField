@@ -41,8 +41,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.imkhalid.composefield.composeField.ComposeFieldState
 import com.imkhalid.composefield.composeField.PhoneNumberUtil
+import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldType
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
-import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardTypeAdv
+import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardType
 import com.imkhalid.composefield.theme.ComposeFieldTheme
 import com.imkhalid.composefieldproject.composeField.fields.ComposeField
 import com.imkhalid.composefield.composeField.responsiveTextSize
@@ -55,15 +56,12 @@ class ComposeMobileField : ComposeField() {
         state: ComposeFieldState,
         newValue: (Pair<Boolean, String>, String) -> Unit
     ) {
+        val type = (state.field.type as ComposeFieldType.MobileNo)
         val phoneNumberUtil: MutableState<PhoneNumberUtil> = remember {
             mutableStateOf(PhoneNumberUtil().apply {
-                 if (state.field.keyboardType is ComposeKeyboardTypeAdv.MOBILE_NO) {
-                     state.field.keyboardType.let {
-                         shouldShowPicker=it.isSelectionDisabled.not()
-                             currentCountryCode = it.countryCode.takeIf { x -> x.isNotEmpty() }
-                                 ?: currentCountryCode
-                     }
-                 }
+                shouldShowPicker=type.isSelectionDisabled.not()
+                currentCountryCode = type.countryCode.takeIf { x -> x.isNotEmpty() }
+                             ?: currentCountryCode
                 setDefaultCountry(currentCountryCode)
                 setCountryOfSelectedText(state.text, this) }
             )
@@ -130,13 +128,11 @@ class ComposeMobileField : ComposeField() {
                     }
                 },
                 prefix = {
-                    if (state.field.keyboardType is ComposeKeyboardTypeAdv.MOBILE_NO)
                         Text(
                             text = "${phoneNumberUtil.currentCountryFlag}${phoneNumberUtil.prefix}",
                             modifier = Modifier.clickable { toggleDropdown() },
                             fontSize = responsiveTextSize(size = 15).sp
                         )
-                    else null
                 },
                 keyboardOptions =
                     KeyboardOptions(
@@ -226,13 +222,11 @@ class ComposeMobileField : ComposeField() {
                     }
                 },
                 prefix = {
-                    if (state.field.keyboardType is ComposeKeyboardTypeAdv.MOBILE_NO)
-                        Text(
-                            text = "${phoneNumberUtil.currentCountryFlag}${phoneNumberUtil.prefix}",
-                            modifier = Modifier.clickable { toggleDropdown() },
-                            fontSize = responsiveTextSize(size = 15).sp
-                        )
-                    else null
+                    Text(
+                        text = "${phoneNumberUtil.currentCountryFlag}${phoneNumberUtil.prefix}",
+                        modifier = Modifier.clickable { toggleDropdown() },
+                        fontSize = responsiveTextSize(size = 15).sp
+                    )
                 },
                 keyboardOptions =
                     KeyboardOptions(
@@ -361,12 +355,10 @@ class ComposeMobileField : ComposeField() {
                     }
                 },
                 prefix = {
-                    if (state.field.keyboardType is ComposeKeyboardTypeAdv.MOBILE_NO)
-                        Text(
-                            text = "${phoneNumberUtil.currentCountryFlag}${phoneNumberUtil.prefix}",
-                            modifier = Modifier.clickable { toggleDropdown() }
-                        )
-                    else null
+                    Text(
+                        text = "${phoneNumberUtil.currentCountryFlag}${phoneNumberUtil.prefix}",
+                        modifier = Modifier.clickable { toggleDropdown() }
+                    )
                 },
                 keyboardOptions =
                     KeyboardOptions(
