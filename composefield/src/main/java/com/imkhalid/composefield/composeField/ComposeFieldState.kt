@@ -29,7 +29,6 @@ fun rememberFieldState(
     label: String,
     id: String = "",
     type: ComposeFieldType = ComposeFieldType.TextBox(keyboardType = ComposeKeyboardType.TEXT),
-    keyboardType: ComposeKeyboardType = ComposeKeyboardType.TEXT,
     value: String = "",
     defaultValues: List<DefaultValues> = emptyList()
 ): ComposeFieldStateHolder {
@@ -47,7 +46,7 @@ fun rememberFieldState(
             )
         )
     return rememberSaveable(
-        inputs = arrayOf(id, name, type, keyboardType, value, label, defaultValues),
+        inputs = arrayOf(id, name, type, value, label, defaultValues),
         saver = ComposeFieldStateHolder.Saver,
     ) {
         ComposeFieldStateHolder(initialField)
