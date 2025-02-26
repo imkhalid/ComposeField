@@ -24,6 +24,7 @@ import com.imkhalid.composefield.composeField.fieldTypes.SectionType
 import com.imkhalid.composefield.composeField.model.ChildValueModel
 import com.imkhalid.composefield.composeField.model.ComposeSectionModule
 import com.imkhalid.composefield.composeField.model.FamilyData
+import com.imkhalid.composefield.composeField.model.TaggedMap
 import com.imkhalid.composefield.composeField.navigateToNext
 import com.imkhalid.composefield.composeField.rememberFieldState
 import com.imkhalid.composefield.composeField.responsiveHeight
@@ -41,7 +42,7 @@ open class Sections(
 ) {
     val sectionState: HashMap<String, List<ComposeFieldStateHolder>> = LinkedHashMap()
     val tableData:
-        HashMap<String, SnapshotStateList<HashMap<String, List<ComposeFieldStateHolder>>>> =
+        HashMap<String, SnapshotStateList<TaggedMap>> =
         HashMap()
     val sectionNames: ArrayList<String> = arrayListOf()
 
