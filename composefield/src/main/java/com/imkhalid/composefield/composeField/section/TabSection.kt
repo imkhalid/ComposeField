@@ -31,6 +31,7 @@ import com.imkhalid.composefield.composeField.fieldTypes.SectionType
 import com.imkhalid.composefield.composeField.model.ChildValueModel
 import com.imkhalid.composefield.composeField.model.ComposeSectionModule
 import com.imkhalid.composefield.composeField.model.FamilyData
+import com.imkhalid.composefield.composeField.model.TaggedMap
 import com.imkhalid.composefield.composeField.navigateToNext
 import com.imkhalid.composefield.composeField.rememberFieldState
 import com.imkhalid.composefield.composeField.responsiveHeight
@@ -60,25 +61,31 @@ fun Sections.TabBuild(
         }
         sections.forEach {sc->
             if (sc.isTable) {
-                tableData[sc.name] = SnapshotStateList<HashMap<String, List<ComposeFieldStateHolder>>>().apply {
+                tableData[sc.name] = SnapshotStateList<TaggedMap>().apply {
                     sc.prefilledTableData?.onEach {singleRow->
-
+                        var id = ""
                         val list =singleRow.keys.mapNotNull {key->
                             val value = singleRow.getOrDefault(key,"")
-                            if (value.isNotEmpty()) {
-                                sc.fields.find { x -> x.name == key }?.let { fiel ->
-                                    rememberFieldState(
-                                        fieldModule = fiel.copy(
-                                            value = value,
-                                            hideInitial = ComposeFieldYesNo.NO,
-                                            hidden = ComposeFieldYesNo.NO
-                                        ),
-                                        stateHolder = null
-                                    )
+                            if (value.isNotEmpty()){
+                                if (key =="_id"|| key=="id") {
+                                    id=value
+                                    null
+                                }else {
+                                    sc.fields.find { x -> x.name == key }?.let { fiel ->
+                                        rememberFieldState(
+                                            fieldModule = fiel.copy(
+                                                value = value,
+                                                hideInitial = ComposeFieldYesNo.NO,
+                                                hidden = ComposeFieldYesNo.NO
+                                            ),
+                                            stateHolder = null
+                                        )
+                                    }
+
                                 }
                             }else null
                         }
-                        this.add(hashMapOf(sc.name to list))
+                        this.add(TaggedMap(data = hashMapOf(sc.name to list), tag = id))
                     }
                 }
             } else {
@@ -157,12 +164,18 @@ private fun Sections.TabSections(
                                         }
                                         tableData
                                             .getOrDefault(section.name, SnapshotStateList())
-                                            .apply { add(HashMap(map)) }
+                                            .apply { add(TaggedMap(HashMap(map))) }
                                     },
-                                    onDeleteItem = {
+                                    onDeleteItem = {ind->
                                         tableData
                                             .getOrDefault(section.name, SnapshotStateList())
-                                            .apply { removeAt(it) }
+                                            .apply {
+                                                val data = getOrNull(ind)
+                                                data?.let {d->
+                                                    removeAt(ind)
+                                                    add(ind,d.copy(isDeleted = true))
+                                                }
+                                            }
                                     },
                                     onItemEdited = { hashMap: HashMap<String, List<ComposeFieldStateHolder>>,
                                                      i: Int ->
@@ -170,7 +183,7 @@ private fun Sections.TabSections(
                                             .getOrDefault(section.name, SnapshotStateList())
                                             .apply {
                                                 removeAt(i)
-                                                add(i, hashMap)
+                                                add(i, TaggedMap(hashMap))
                                             }
                                     },
                                     valueChangeForChild = valueChangeForChild,
@@ -229,7 +242,7 @@ private fun Sections.TabSections(
                 }
             } else if (currentSectionOf?.isTable == true) {
 
-                val dataList = tableData.getOrDefault(currentSection, SnapshotStateList())
+                val dataList = tableData.getOrDefault(currentSection, SnapshotStateList()).filter { x->x.isDeleted.not() }
                 if (
                     (dataList.size) >= currentSectionOf.min && dataList.size <= currentSectionOf.max
                 ) {

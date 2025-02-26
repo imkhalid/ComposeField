@@ -1,5 +1,6 @@
 package com.imkhalid.composefield.composeField
 
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -11,7 +12,7 @@ data class TableConfig(
     val showDescription:Boolean = false,
     val validationName:String = "Record(s)",
     val tableAddButton: @Composable (ColumnScope.(onClick: () -> Unit) -> Unit)? = null,
-    val tablePopupButton: @Composable (ColumnScope.(onClick: () -> Unit, data:HashMap<String,List<ComposeFieldStateHolder>>) -> Unit)?=null,
+    val tablePopupButton: @Composable (BoxScope.(onClick: () -> Unit, data:HashMap<String,List<ComposeFieldStateHolder>>) -> Unit)?=null,
 )
 
 data class TableColors(

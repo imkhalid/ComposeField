@@ -6,8 +6,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -45,6 +45,7 @@ import com.imkhalid.composefield.composeField.TableConfig
 import com.imkhalid.composefield.composeField.fieldTypes.SectionType
 import com.imkhalid.composefield.composeField.model.ChildValueModel
 import com.imkhalid.composefield.composeField.model.ComposeSectionModule
+import com.imkhalid.composefield.composeField.model.TaggedMap
 import com.imkhalid.composefield.composeField.rememberFieldState
 import com.imkhalid.composefield.theme.ComposeFieldTheme
 import com.imkhalid.composefield.composeField.responsiveHeight
@@ -68,7 +69,7 @@ class TableSection(
         tableConfig: TableConfig = TableConfig(),
         tableName: String,
         description: String,
-        tableDataList: SnapshotStateList<HashMap<String, List<ComposeFieldStateHolder>>> =
+        tableDataList: SnapshotStateList<TaggedMap> =
             SnapshotStateList(),
         preState: HashMap<String, List<ComposeFieldStateHolder>>? = null,
         onItemAdded: (HashMap<String, List<ComposeFieldStateHolder>>) -> Unit,
@@ -147,47 +148,49 @@ class TableSection(
             LazyColumn(modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(responsiveHeight(10))) {
                 items(tableDataList.size) {
-                    val item =
-                        LinkedHashMap<String, Pair<String, String>>().apply {
-                            tableDataList[it].forEach { x ->
-                                x.value.sortedBy { y->y.state.field.sortNumber }
-                                    .forEach { y ->
-                                    put(
-                                        y.state.field.name,
-                                        Pair(
-                                            y.state.field.label,
-                                            y.state.field.getTextFromValue(y.state.text)
-                                        )
-                                    )
+                    if (tableDataList[it].isDeleted.not()) {
+                        val item =
+                            LinkedHashMap<String, Pair<String, String>>().apply {
+                                tableDataList[it].data.forEach { x ->
+                                    x.value.sortedBy { y -> y.state.field.sortNumber }
+                                        .forEach { y ->
+                                            put(
+                                                y.state.field.name,
+                                                Pair(
+                                                    y.state.field.label,
+                                                    y.state.field.getTextFromValue(y.state.text)
+                                                )
+                                            )
+                                        }
                                 }
                             }
-                        }
-                    TableItem(
-                        tableConfig.tableColors,
-                        tableName,
-                        it,
-                        item,
-                        SingleItemHeader = {
-                            SingleItemHeader.invoke(
-                                /*onEditClick = */{ editItem = it },
-                                /*onDeleteClick = */{ onDeleteItem.invoke(it) },
-                                /*onExpandClick = */{
-                                    if (expandedItem == it) {
-                                        expandedItem = -1
-                                    } else expandedItem = it
-                                },
-                                /*textTitle = */"${it.plus(1)}. ${tableName.replace("_", " ")}"
-                            )
-                        },
-                        expandedItem
-                    )
+                        TableItem(
+                            tableConfig.tableColors,
+                            tableName,
+                            it,
+                            item,
+                            SingleItemHeader = {
+                                SingleItemHeader.invoke(
+                                    /*onEditClick = */{ editItem = it },
+                                    /*onDeleteClick = */{ onDeleteItem.invoke(it) },
+                                    /*onExpandClick = */{
+                                        if (expandedItem == it) {
+                                            expandedItem = -1
+                                        } else expandedItem = it
+                                    },
+                                    /*textTitle = */"${it.plus(1)}. ${tableName.replace("_", " ")}"
+                                )
+                            },
+                            expandedItem
+                        )
+                    }
                 }
             }
         }
         if (showDialog || editItem != -1) {
             TableItemDialog(
                 name = tableName,
-                preState = tableDataList.getOrNull(editItem),
+                preState = tableDataList.getOrNull(editItem)?.data,
                 sections = sections,
                 valueChangeForChild = valueChangeForChild,
                 onValueChange = onValueChange,
@@ -305,7 +308,7 @@ class TableSection(
         preState: HashMap<String, List<ComposeFieldStateHolder>>?,
         onValueChange: ((name: String, newValue: String) -> Unit)? = null,
         valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
-        DoneButton: (@Composable ColumnScope.(onClick: () -> Unit,data:HashMap<String, List<ComposeFieldStateHolder>>) -> Unit)?,
+        DoneButton: (@Composable BoxScope.(onClick: () -> Unit,data:HashMap<String, List<ComposeFieldStateHolder>>) -> Unit)?,
         sections: List<ComposeSectionModule>,
         onDismiss: () -> Unit,
         onDone: (HashMap<String, List<ComposeFieldStateHolder>>) -> Unit,
@@ -317,7 +320,8 @@ class TableSection(
                         .background(
                             color = Color(0xFFF5F5F5),
                             shape = RoundedCornerShape(responsiveSize(12))
-                        ).align(Alignment.Center)
+                        )
+                        .align(Alignment.Center)
                         .padding(responsiveSize(size = 10)),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -348,9 +352,15 @@ class TableSection(
                         sections = sections,
                         preState = preState,
                         onValueChange = onValueChange,
-                        valueChangeForChild = valueChangeForChild
+                        valueChangeForChild = valueChangeForChild,
+                        button = {
+                            DoneButton?.invoke(
+                                this,
+                                { onDone.invoke(sectionState) },
+                                sectionState
+                            )
+                        }
                     )
-                    DoneButton?.invoke(this, { onDone.invoke(sectionState) }, sectionState)
                 }
             }
         }
