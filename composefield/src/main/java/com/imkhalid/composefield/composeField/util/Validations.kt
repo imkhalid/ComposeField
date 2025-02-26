@@ -67,7 +67,8 @@ internal fun updateDependantChildren(fields: List<ComposeFieldStateHolder>, stat
                     it.updatedField(
                         it.state.field.copy(
                             required = ComposeFieldYesNo.YES,
-                            hidden = ComposeFieldYesNo.NO
+                            hidden = ComposeFieldYesNo.NO,
+                            hideInitial = ComposeFieldYesNo.NO
                         )
                     )
                 } else {
@@ -75,7 +76,8 @@ internal fun updateDependantChildren(fields: List<ComposeFieldStateHolder>, stat
                     it.updatedField(
                         it.state.field.copy(
                             required = ComposeFieldYesNo.NO,
-                            hidden = ComposeFieldYesNo.YES
+                            hidden = ComposeFieldYesNo.YES,
+                            hideInitial = ComposeFieldYesNo.YES
                         )
                     )
                 }
