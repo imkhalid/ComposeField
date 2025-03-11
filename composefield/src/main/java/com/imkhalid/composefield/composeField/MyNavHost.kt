@@ -19,6 +19,10 @@ class  MyNavHost(val nav: NavHostController, val sections:List<String>, val sect
             }
         }
     }
+
+    fun getCurrentSectionName():String{
+        return nav.currentDestination?.route.orEmpty()
+    }
 }
 
 internal fun navigateToNext(

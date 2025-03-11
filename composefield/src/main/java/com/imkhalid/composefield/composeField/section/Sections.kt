@@ -54,7 +54,7 @@ open class Sections(
         familyData: FamilyData? = null,
         showTitle: Boolean = false,
         preState: HashMap<String, List<ComposeFieldStateHolder>>? = null,
-        button: (@Composable BoxScope.(onClick: () -> Unit) -> Unit)? = null,
+        button: (@Composable BoxScope.(currentSectionName:String,onClick: () -> Unit) -> Unit)? = null,
         onValueChange: ((name: String, newValue: String) -> Unit)? = null,
         valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
         onLastPageReach: ((Sections) -> Unit)? = null,
@@ -113,7 +113,7 @@ open class Sections(
         familyData: FamilyData? = null,
         showTitle: Boolean = false,
         preState: HashMap<String, List<ComposeFieldStateHolder>>? = null,
-        button: (@Composable BoxScope.(onClick: () -> Unit) -> Unit)? = null,
+        button: (@Composable BoxScope.(currentSectionName:String,onClick: () -> Unit) -> Unit)? = null,
         onValueChange: ((name: String, newValue: String) -> Unit)? = null,
         valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
         onLastPageReach: ((Sections) -> Unit)? = null,
@@ -189,7 +189,7 @@ open class Sections(
         sections: List<ComposeSectionModule>,
         showTitle: Boolean,
         valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
-        button: (@Composable BoxScope.(onClick: () -> Unit) -> Unit)?,
+        button: (@Composable BoxScope.(currentSectionName:String,onClick: () -> Unit) -> Unit)?,
         onLastPageReach: ((Sections) -> Unit)? = null,
         onValueChange: ((name: String, newValue: String) -> Unit)?
     ) {
@@ -226,7 +226,7 @@ open class Sections(
                     }
                 }
             }
-            button?.invoke(this) { navigateToNext(nav, onLastPageReach) }
+            button?.invoke(this,nav.getCurrentSectionName()) { navigateToNext(nav, onLastPageReach) }
         }
     }
 
@@ -238,7 +238,7 @@ open class Sections(
         showTitle: Boolean,
         familyData: FamilyData? = null,
         valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
-        button: (@Composable BoxScope.(onClick: () -> Unit) -> Unit)?,
+        button: (@Composable BoxScope.(currentSectionName:String,onClick: () -> Unit) -> Unit)?,
         onLastPageReach: ((Sections) -> Unit)? = null,
         onValueChange: ((name: String, newValue: String) -> Unit)?
     ) {
@@ -273,7 +273,7 @@ open class Sections(
                     FamilyForm(familyData = familyData,userCountry=userCountry)
                 }
             }
-            button?.invoke(this) { navigateToNext(nav, onLastPageReach) }
+            button?.invoke(this,nav.getCurrentSectionName()) { navigateToNext(nav, onLastPageReach) }
 
 
         }

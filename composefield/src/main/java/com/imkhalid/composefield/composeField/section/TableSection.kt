@@ -353,7 +353,7 @@ class TableSection(
                         preState = preState,
                         onValueChange = onValueChange,
                         valueChangeForChild = valueChangeForChild,
-                        button = {
+                        button = {sectionName,callback->
                             DoneButton?.invoke(
                                 this,
                                 { onDone.invoke(sectionState) },

@@ -91,8 +91,8 @@ fun Greeting(
                         )
                     )
                 },
-                button = {
-                    Button(onClick = { it.invoke() }) {
+                button = {sectionName,callback->
+                    Button(onClick = { callback.invoke() }) {
                         Text(text = "Add")
                     }
                 },

@@ -47,7 +47,7 @@ fun Sections.TabBuild(
     sections: List<ComposeSectionModule>,
     familyData: FamilyData? = null,
     onValueChange: ((name: String, newValue: String) -> Unit)? = null,
-    button: @Composable (BoxScope.(onClick: () -> Unit) -> Unit)?,
+    button: @Composable (BoxScope.(currentSectionName:String,onClick: () -> Unit) -> Unit)?,
     tableConfig: TableConfig,
     valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
     onLastPageReach: ((Sections) -> Unit)? = null,
@@ -117,7 +117,7 @@ private fun Sections.TabSections(
     familyData: FamilyData?,
     onValueChange: ((name: String, newValue: String) -> Unit)? = null,
     valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
-    button: (@Composable BoxScope.(onClick: () -> Unit) -> Unit)?,
+    button: (@Composable BoxScope.(currentSectionName:String,onClick: () -> Unit) -> Unit)?,
     tableConfig: TableConfig = TableConfig(),
     onLastPageReach: ((Sections) -> Unit)? = null
 ) {
@@ -234,7 +234,7 @@ private fun Sections.TabSections(
                     }
             }
         }
-        button?.invoke(this) {
+        button?.invoke(this,currentSection) {
             val currentSectionOf = sections.find { x -> x.name == currentSection }
             if (currentSection == "Family Details" && invalidFamily(familyData).isNotEmpty()) {
                 invalidFamily(familyData).firstOrNull()?.let {
