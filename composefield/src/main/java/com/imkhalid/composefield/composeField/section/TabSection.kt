@@ -177,13 +177,14 @@ private fun Sections.TabSections(
                                                 }
                                             }
                                     },
-                                    onItemEdited = { hashMap: HashMap<String, List<ComposeFieldStateHolder>>,
+                                    onItemEdited = { hashMap: Map<String, List<ComposeFieldStateHolder>>,
                                                      i: Int ->
                                         tableData
                                             .getOrDefault(section.name, SnapshotStateList())
                                             .apply {
+                                                val id = get(i).tag
                                                 removeAt(i)
-                                                add(i, TaggedMap(hashMap))
+                                                add(i, TaggedMap(tag = id, data = java.util.HashMap(hashMap)))
                                             }
                                     },
                                     valueChangeForChild = valueChangeForChild,
