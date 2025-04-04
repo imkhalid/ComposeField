@@ -103,7 +103,7 @@ internal fun updatedChildValues(
 internal fun validatedSection(sectionState: List<ComposeFieldStateHolder>): Boolean {
     return sectionState.all { x ->
         x.state.field.required == ComposeFieldYesNo.YES &&
-                x.state.text.isNotEmpty() &&
+                x.state.text.trim().isNotEmpty() &&
                 x.state.hasError.not()
     }
 }
@@ -166,7 +166,7 @@ fun ArrayList<MutableStateFlow<ComposeFieldState>>.validateSection(): Boolean {
     return this.all { x ->
         val state = x.value
         (state.field.required == ComposeFieldYesNo.YES &&
-                (state.text.isNotEmpty() && state.hasError.not())) ||
+                (state.text.trim().isNotEmpty() && state.hasError.not())) ||
                 (state.field.required == ComposeFieldYesNo.NO && state.hasError.not())
     }
 }
@@ -175,7 +175,7 @@ fun java.util.HashMap<String, List<ComposeFieldStateHolder>>.validate(showError:
     val res = this.all { x ->
         x.value.all {
             it.state.field.required == ComposeFieldYesNo.YES &&
-                    (it.state.text.isNotEmpty() && it.state.hasError.not()) ||
+                    (it.state.text.trim().isNotEmpty() && it.state.hasError.not()) ||
                     (it.state.field.required == ComposeFieldYesNo.NO && it.state.hasError.not())
         }
     }
@@ -184,12 +184,12 @@ fun java.util.HashMap<String, List<ComposeFieldStateHolder>>.validate(showError:
             it.value
         }.firstOrNull {
             it.state.field.required == ComposeFieldYesNo.YES &&
-                    (it.state.text.isEmpty() || it.state.hasError)
+                    (it.state.text.trim().isEmpty() || it.state.hasError)
         }?.let { err ->
             val message =
-                if (err.state.errorMessage.isEmpty()) {
+                err.state.errorMessage.ifEmpty {
                     "Required Field"
-                } else err.state.errorMessage
+                }
             err.updateValidation(Pair(false, message))
         }
     }
@@ -200,19 +200,19 @@ fun List<ComposeFieldStateHolder>.validate(showError: Boolean = false): Boolean 
     val res =
         this.all {
             it.state.field.required == ComposeFieldYesNo.YES &&
-                    (it.state.text.isNotEmpty() && it.state.hasError.not()) ||
+                    (it.state.text.trim().isNotEmpty() && it.state.hasError.not()) ||
                     (it.state.field.required == ComposeFieldYesNo.NO && it.state.hasError.not())
         }
     if (res.not() && showError) {
         this.firstOrNull {
             it.state.field.required == ComposeFieldYesNo.YES &&
-                    (it.state.text.isEmpty() || it.state.hasError)
+                    (it.state.text.trim().isEmpty() || it.state.hasError)
         }
             ?.let { err ->
                 val message =
-                    if (err.state.errorMessage.isEmpty()) {
+                    err.state.errorMessage.ifEmpty {
                         "Required Field"
-                    } else err.state.errorMessage
+                    }
                 err.updateValidation(Pair(false, message))
             }
     }
