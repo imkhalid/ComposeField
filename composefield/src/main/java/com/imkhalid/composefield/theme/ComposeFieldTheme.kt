@@ -7,6 +7,7 @@ object ComposeFieldTheme {
     var focusedBorderColor = Color.Black
     var unfocusedBorderColor = Color.LightGray
     var errorColor = Color.Red
+    var errorMessageColor = Color.Red
     var hintColor = Color.Gray
     var infoColor = Color.Gray
     var textColor = Color.Black

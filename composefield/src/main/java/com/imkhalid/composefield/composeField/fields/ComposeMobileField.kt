@@ -178,7 +178,7 @@ class ComposeMobileField : ComposeField() {
             if (state.hasError) {
                 Text(
                     text = state.errorMessage,
-                    color = ComposeFieldTheme.errorColor,
+                    color = ComposeFieldTheme.errorMessageColor,
                     style = MaterialTheme.typography.labelSmall,
                     modifier = Modifier.padding(start = 16.dp)
                 )
@@ -304,7 +304,7 @@ class ComposeMobileField : ComposeField() {
             if (state.hasError) {
                 Text(
                     text = state.errorMessage,
-                    color = ComposeFieldTheme.errorColor,
+                    color = ComposeFieldTheme.errorMessageColor,
                     style = MaterialTheme.typography.labelSmall,
                     modifier = Modifier.padding(start = 16.dp)
                 )
@@ -402,7 +402,7 @@ class ComposeMobileField : ComposeField() {
             if (state.hasError) {
                 Text(
                     text = state.errorMessage,
-                    color = ComposeFieldTheme.errorColor,
+                    color = ComposeFieldTheme.errorMessageColor,
                     style = MaterialTheme.typography.labelSmall,
                     modifier = Modifier.padding(start = 16.dp)
                 )

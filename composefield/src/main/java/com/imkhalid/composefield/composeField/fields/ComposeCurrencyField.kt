@@ -188,7 +188,7 @@ class ComposeCurrencyField : ComposeField() {
         if (state.hasError) {
             Text(
                 text = state.errorMessage,
-                color = MaterialTheme.colorScheme.error,
+                color = ComposeFieldTheme.errorMessageColor,
                 style = MaterialTheme.typography.labelSmall,
                 modifier = Modifier.padding(start = 16.dp)
             )
@@ -284,7 +284,7 @@ class ComposeCurrencyField : ComposeField() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 20.dp, bottom = 5.dp),
-                color = ComposeFieldTheme.textColor,
+                color = ComposeFieldTheme.errorMessageColor,
                 text =helper,
                 fontWeight = FontWeight.Normal,
                 fontSize = responsiveTextSize(size = 12).sp
@@ -292,7 +292,7 @@ class ComposeCurrencyField : ComposeField() {
         if (state.hasError) {
             Text(
                 text = state.errorMessage,
-                color = Color.Red,
+                color = ComposeFieldTheme.errorMessageColor,
                 style = MaterialTheme.typography.labelSmall,
                 modifier = Modifier.padding(start = 16.dp)
             )
@@ -359,7 +359,7 @@ class ComposeCurrencyField : ComposeField() {
         if (state.hasError) {
             Text(
                 text = state.errorMessage,
-                color = MaterialTheme.colorScheme.error,
+                color = ComposeFieldTheme.errorMessageColor,
                 style = MaterialTheme.typography.labelSmall,
                 modifier = Modifier.padding(start = 16.dp)
             )

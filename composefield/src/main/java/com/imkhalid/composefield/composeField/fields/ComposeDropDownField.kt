@@ -179,7 +179,7 @@ class ComposeDropDownField : ComposeField() {
             if (state.hasError) {
                 Text(
                     text = state.errorMessage,
-                    color = MaterialTheme.colorScheme.error,
+                    color = ComposeFieldTheme.errorMessageColor,
                     style = MaterialTheme.typography.labelSmall,
                     modifier = Modifier.padding(start = 16.dp)
                 )
