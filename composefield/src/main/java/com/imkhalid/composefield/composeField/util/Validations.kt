@@ -26,7 +26,7 @@ internal fun updateDependantChildren(fields: List<ComposeFieldStateHolder>, stat
             it.field_name
         }?: emptyList()
         val allChild = stateHolder.state.field.defaultValues.flatMap {
-            it.dependent_child_fields.map { it.field_name }
+            it.dependent_child_fields?.map { it.field_name }?: emptyList()
         }
         fields.onEach {
             if (currentChildName.contains(it.state.field.name)){
@@ -48,7 +48,7 @@ internal fun updateDependantChildren(fields: List<ComposeFieldStateHolder>, stat
     }
     else if (
         stateHolder.state.field.defaultValues.size==1 &&
-        stateHolder.state.field.defaultValues.first().dependent_child_fields.isNotEmpty()
+        stateHolder.state.field.defaultValues.first().dependent_child_fields.isNullOrEmpty().not()
     ){
         val defVal = stateHolder.state.field.defaultValues.first()
         val checkValue = if (stateHolder.state.field.type== ComposeFieldType.DATE_PICKER){
@@ -58,9 +58,9 @@ internal fun updateDependantChildren(fields: List<ComposeFieldStateHolder>, stat
             stateHolder.state.text
         }
         val isValueMatch = ExpressionEvaluator.evaluateCondition(defVal.text,checkValue)
-        val currentChildName = defVal.dependent_child_fields.map {
+        val currentChildName = defVal.dependent_child_fields?.map {
             it.field_name
-        }
+        }?: emptyList()
         fields.onEach {
             if (currentChildName.contains(it.state.field.name)) {
                 if (isValueMatch) {
