@@ -61,7 +61,7 @@ class ComposeMobileField : ComposeField() {
                      state.field.keyboardType.let {
                          shouldShowPicker=it.isSelectionDisabled.not()
                              currentCountryCode = it.countryCode.takeIf { x -> x.isNotEmpty() }
-                                 ?: currentCountryCode
+                                 ?: currentUserCountryCode
                      }
                  }
                 setDefaultCountry(currentCountryCode)
