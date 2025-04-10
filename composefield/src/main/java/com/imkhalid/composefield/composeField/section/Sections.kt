@@ -317,7 +317,7 @@ open class Sections(
                         modifier = modifier,
                         stateHolder = state,
                         onValueChange = {name,value->
-                            updateDependantChildren(sectionsStateList,state,value)
+                            updateDependantChildren(sectionState,state,value)
                             onValueChange?.invoke(name,value)
                         }
                         ,

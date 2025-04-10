@@ -16,53 +16,59 @@ internal fun String.isMatchingAny(vararg with:String) =
     with.any { this.contains(it,true) }
 
 
-internal fun updateDependantChildren(fields: List<ComposeFieldStateHolder>, stateHolder: ComposeFieldStateHolder, newValue:String){
+internal fun updateDependantChildren(
+    fields: HashMap<String, List<ComposeFieldStateHolder>>,
+    stateHolder: ComposeFieldStateHolder,
+    newValue:String
+){
     if (
-        stateHolder.state.field.type== ComposeFieldType.DROP_DOWN ||
-        stateHolder.state.field.type== ComposeFieldType.RADIO_BUTTON ||
-        stateHolder.state.field.type== ComposeFieldType.SWITCH
-    ){
-        val currentChildName = stateHolder.state.field.defaultValues.find { x->x.id==newValue }?.dependent_child_fields?.map {
-            it.field_name
-        }?: emptyList()
+        stateHolder.state.field.type == ComposeFieldType.DROP_DOWN ||
+        stateHolder.state.field.type == ComposeFieldType.RADIO_BUTTON ||
+        stateHolder.state.field.type == ComposeFieldType.SWITCH
+    ) {
+        val currentChildName =
+            stateHolder.state.field.defaultValues.find { x -> x.id == newValue }?.dependent_child_fields?.map {
+                it.field_name
+            } ?: emptyList()
         val allChild = stateHolder.state.field.defaultValues.flatMap {
-            it.dependent_child_fields?.map { it.field_name }?: emptyList()
+            it.dependent_child_fields?.map { it.field_name } ?: emptyList()
         }
-        fields.onEach {
-            if (currentChildName.contains(it.state.field.name)){
-                it.updatedField(
-                    it.state.field.copy(
-                        required = ComposeFieldYesNo.YES,
-                        hidden = ComposeFieldYesNo.NO
+        allChild.forEach {
+            getFieldByFieldName(it, fields)?.let {
+                if (currentChildName.contains(it.state.field.name)) {
+                    it.updatedField(
+                        it.state.field.copy(
+                            required = ComposeFieldYesNo.YES,
+                            hidden = ComposeFieldYesNo.NO
+                        )
                     )
-                )
-            }else if (allChild.contains(it.state.field.name)){
-                it.updatedField(
-                    it.state.field.copy(
-                        required = ComposeFieldYesNo.NO,
-                        hidden = ComposeFieldYesNo.YES
+                } else {
+                    it.updatedField(
+                        it.state.field.copy(
+                            required = ComposeFieldYesNo.NO,
+                            hidden = ComposeFieldYesNo.YES
+                        )
                     )
-                )
+                }
             }
         }
-    }
-    else if (
-        stateHolder.state.field.defaultValues.size==1 &&
+    } else if (
+        stateHolder.state.field.defaultValues.size == 1 &&
         stateHolder.state.field.defaultValues.first().dependent_child_fields.isNullOrEmpty().not()
-    ){
+    ) {
         val defVal = stateHolder.state.field.defaultValues.first()
-        val checkValue = if (stateHolder.state.field.type== ComposeFieldType.DATE_PICKER){
-            val year = (stateHolder.state.text.split("-").getOrNull(0)?:"")
-            stateHolder.state.text.getAgeFromDOBYear(year.toIntOrNull()?:0)
-        }else{
+        val checkValue = if (stateHolder.state.field.type == ComposeFieldType.DATE_PICKER) {
+            val year = (stateHolder.state.text.split("-").getOrNull(0) ?: "")
+            stateHolder.state.text.getAgeFromDOBYear(year.toIntOrNull() ?: 0)
+        } else {
             stateHolder.state.text
         }
-        val isValueMatch = ExpressionEvaluator.evaluateCondition(defVal.text,checkValue)
+        val isValueMatch = ExpressionEvaluator.evaluateCondition(defVal.text, checkValue)
         val currentChildName = defVal.dependent_child_fields?.map {
             it.field_name
-        }?: emptyList()
-        fields.onEach {
-            if (currentChildName.contains(it.state.field.name)) {
+        } ?: emptyList()
+        currentChildName.forEach {
+            getFieldByFieldName(it, fields)?.let {
                 if (isValueMatch) {
                     it.updatedField(
                         it.state.field.copy(
@@ -71,8 +77,9 @@ internal fun updateDependantChildren(fields: List<ComposeFieldStateHolder>, stat
                             hideInitial = ComposeFieldYesNo.NO
                         )
                     )
+
                 } else {
-                    it.updatedState(Pair(true,""),"")
+                    it.updatedState(Pair(true, ""), "")
                     it.updatedField(
                         it.state.field.copy(
                             required = ComposeFieldYesNo.NO,
@@ -82,6 +89,7 @@ internal fun updateDependantChildren(fields: List<ComposeFieldStateHolder>, stat
                     )
                 }
             }
+
         }
 
     }
