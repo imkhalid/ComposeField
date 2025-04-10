@@ -58,6 +58,7 @@ data class ComposeFieldModule(
                 customField.field_name,
                 customField.field_hint
             ),
+            isEditable = (customField.is_readonly == 1).not().toString().CHOICE(),
             value = getInitialValue(customField, selected_value),
             label = customField.label,
             hint = customField.field_hint ?: "",
