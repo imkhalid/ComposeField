@@ -209,6 +209,7 @@ class ComposeDatePickerField : ComposeField() {
                     content?.invoke(this)
                 }
 
+            ComposeFieldTheme.FieldStyle.STICK_LABEL,
             ComposeFieldTheme.FieldStyle.CONTAINER,
             ComposeFieldTheme.FieldStyle.NORMAL ->
                 Box(

@@ -243,6 +243,7 @@ class ComposeDropDownField : ComposeField() {
                 ) {
                     content?.invoke(this)
                 }
+            ComposeFieldTheme.FieldStyle.STICK_LABEL ->{}
         }
     }
 

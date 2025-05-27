@@ -305,6 +305,7 @@ class ComposeCheckBoxField : ComposeField() {
                 ) {
                     content.invoke(this)
                 }
+            ComposeFieldTheme.FieldStyle.STICK_LABEL ->{}
         }
     }
 
@@ -441,6 +442,7 @@ private fun CheckBoxField3Options(modifier: Modifier = Modifier,enabled: Boolean
                 horizontalAlignment = Alignment.Start,
                 content = { content.invoke() }
             )
+        ComposeFieldTheme.FieldStyle.STICK_LABEL,
         ComposeFieldTheme.FieldStyle.CONTAINER,
         ComposeFieldTheme.FieldStyle.NORMAL ->
             Column(

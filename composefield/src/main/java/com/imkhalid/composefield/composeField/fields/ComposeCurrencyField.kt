@@ -97,6 +97,7 @@ class ComposeCurrencyField : ComposeField() {
                         newValue = newValue
                     )
 
+                ComposeFieldTheme.FieldStyle.STICK_LABEL,
                 ComposeFieldTheme.FieldStyle.CONTAINER ->
                     ContainerField(
                         modifier = Modifier.fillMaxWidth(),

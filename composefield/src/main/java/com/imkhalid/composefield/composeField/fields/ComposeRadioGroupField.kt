@@ -126,6 +126,7 @@ private fun RadioGroupField(modifier: Modifier = Modifier, content: @Composable 
                 horizontalAlignment = Alignment.Start,
                 content = { content.invoke() }
             )
+        ComposeFieldTheme.FieldStyle.STICK_LABEL,
         ComposeFieldTheme.FieldStyle.CONTAINER,
         ComposeFieldTheme.FieldStyle.NORMAL ->
             Column(

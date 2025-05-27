@@ -92,6 +92,7 @@ class ComposeMobileField : ComposeField() {
                     newValue = newValue,
                     phoneNumberUtil = phoneNumberUtil
                 )
+            ComposeFieldTheme.FieldStyle.STICK_LABEL,
             ComposeFieldTheme.FieldStyle.CONTAINER ->
                 ContainerField(
                     modifier = modifier,

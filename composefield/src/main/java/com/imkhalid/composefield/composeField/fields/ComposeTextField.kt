@@ -4,14 +4,17 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -45,6 +48,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -142,6 +146,13 @@ class ComposeTextField : ComposeField() {
                         )
                     ComposeFieldTheme.FieldStyle.NORMAL ->
                         NormalField(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors=colors,
+                            state = state,
+                            newValue = newValue
+                        )
+                    ComposeFieldTheme.FieldStyle.STICK_LABEL->
+                        StickLabelField(
                             modifier = Modifier.fillMaxWidth(),
                             colors=colors,
                             state = state,
@@ -384,6 +395,104 @@ class ComposeTextField : ComposeField() {
                 modifier = Modifier.padding(start = 16.dp)
             )
         }
+    }
+
+    @Preview
+    @Composable
+    private fun StickLabelField(
+        modifier: Modifier = Modifier,
+        colors:TextFieldColors = TextFieldDefaults.colors(),
+        state: ComposeFieldState = ComposeFieldState(
+            field = ComposeFieldModule(
+                label = "Email"
+            )
+        ),
+        newValue: (Pair<Boolean, String>, String) -> Unit = {pair,s->}
+    ) {
+        val mask = getFieldMask(state.field)
+        var passwordVisible by remember { mutableStateOf(false) }
+        val visualTransformation =if (state.field.visualTransformation.isNotEmpty())
+            getVisualTransformation(state.field.visualTransformation, state.field.keyboardType, passwordVisible)
+        else
+            getVisualTransformation(mask, state.field.keyboardType, passwordVisible)
+
+        val label = buildAnnotatedString {
+            append(state.field.label)
+        }
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp, vertical = 4.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = label,
+                    fontSize = responsiveTextSize(ComposeFieldTheme.stickLabelFontSize).sp,
+                    color = ComposeFieldTheme.focusedLabelColor,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+
+                TextField(
+                    value = state.text,
+                    onValueChange = { curVal ->
+                        if (mask != Patterns.NONE && mask.value.isNotEmpty()) {
+                            if (curVal.length <= mask.length) {
+                                builtinValidations(curVal, state) { validated, newVal ->
+                                    newValue.invoke(validated, newVal)
+                                }
+                            }
+                        } else {
+                            builtinValidations(curVal, state) { validated, newVal ->
+                                newValue.invoke(validated, newVal)
+                            }
+                        }
+                    },
+                    singleLine = true,
+                    keyboardOptions = getKeyboardOptions(state.field),
+                    isError = state.hasError,
+                    textStyle = TextStyle.Default.copy(
+                        fontSize = responsiveTextSize(
+                        ComposeFieldTheme.stickFontSize).sp,
+                        textAlign = TextAlign.End,
+                    ),
+                    minLines = getMinLine(state.field.type),
+                    maxLines = getMaxLine(state.field.type),
+                    visualTransformation = visualTransformation,
+                    enabled = state.field.isEditable.value,
+                    colors = colors.copy(
+                        errorContainerColor = Color.Transparent,
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        disabledContainerColor = Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        errorIndicatorColor = Color.Transparent,
+                        focusedTextColor = Color.Black,
+                        errorTextColor = Color.Black,
+                        disabledTextColor = Color.Black,
+                        unfocusedTextColor = Color.Black
+                    ),
+                    modifier = Modifier
+                        .then(modifier)
+                        .fillMaxWidth()
+                        .padding(start = 8.dp)
+                )
+            }
+            if (state.hasError) {
+                Text(
+                    text = state.errorMessage,
+                    color = ComposeFieldTheme.errorMessageColor,
+                    style = MaterialTheme.typography.labelSmall,
+                    fontSize = 12.sp,
+                    modifier = Modifier.align(Alignment.End)
+                )
+            }
+        }
+
     }
 
     private fun getMinLine(type: ComposeFieldType): Int {
