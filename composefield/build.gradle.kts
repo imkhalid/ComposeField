@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         minSdk = 26
-        targetSdk = 35
+        lint.targetSdk = 35
         multiDexEnabled = true
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -105,7 +105,7 @@ dependencies {
     api("androidx.compose.ui:ui")
     api("androidx.compose.ui:ui-graphics")
     api("androidx.compose.ui:ui-tooling-preview")
-    api("androidx.compose.material3:material3")
+    api("androidx.compose.material3:material3:1.3.2")
 //    api(project(":library"))
 
     implementation("androidx.hilt:hilt-navigation-compose:$hiltWork")
