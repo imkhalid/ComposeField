@@ -1,6 +1,5 @@
 package com.imkhalid.composefieldproject.composeField.fields
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -9,15 +8,17 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -41,9 +42,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalTextToolbar
 import androidx.compose.ui.platform.TextToolbar
 import androidx.compose.ui.platform.TextToolbarStatus
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -53,6 +56,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.imkhalid.composefield.R
 import com.imkhalid.composefield.composeField.ComposeFieldState
 import com.imkhalid.composefield.composeField.mask.FieldMaskTransformation
 import com.imkhalid.composefield.composeField.Patterns
@@ -60,8 +64,11 @@ import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldType
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardTypeAdv
 import com.imkhalid.composefield.composeField.model.ComposeFieldModule
+import com.imkhalid.composefield.composeField.responsiveSize
 import com.imkhalid.composefield.theme.ComposeFieldTheme
 import com.imkhalid.composefield.composeField.responsiveTextSize
+import com.imkhalid.composefield.composeField.util.ErrorView
+import com.imkhalid.composefield.composeField.util.ShowToolTip
 import java.util.regex.Pattern
 
 class ComposeTextField : ComposeField() {
@@ -79,7 +86,6 @@ class ComposeTextField : ComposeField() {
         MyBuild(state = state, newValue = newValue, modifier = modifier)
     }
 
-    @OptIn(ExperimentalFoundationApi::class)
     @Composable
     fun MyBuild(
         state: ComposeFieldState,
@@ -91,23 +97,7 @@ class ComposeTextField : ComposeField() {
                 LocalTextToolbar provides EmptyTextToolbar
             else LocalTextToolbar provides LocalTextToolbar.current
 
-        val colors = TextFieldDefaults.colors(
-            focusedContainerColor = Color.White,
-            unfocusedContainerColor = Color.White,
-            errorLabelColor = ComposeFieldTheme.errorColor,
-            focusedLabelColor = ComposeFieldTheme.hintColor,
-            focusedTextColor = ComposeFieldTheme.textColor,
-            unfocusedTextColor = ComposeFieldTheme.textColor,
-            focusedSupportingTextColor = ComposeFieldTheme.infoColor,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-            disabledTextColor = Color(0xFFBDBDBD),
-            disabledLabelColor = Color(0xFF9E9E9E),
-            disabledPlaceholderColor = Color(0xFFBDBDBD),
-            disabledContainerColor = Color(0xFFE0E0E0),
-            errorContainerColor = Color(0xFFfaebeb),
-            errorTextColor = ComposeFieldTheme.textColor
-        )
+        val colors = getColors(ComposeFieldTheme.fieldStyle)
 
         Column(modifier = modifier.bringIntoViewRequester(localRequester)) {
             CompositionLocalProvider(toolbar) {
@@ -122,25 +112,7 @@ class ComposeTextField : ComposeField() {
                     ComposeFieldTheme.FieldStyle.CONTAINER ->
                         ContainerField(
                             modifier = Modifier.fillMaxWidth(),
-                            colors=TextFieldDefaults.colors(
-                                focusedContainerColor = Color.White,
-                                unfocusedContainerColor = Color.White,
-                                errorLabelColor = ComposeFieldTheme.errorColor,
-                                focusedLabelColor = ComposeFieldTheme.focusedLabelColor,
-                                unfocusedLabelColor = ComposeFieldTheme.unfocusedLabelColor,
-                                unfocusedPlaceholderColor = ComposeFieldTheme.unfocusedLabelColor,
-                                focusedTextColor = ComposeFieldTheme.textColor,
-                                unfocusedTextColor = ComposeFieldTheme.textColor,
-                                focusedSupportingTextColor = ComposeFieldTheme.infoColor,
-                                focusedIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent,
-                                disabledTextColor = Color(0xFFBDBDBD),
-                                disabledLabelColor = Color(0xFF9E9E9E),
-                                disabledPlaceholderColor = Color(0xFFBDBDBD),
-                                disabledContainerColor = Color(0xFFE0E0E0),
-                                errorContainerColor = Color(0xFFfaebeb),
-                                errorTextColor = ComposeFieldTheme.textColor
-                            ),
+                            colors=colors,
                             state = state,
                             newValue = newValue
                         )
@@ -172,58 +144,35 @@ class ComposeTextField : ComposeField() {
     ) {
         val mask = getFieldMask(state.field)
         var passwordVisible by remember { mutableStateOf(false) }
-        val visualTransformation =if (state.field.visualTransformation.isNotEmpty())
-            getVisualTransformation(state.field.visualTransformation, state.field.keyboardType, passwordVisible)
-        else
-            getVisualTransformation(mask, state.field.keyboardType, passwordVisible)
+
 
         TextField(
             value = state.text,
             enabled = state.field.isEditable.value,
             onValueChange = { curVal ->
-                if (mask != Patterns.NONE && mask.value.isNotEmpty()) {
-                    if (curVal.length <= mask.length) {
-                        builtinValidations(curVal, state) { validated, newVal ->
-                            newValue.invoke(validated, newVal)
-                        }
-                    }
-                } else {
-                    builtinValidations(curVal, state) { validated, newVal ->
-                        newValue.invoke(validated, newVal)
-                    }
-                }
-            },
-            prefix = {
-                if (state.field.keyboardType is ComposeKeyboardTypeAdv.MOBILE_NO)
-                    Text(text = "+1", modifier = Modifier.clickable {})
-                else null
+                handleValueChange(curVal,mask,state,newValue)
             },
             keyboardOptions = getKeyboardOptions(state.field),
             isError = state.hasError,
-            label = { Text(state.field.label) },
+            label = { GetLabel(field = state.field) },
             minLines = getMinLine(state.field.type),
             maxLines = getMaxLine(state.field.type),
-            visualTransformation = visualTransformation,
+            visualTransformation = getVisualTransformation(mask, state.field, passwordVisible),
             colors =colors,
             shape = RoundedCornerShape(8.dp),
             modifier =
             modifier
                 .padding(5.dp)
                 .shadow(elevation = 5.dp, shape = RoundedCornerShape(8.dp)),
-            trailingIcon = {
-                TrailingIcon(state.field, passwordVisible = passwordVisible) {
-                    passwordVisible = passwordVisible.not()
-                }
+            trailingIcon = trailingIcon(state.field, passwordVisible = passwordVisible) {
+                passwordVisible = passwordVisible.not()
             }
         )
-        if (state.hasError) {
-            Text(
-                text = state.errorMessage,
-                color = ComposeFieldTheme.errorMessageColor,
-                style = MaterialTheme.typography.labelSmall,
-                modifier = Modifier.padding(start = 16.dp)
-            )
-        }
+        ErrorView(
+            modifier =  Modifier.padding(start = 16.dp),
+            hasError = state.hasError,
+            errorMessage = state.errorMessage
+        )
     }
 
     @Composable
@@ -237,26 +186,12 @@ class ComposeTextField : ComposeField() {
         val focusRequester = remember { FocusRequester() }
         var isFocused by remember { mutableStateOf(false) }
         var passwordVisible by remember { mutableStateOf(false) }
-        val visualTransformation =if (state.field.visualTransformation.isNotEmpty())
-            getVisualTransformation(state.field.visualTransformation, state.field.keyboardType, passwordVisible)
-        else
-            getVisualTransformation(mask, state.field.keyboardType, passwordVisible)
 
         TextField(
             value = state.text,
             enabled = state.field.isEditable.value,
             onValueChange = { curVal ->
-                if (mask != Patterns.NONE && mask.value.isNotEmpty()) {
-                    if (curVal.length <= mask.length) {
-                        builtinValidations(curVal, state) { validated, newVal ->
-                            newValue.invoke(validated, newVal)
-                        }
-                    }
-                } else {
-                    builtinValidations(curVal, state) { validated, newVal ->
-                        newValue.invoke(validated, newVal)
-                    }
-                }
+                handleValueChange(curVal,mask,state,newValue)
             },
             prefix = {
                 if (state.field.keyboardType is ComposeKeyboardTypeAdv.MOBILE_NO)
@@ -265,29 +200,11 @@ class ComposeTextField : ComposeField() {
             },
             keyboardOptions = getKeyboardOptions(state.field),
             isError = state.hasError,
-            label = {
-                val label = buildAnnotatedString {
-                    withStyle(style = SpanStyle(fontSize = responsiveTextSize(size = 13).sp)) {
-                        append(state.field.label)
-                    }
-                    if (state.field.required == ComposeFieldYesNo.YES) {
-                        withStyle(
-                            style =
-                                SpanStyle(
-                                    fontSize = responsiveTextSize(size = 13).sp,
-                                    color = Color.Red
-                                )
-                        ) {
-                            append("*")
-                        }
-                    }
-                }
-                Text(label, fontSize = responsiveTextSize(size = 13).sp)
-            },
+            label = { GetLabel(field = state.field) },
             textStyle = TextStyle.Default.copy(fontSize = responsiveTextSize(size = 15).sp),
             minLines = getMinLine(state.field.type),
             maxLines = getMaxLine(state.field.type),
-            visualTransformation = visualTransformation,
+            visualTransformation = getVisualTransformation(mask, state.field, passwordVisible),
             colors =colors,
             shape = RoundedCornerShape(8.dp),
             modifier =
@@ -298,25 +215,20 @@ class ComposeTextField : ComposeField() {
                 .border(
                     width = if (isFocused) 1.dp else 0.dp,
                     color =
-                    if (isFocused) ComposeFieldTheme.focusedBorderColor
-                    else Color.Transparent,
+                        if (isFocused) ComposeFieldTheme.focusedBorderColor
+                        else Color.Transparent,
                     shape = RoundedCornerShape(8.dp)
                 )
                 .shadow(elevation = 5.dp, shape = RoundedCornerShape(8.dp)),
-            trailingIcon = {
-                TrailingIcon(state.field, passwordVisible = passwordVisible) {
-                    passwordVisible = passwordVisible.not()
-                }
+            trailingIcon = trailingIcon(state.field, passwordVisible = passwordVisible) {
+                passwordVisible = passwordVisible.not()
             }
         )
-        if (state.hasError) {
-            Text(
-                text = state.errorMessage,
-                color = ComposeFieldTheme.errorMessageColor,
-                style = MaterialTheme.typography.labelSmall,
-                modifier = Modifier.padding(start = 16.dp)
-            )
-        }
+        ErrorView(
+            modifier =  Modifier.padding(start = 16.dp),
+            hasError = state.hasError,
+            errorMessage = state.errorMessage
+        )
     }
 
     @Composable
@@ -328,26 +240,12 @@ class ComposeTextField : ComposeField() {
     ) {
         val mask = getFieldMask(state.field)
         var passwordVisible by remember { mutableStateOf(false) }
-        val visualTransformation =if (state.field.visualTransformation.isNotEmpty())
-            getVisualTransformation(state.field.visualTransformation, state.field.keyboardType, passwordVisible)
-        else
-            getVisualTransformation(mask, state.field.keyboardType, passwordVisible)
 
         OutlinedTextField(
             value = state.text,
             enabled = state.field.isEditable.value,
             onValueChange = { curVal ->
-                if (mask != Patterns.NONE && mask.value.isNotEmpty()) {
-                    if (curVal.length <= mask.length) {
-                        builtinValidations(curVal, state) { validated, newVal ->
-                            newValue.invoke(validated, newVal)
-                        }
-                    }
-                } else {
-                    builtinValidations(curVal, state) { validated, newVal ->
-                        newValue.invoke(validated, newVal)
-                    }
-                }
+                handleValueChange(curVal,mask,state,newValue)
             },
             prefix = {
                 if (state.field.keyboardType is ComposeKeyboardTypeAdv.MOBILE_NO)
@@ -356,45 +254,22 @@ class ComposeTextField : ComposeField() {
             },
             keyboardOptions = getKeyboardOptions(state.field),
             isError = state.hasError,
-            label = {
-                val label = buildAnnotatedString {
-                    withStyle(style = SpanStyle(fontSize = responsiveTextSize(size = 13).sp)) {
-                        append(state.field.label)
-                    }
-                    if (state.field.required == ComposeFieldYesNo.YES) {
-                        withStyle(
-                            style =
-                                SpanStyle(
-                                    fontSize = responsiveTextSize(size = 13).sp,
-                                    color = Color.Red
-                                )
-                        ) {
-                            append("*")
-                        }
-                    }
-                }
-                Text(label, fontSize = responsiveTextSize(size = 13).sp)
-            },
+            label = { GetLabel(field = state.field) },
             textStyle = TextStyle.Default.copy(fontSize = responsiveTextSize(size = 16).sp),
             minLines = getMinLine(state.field.type),
             maxLines = getMaxLine(state.field.type),
-            visualTransformation = visualTransformation,
+            visualTransformation = getVisualTransformation(mask, state.field, passwordVisible),
             colors =colors,
             modifier = modifier,
-            trailingIcon = {
-                TrailingIcon(field = state.field, passwordVisible = passwordVisible) {
-                    passwordVisible = passwordVisible.not()
-                }
+            trailingIcon = trailingIcon(state.field, passwordVisible = passwordVisible) {
+                passwordVisible = passwordVisible.not()
             }
         )
-        if (state.hasError) {
-            Text(
-                text = state.errorMessage,
-                color = ComposeFieldTheme.errorMessageColor,
-                style = MaterialTheme.typography.labelSmall,
-                modifier = Modifier.padding(start = 16.dp)
-            )
-        }
+        ErrorView(
+            modifier =  Modifier.padding(start = 16.dp),
+            hasError = state.hasError,
+            errorMessage = state.errorMessage
+        )
     }
 
     @Preview
@@ -411,86 +286,87 @@ class ComposeTextField : ComposeField() {
     ) {
         val mask = getFieldMask(state.field)
         var passwordVisible by remember { mutableStateOf(false) }
-        val visualTransformation =if (state.field.visualTransformation.isNotEmpty())
-            getVisualTransformation(state.field.visualTransformation, state.field.keyboardType, passwordVisible)
-        else
-            getVisualTransformation(mask, state.field.keyboardType, passwordVisible)
 
-        val label = buildAnnotatedString {
-            append(state.field.label)
-        }
-        Column(
+
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 4.dp)
+                .height(TextFieldDefaults.MinHeight)
+                .padding(horizontal = 8.dp),
+            contentAlignment = Alignment.Center
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(responsiveSize(5))
             ) {
                 Text(
-                    text = label,
+                    text = state.field.label,
                     fontSize = responsiveTextSize(ComposeFieldTheme.stickLabelFontSize).sp,
                     color = ComposeFieldTheme.focusedLabelColor,
-                    style = MaterialTheme.typography.bodyMedium
+                    fontWeight = FontWeight.Medium
                 )
+                if (state.field.hint.isNotEmpty())
+                    ShowToolTip(info=state.field.hint, modifier = Modifier)
 
-                TextField(
-                    value = state.text,
-                    onValueChange = { curVal ->
-                        if (mask != Patterns.NONE && mask.value.isNotEmpty()) {
-                            if (curVal.length <= mask.length) {
-                                builtinValidations(curVal, state) { validated, newVal ->
-                                    newValue.invoke(validated, newVal)
-                                }
-                            }
-                        } else {
-                            builtinValidations(curVal, state) { validated, newVal ->
-                                newValue.invoke(validated, newVal)
-                            }
-                        }
-                    },
-                    singleLine = true,
-                    keyboardOptions = getKeyboardOptions(state.field),
-                    isError = state.hasError,
-                    textStyle = TextStyle.Default.copy(
-                        fontSize = responsiveTextSize(
-                        ComposeFieldTheme.stickFontSize).sp,
-                        textAlign = TextAlign.End,
-                    ),
-                    minLines = getMinLine(state.field.type),
-                    maxLines = getMaxLine(state.field.type),
-                    visualTransformation = visualTransformation,
-                    enabled = state.field.isEditable.value,
-                    colors = colors.copy(
-                        errorContainerColor = Color.Transparent,
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-                        disabledContainerColor = Color.Transparent,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        errorIndicatorColor = Color.Transparent,
-                        focusedTextColor = Color.Black,
-                        errorTextColor = Color.Black,
-                        disabledTextColor = Color.Black,
-                        unfocusedTextColor = Color.Black
-                    ),
+                BasicTextField(
                     modifier = Modifier
                         .then(modifier)
                         .fillMaxWidth()
-                        .padding(start = 8.dp)
+                        .fillMaxHeight()
+                    ,
+                    value = state.text,
+                    onValueChange = { curVal ->
+                        handleValueChange(curVal,mask,state,newValue)
+                    },
+                    enabled = state.field.isEditable.value,
+                    keyboardOptions = getKeyboardOptions(state.field),
+                    minLines = getMinLine(state.field.type),
+                    maxLines = getMaxLine(state.field.type),
+                    singleLine = true,
+                    visualTransformation = getVisualTransformation(mask, state.field, passwordVisible),
+                    textStyle = TextStyle.Default.copy(
+                        color = ComposeFieldTheme.textColor,
+                        fontSize = responsiveTextSize(
+                            ComposeFieldTheme.stickFontSize).sp,
+                        fontWeight = FontWeight.Medium,
+                        textAlign = TextAlign.End,
+                        fontFamily = MaterialTheme.typography.bodyLarge.fontFamily,
+                    ),
+                    decorationBox = { innerTextField ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            // TextField content
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f),
+                                contentAlignment = Alignment.CenterEnd
+                            ) {
+                                if (state.text.isEmpty()) {
+                                    GetPlaceHolder(label = if (state.field.required == ComposeFieldYesNo.YES) "Required" else "Optional")
+                                }
+                                innerTextField()
+                            }
+
+                            TrailingIconBasic(
+                                state.field,
+                                passwordVisible,
+                                onClick = {
+                                    passwordVisible = passwordVisible.not()
+                                }
+                            )
+
+                        }
+                    }
                 )
             }
-            if (state.hasError) {
-                Text(
-                    text = state.errorMessage,
-                    color = ComposeFieldTheme.errorMessageColor,
-                    style = MaterialTheme.typography.labelSmall,
-                    fontSize = 12.sp,
-                    modifier = Modifier.align(Alignment.End)
-                )
-            }
+            ErrorView(
+                modifier =  Modifier.align(Alignment.BottomEnd),
+                hasError = state.hasError,
+                errorMessage = state.errorMessage
+            )
         }
 
     }
@@ -545,25 +421,14 @@ class ComposeTextField : ComposeField() {
 
     private fun getVisualTransformation(
         mask: Patterns,
-        keyboardType: ComposeKeyboardTypeAdv,
+        field: ComposeFieldModule,
         passwordVisible: Boolean
     ): VisualTransformation {
-        return if (mask != Patterns.MOBILE && mask != Patterns.NONE && mask.value.isNotEmpty())
+        return if (field.visualTransformation.isNotEmpty())
+            FieldMaskTransformation(field.visualTransformation)
+        else if (mask != Patterns.MOBILE && mask != Patterns.NONE && mask.value.isNotEmpty())
             FieldMaskTransformation(mask.value)
-        else if (keyboardType is ComposeKeyboardTypeAdv.PASSWORD)
-            if (passwordVisible) VisualTransformation.None
-            else PasswordVisualTransformation(mask = '●')
-        else VisualTransformation.None
-    }
-
-    private fun getVisualTransformation(
-        mask: String,
-        keyboardType: ComposeKeyboardTypeAdv,
-        passwordVisible: Boolean
-    ): VisualTransformation {
-        return if (mask.isNotEmpty())
-            FieldMaskTransformation(mask)
-        else if (keyboardType is ComposeKeyboardTypeAdv.PASSWORD)
+        else if (field.keyboardType is ComposeKeyboardTypeAdv.PASSWORD)
             if (passwordVisible) VisualTransformation.None
             else PasswordVisualTransformation(mask = '●')
         else VisualTransformation.None
@@ -692,6 +557,25 @@ class ComposeTextField : ComposeField() {
                 currValue
         } else transforation.applyMaskAndGetResult(currValue)
     }
+
+    private fun handleValueChange(
+        currentText: String,
+        mask: Patterns,
+        state: ComposeFieldState,
+        onValidated: (Pair<Boolean, String>, String) -> Unit
+    ) {
+        if (mask != Patterns.NONE && mask.value.isNotEmpty()) {
+            if (currentText.length <= mask.length) {
+                builtinValidations(currentText, state) { validated, newVal ->
+                    onValidated.invoke(validated, newVal)
+                }
+            }
+        } else {
+            builtinValidations(currentText, state) { validated, newVal ->
+                onValidated.invoke(validated, newVal)
+            }
+        }
+    }
 }
 
 @Preview
@@ -703,7 +587,8 @@ private fun ShadowSample() {
 
         Box(
             modifier =
-                Modifier.size(100.dp)
+                Modifier
+                    .size(100.dp)
                     .shadow(
                         elevation = 10.dp,
                         spotColor = Color.Red,
@@ -717,9 +602,10 @@ private fun ShadowSample() {
         Spacer(modifier = Modifier.height(20.dp))
         Box(
             modifier =
-                Modifier.background(Color.Red)
+                Modifier
+                    .background(Color.Red)
                     .size(100.dp)
-                    .shadow(elevation = 10.dp, shape = RoundedCornerShape(8.dp)),
+                    .shadow(elevation = 5.dp, shape = RoundedCornerShape(8.dp)),
             contentAlignment = Alignment.Center
         ) {
             Text("Hello World")
@@ -729,12 +615,118 @@ private fun ShadowSample() {
 
         Box(
             modifier =
-                Modifier.shadow(elevation = 10.dp, shape = RoundedCornerShape(8.dp))
+                Modifier
+                    .shadow(elevation = 10.dp, shape = RoundedCornerShape(8.dp))
                     .background(Color.Red)
                     .size(100.dp),
             contentAlignment = Alignment.Center
         ) {
             Text("Hello World")
         }
+    }
+}
+
+
+@Composable
+fun getColors(type: ComposeFieldTheme.FieldStyle): TextFieldColors{
+    return when(type){
+        ComposeFieldTheme.FieldStyle.STICK_LABEL-> TextFieldDefaults.colors().copy(
+            errorContainerColor = Color.Transparent,
+            focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color.Transparent,
+            disabledContainerColor = Color.Transparent,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            errorIndicatorColor = Color.Transparent,
+            focusedTextColor = ComposeFieldTheme.textColor,
+            errorTextColor = ComposeFieldTheme.textColor,
+            disabledTextColor = ComposeFieldTheme.textColor,
+            unfocusedTextColor = ComposeFieldTheme.textColor,
+            disabledIndicatorColor = Color.Transparent,
+
+        )
+        ComposeFieldTheme.FieldStyle.NORMAL,
+        ComposeFieldTheme.FieldStyle.OUTLINE -> TextFieldDefaults.colors(
+            focusedContainerColor = Color.White,
+            unfocusedContainerColor = Color.White,
+            errorLabelColor = ComposeFieldTheme.errorColor,
+            focusedLabelColor = ComposeFieldTheme.hintColor,
+            focusedTextColor = ComposeFieldTheme.textColor,
+            unfocusedTextColor = ComposeFieldTheme.textColor,
+            focusedSupportingTextColor = ComposeFieldTheme.infoColor,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            disabledTextColor = Color(0xFFBDBDBD),
+            disabledLabelColor = Color(0xFF9E9E9E),
+            disabledPlaceholderColor = Color(0xFFBDBDBD),
+            disabledContainerColor = Color(0xFFE0E0E0),
+            errorContainerColor = Color(0xFFfaebeb),
+            errorTextColor = ComposeFieldTheme.textColor
+        )
+        ComposeFieldTheme.FieldStyle.CONTAINER -> TextFieldDefaults.colors(
+            focusedContainerColor = Color.White,
+            unfocusedContainerColor = Color.White,
+            errorLabelColor = ComposeFieldTheme.errorColor,
+            focusedLabelColor = ComposeFieldTheme.focusedLabelColor,
+            unfocusedLabelColor = ComposeFieldTheme.unfocusedLabelColor,
+            unfocusedPlaceholderColor = ComposeFieldTheme.unfocusedLabelColor,
+            focusedTextColor = ComposeFieldTheme.textColor,
+            unfocusedTextColor = ComposeFieldTheme.textColor,
+            focusedSupportingTextColor = ComposeFieldTheme.infoColor,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            disabledTextColor = Color(0xFFBDBDBD),
+            disabledLabelColor = Color(0xFF9E9E9E),
+            disabledPlaceholderColor = Color(0xFFBDBDBD),
+            disabledContainerColor = Color(0xFFE0E0E0),
+            errorContainerColor = Color(0xFFfaebeb),
+            errorTextColor = ComposeFieldTheme.textColor
+        )
+    }
+
+}
+
+@Composable
+fun GetPlaceHolder(modifier: Modifier = Modifier, label:String)  {
+    when(ComposeFieldTheme.fieldStyle){
+        ComposeFieldTheme.FieldStyle.OUTLINE -> null
+        ComposeFieldTheme.FieldStyle.CONTAINER -> null
+        ComposeFieldTheme.FieldStyle.NORMAL -> null
+        ComposeFieldTheme.FieldStyle.STICK_LABEL -> Text(
+            modifier = Modifier.then(modifier),
+            text = label,
+            color = ComposeFieldTheme.textColor,
+            textAlign = TextAlign.End,
+            fontWeight = FontWeight.Medium,
+            fontSize= responsiveTextSize(ComposeFieldTheme.stickFontSize).sp
+        )
+    }
+}
+
+@Composable
+fun GetLabel(modifier: Modifier = Modifier, field: ComposeFieldModule) {
+    when(ComposeFieldTheme.fieldStyle){
+        ComposeFieldTheme.FieldStyle.OUTLINE ,
+        ComposeFieldTheme.FieldStyle.CONTAINER -> {
+            val label = buildAnnotatedString {
+                withStyle(style = SpanStyle(fontSize = responsiveTextSize(size = 13).sp)) {
+                    append(field.label)
+                }
+                if (field.required == ComposeFieldYesNo.YES) {
+                    withStyle(
+                        style =
+                            SpanStyle(
+                                fontSize = responsiveTextSize(size = 13).sp,
+                                color = Color.Red
+                            )
+                    ) {
+                        append("*")
+                    }
+                }
+            }
+            Text(label, fontSize = responsiveTextSize(size = 13).sp)
+        }
+        ComposeFieldTheme.FieldStyle.NORMAL -> Text(field.label)
+        ComposeFieldTheme.FieldStyle.STICK_LABEL -> null
     }
 }

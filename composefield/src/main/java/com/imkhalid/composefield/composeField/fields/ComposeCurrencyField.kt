@@ -44,7 +44,6 @@ import com.imkhalid.composefield.theme.ComposeFieldTheme
 import com.imkhalid.composefieldproject.composeField.fields.ComposeField
 import com.imkhalid.composefield.composeField.responsiveTextSize
 import java.text.DecimalFormat
-import java.util.Locale
 
 
 class ComposeCurrencyField : ComposeField() {
@@ -180,10 +179,8 @@ class ComposeCurrencyField : ComposeField() {
             modifier
                 .padding(5.dp)
                 .shadow(elevation = 5.dp, shape = RoundedCornerShape(8.dp)),
-            trailingIcon = {
-                TrailingIcon(state.field, passwordVisible = passwordVisible) {
-                    passwordVisible = passwordVisible.not()
-                }
+            trailingIcon = trailingIcon(state.field, passwordVisible = passwordVisible) {
+                passwordVisible = passwordVisible.not()
             }
         )
         if (state.hasError) {
@@ -274,10 +271,8 @@ class ComposeCurrencyField : ComposeField() {
                     shape = RoundedCornerShape(8.dp)
                 )
                 .shadow(elevation = 5.dp, shape = RoundedCornerShape(8.dp)),
-            trailingIcon = {
-                TrailingIcon(state.field, passwordVisible = passwordVisible) {
-                    passwordVisible = passwordVisible.not()
-                }
+            trailingIcon = trailingIcon(state.field, passwordVisible = passwordVisible) {
+                passwordVisible = passwordVisible.not()
             }
         )
         if (helper.isNotEmpty())
@@ -351,10 +346,8 @@ class ComposeCurrencyField : ComposeField() {
             visualTransformation = visualTransformation,
             colors = colors,
             modifier = modifier,
-            trailingIcon = {
-                TrailingIcon(field = state.field, passwordVisible = passwordVisible) {
-                    passwordVisible = passwordVisible.not()
-                }
+            trailingIcon = trailingIcon(state.field, passwordVisible = passwordVisible) {
+                passwordVisible = passwordVisible.not()
             }
         )
         if (state.hasError) {

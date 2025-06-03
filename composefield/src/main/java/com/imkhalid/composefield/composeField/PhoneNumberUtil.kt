@@ -20,6 +20,13 @@ class PhoneNumberUtil {
 
     fun setDefaultCountry(userCountryCode:String){
         when(userCountryCode){
+            "1"->{
+                prefix="92"
+                currentCountryCode="pk"
+                currentCountryFlag="\uD83C\uDDF5\uD83C\uDDF0 +"
+                minLength=10
+                maxLength=10
+            }
             "2"->{ //Kenya
                 prefix="254"
                 currentCountryCode="ke"
@@ -65,7 +72,7 @@ class PhoneNumberUtil {
                 CountryModel("ke", "254", "Kenya", "🇰🇪 +", 9, 9),
                 CountryModel("tz", "255", "Tanzania", "🇹🇿 +", 9, 10),
                 CountryModel("ug", "256", "Uganda", "🇺🇬 +", 9, 9),
-//                CountryModel("pk", "92", "Pakistan", "🇵🇰 +", 10, 10)
+                CountryModel("pk", "92", "Pakistan", "🇵🇰 +", 10, 10)
             )
 
         /**

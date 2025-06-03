@@ -1,15 +1,17 @@
 package com.imkhalid.composefieldproject.composeField.fields
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import com.imkhalid.composefield.R
 import com.imkhalid.composefield.composeField.ComposeFieldState
 import com.imkhalid.composefield.composeField.ComposeFieldStateHolder
@@ -25,6 +27,7 @@ import com.imkhalid.composefield.composeField.fields.ComposeRadioGroupField
 import com.imkhalid.composefield.composeField.fields.ComposeSwitchField
 import com.imkhalid.composefield.composeField.fields.ComposeTimePickerField
 import com.imkhalid.composefield.composeField.model.ComposeFieldModule
+import com.imkhalid.composefield.composeField.responsiveSize
 import com.imkhalid.composefield.composeField.states.rememberFieldState
 
 abstract class ComposeField {
@@ -34,21 +37,46 @@ abstract class ComposeField {
     lateinit var localRequester:BringIntoViewRequester
 
     @Composable
-    fun TrailingIcon(
+    fun TrailingIconBasic(
         field: ComposeFieldModule,
         passwordVisible: Boolean,
         onClick: (() -> Unit)? = null
     ) {
         if (field.keyboardType is ComposeKeyboardTypeAdv.PASSWORD) {
-            Image(
-                painter =
-                    if (passwordVisible) painterResource(id = R.drawable.ic_open_password)
-                    else painterResource(id = R.drawable.ic_close_password),
-                contentDescription = "Toggle password visibility",
-                modifier = Modifier.clickable { onClick?.invoke() }
-            )
+            Icon(
+                    painter = if (passwordVisible) painterResource(id = R.drawable.ic_v2_eye_closed)
+                    else painterResource(id = R.drawable.ic_v2_eye_closed),
+                    contentDescription = "Hide/Show",
+                    modifier = Modifier
+                        .padding(start = 2.dp)
+                        .size(responsiveSize(20))
+                        .clickable { onClick?.invoke() }
+                )
         }
     }
+
+    fun trailingIcon(
+        field: ComposeFieldModule,
+        passwordVisible: Boolean,
+        onClick: (() -> Unit)? = null
+    ): (@Composable () -> Unit)? {
+        return if (field.keyboardType is ComposeKeyboardTypeAdv.PASSWORD) {
+            {
+                Icon(
+                    painter = if (passwordVisible)
+                        painterResource(id = R.drawable.ic_open_password)
+                    else
+                        painterResource(id = R.drawable.ic_close_password),
+                    contentDescription = "Hide/Show",
+                    modifier = Modifier
+                        .size(responsiveSize(16))
+                        .clickable { onClick?.invoke() }
+                )
+            }
+        } else null
+    }
+
+
 
     @OptIn(ExperimentalFoundationApi::class)
     @Composable

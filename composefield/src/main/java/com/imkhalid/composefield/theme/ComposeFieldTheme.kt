@@ -1,5 +1,7 @@
 package com.imkhalid.composefield.theme
 
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.RichTooltipColors
 import androidx.compose.ui.graphics.Color
 
 object ComposeFieldTheme {
@@ -20,6 +22,10 @@ object ComposeFieldTheme {
     var containerColor = Color.LightGray
     var stickLabelFontSize = 20
     var stickFontSize = 16
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    var toolTipColors: RichTooltipColors?=null
+
 
     enum class FieldStyle {
         OUTLINE,

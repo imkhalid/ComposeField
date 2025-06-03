@@ -6,10 +6,12 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -45,6 +47,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -53,6 +56,7 @@ import com.imkhalid.composefield.composeField.ComposeFieldState
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardTypeAdv
 import com.imkhalid.composefield.composeField.responsiveHPaddings
+import com.imkhalid.composefield.composeField.responsiveSize
 import com.imkhalid.composefield.theme.ComposeFieldTheme
 import com.imkhalid.composefieldproject.composeField.fields.ComposeField
 import com.imkhalid.composefield.composeField.responsiveTextSize
@@ -119,29 +123,53 @@ class ComposeDatePickerField : ComposeField() {
                     onClick = { showDialog.value = true },
                     enabled = state.field.isEditable == ComposeFieldYesNo.YES
                 ) {
-                    Text(
-                        modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(start = 20.dp, top = 7.dp)
-                            .align(Alignment.CenterStart),
-                        color =
-                        if (state.text.isEmpty()) ComposeFieldTheme.unfocusedLabelColor
-                        else ComposeFieldTheme.textColor,
-                        text = dropDownText,
-                        fontWeight =
-                        if (state.text.isEmpty()) FontWeight.Normal else FontWeight.Medium,
-                        fontSize = responsiveTextSize(size = 15).sp
-                    )
-                    Text(
-                        text = label,
-                        color = ComposeFieldTheme.hintColor,
-                        fontSize = responsiveTextSize(size = 13).sp,
-                        modifier = Modifier.padding(start = 20.dp, top = 7.dp)
-                    )
-                }
-                EndIcons(state){
-                    newValue(Pair(true,""),"")
+                    if (ComposeFieldTheme.fieldStyle== ComposeFieldTheme.FieldStyle.STICK_LABEL){
+                        Row(
+                            modifier = Modifier.fillMaxWidth().fillMaxHeight(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(responsiveSize(5))
+                        ) {
+                            Text(
+                                text = state.field.label,
+                                fontSize = responsiveTextSize(ComposeFieldTheme.stickLabelFontSize).sp,
+                                color = ComposeFieldTheme.focusedLabelColor,
+                                fontWeight = FontWeight.Medium
+                            )
+
+                            Text(
+                                modifier = Modifier.fillMaxWidth(),
+                                color = ComposeFieldTheme.textColor,
+                                text = dropDownText,
+                                textAlign = TextAlign.End,
+                                fontWeight = FontWeight.Medium,
+                                fontSize = responsiveTextSize(size = ComposeFieldTheme.stickFontSize).sp,
+                            )
+                        }
+                    }else {
+                        Text(
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = 20.dp, top = 7.dp)
+                                    .align(Alignment.CenterStart),
+                            color =
+                                if (state.text.isEmpty()) ComposeFieldTheme.unfocusedLabelColor
+                                else ComposeFieldTheme.textColor,
+                            text = dropDownText,
+                            fontWeight =
+                                if (state.text.isEmpty()) FontWeight.Normal else FontWeight.Medium,
+                            fontSize = responsiveTextSize(size = 15).sp
+                        )
+                        Text(
+                            text = label,
+                            color = ComposeFieldTheme.hintColor,
+                            fontSize = responsiveTextSize(size = 13).sp,
+                            modifier = Modifier.padding(start = 20.dp, top = 7.dp)
+                        )
+                        EndIcons(state){
+                            newValue(Pair(true,""),"")
+                        }
+                    }
                 }
             }
             if (state.hasError) {
@@ -209,7 +237,6 @@ class ComposeDatePickerField : ComposeField() {
                     content?.invoke(this)
                 }
 
-            ComposeFieldTheme.FieldStyle.STICK_LABEL,
             ComposeFieldTheme.FieldStyle.CONTAINER,
             ComposeFieldTheme.FieldStyle.NORMAL ->
                 Box(
@@ -228,6 +255,18 @@ class ComposeDatePickerField : ComposeField() {
                                 onClick()
                         },
                 ) {
+                    content?.invoke(this)
+                }
+            ComposeFieldTheme.FieldStyle.STICK_LABEL->
+                Box(
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(horizontal = responsiveSize(8))
+                        .height(OutlinedTextFieldDefaults.MinHeight)
+                        .clickable {
+                            if (enabled)
+                                onClick()
+                        },
+                ){
                     content?.invoke(this)
                 }
         }

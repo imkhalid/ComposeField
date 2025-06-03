@@ -3,13 +3,22 @@ package com.imkhalid.composefield.composeField.fields
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
@@ -25,6 +34,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
@@ -34,18 +44,25 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.imkhalid.composefield.composeField.ComposeFieldState
 import com.imkhalid.composefield.composeField.PhoneNumberUtil
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardTypeAdv
+import com.imkhalid.composefield.composeField.model.ComposeFieldModule
+import com.imkhalid.composefield.composeField.responsiveSize
 import com.imkhalid.composefield.theme.ComposeFieldTheme
 import com.imkhalid.composefieldproject.composeField.fields.ComposeField
 import com.imkhalid.composefield.composeField.responsiveTextSize
+import com.imkhalid.composefield.composeField.util.ShowToolTip
+import com.imkhalid.composefieldproject.composeField.fields.GetPlaceHolder
 
 class ComposeMobileField : ComposeField() {
 
@@ -92,7 +109,6 @@ class ComposeMobileField : ComposeField() {
                     newValue = newValue,
                     phoneNumberUtil = phoneNumberUtil
                 )
-            ComposeFieldTheme.FieldStyle.STICK_LABEL,
             ComposeFieldTheme.FieldStyle.CONTAINER ->
                 ContainerField(
                     modifier = modifier,
@@ -102,6 +118,14 @@ class ComposeMobileField : ComposeField() {
                 )
             ComposeFieldTheme.FieldStyle.NORMAL ->
                 NormalField(
+                    modifier = modifier,
+                    state = state,
+                    newValue = newValue,
+                    phoneNumberUtil = phoneNumberUtil
+                )
+
+            ComposeFieldTheme.FieldStyle.STICK_LABEL->
+                StickyLabelField(
                     modifier = modifier,
                     state = state,
                     newValue = newValue,
@@ -170,11 +194,6 @@ class ComposeMobileField : ComposeField() {
                     Modifier.then(modifier)
                         .padding(5.dp)
                         .shadow(elevation = 5.dp, shape = RoundedCornerShape(8.dp)),
-                trailingIcon = {
-                    TrailingIcon(state.field, passwordVisible = false) {
-                        //                        passwordVisible = passwordVisible.not()
-                    }
-                }
             )
             if (state.hasError) {
                 Text(
@@ -296,11 +315,6 @@ class ComposeMobileField : ComposeField() {
                             shape = RoundedCornerShape(8.dp)
                         )
                         .shadow(elevation = 5.dp, shape = RoundedCornerShape(8.dp)),
-                trailingIcon = {
-                    TrailingIcon(state.field, passwordVisible = false) {
-                        //                        passwordVisible = passwordVisible.not()
-                    }
-                }
             )
             if (state.hasError) {
                 Text(
@@ -308,6 +322,140 @@ class ComposeMobileField : ComposeField() {
                     color = ComposeFieldTheme.errorMessageColor,
                     style = MaterialTheme.typography.labelSmall,
                     modifier = Modifier.padding(start = 16.dp)
+                )
+            }
+            if(expanded && phoneNumberUtil.shouldShowPicker) {
+                CountryPickerDialog(
+                    onDone = { toggleDropdown() },
+                    onOptionSelected = { countryModel ->
+                        phoneNumberUtil.apply {
+                            minLength = countryModel.length
+                            maxLength = countryModel.maxLength
+                            currentCountryFlag = countryModel.emoji
+                            currentCountryCode = countryModel.code
+                            prefix = countryModel.dialCode
+                        }
+                        newValue.invoke(Pair(true, ""), "")
+                        toggleDropdown()
+                    }
+                )
+            }
+        }
+    }
+
+    @OptIn(ExperimentalFoundationApi::class)
+    @Preview
+    @Composable
+    private fun StickyLabelField(
+        modifier: Modifier = Modifier,
+        state: ComposeFieldState = ComposeFieldState(
+            field = ComposeFieldModule(
+                label = "Email"
+            ),
+            hasError = true,
+            errorMessage = "Some Error Message"
+        ),
+        newValue: (Pair<Boolean, String>, String) -> Unit={pair,str->},
+        phoneNumberUtil: PhoneNumberUtil = PhoneNumberUtil()
+    ) {
+        localRequester = remember { BringIntoViewRequester() }
+        var expanded by remember { mutableStateOf(false) }
+        val toggleDropdown: () -> Unit = { expanded = !expanded }
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(TextFieldDefaults.MinHeight)
+                .padding(horizontal = 8.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(responsiveSize(5))
+            ) {
+                Text(
+                    modifier=Modifier,
+                    text = state.field.label,
+                    fontSize = responsiveTextSize(ComposeFieldTheme.stickLabelFontSize).sp,
+                    color = ComposeFieldTheme.focusedLabelColor,
+                    fontWeight = FontWeight.Medium
+                )
+                if (state.field.hint.isNotEmpty())
+                    ShowToolTip(info = state.field.hint, modifier = Modifier)
+
+                BasicTextField(
+                    modifier = Modifier
+                        .then(modifier)
+                        .bringIntoViewRequester(localRequester),
+                    value = state.text.removePrefix("+" + phoneNumberUtil.prefix),
+                    onValueChange = { curVal ->
+                        if (curVal.length <= phoneNumberUtil.maxLength) {
+                            builtinValidations(curVal, phoneNumberUtil) { validated, newVal ->
+                                newValue.invoke(
+                                    validated,
+                                    "+" + phoneNumberUtil.prefix.plus(newVal)
+                                )
+                            }
+                        }
+                    },
+                    enabled = state.field.isEditable.value,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.NumberPassword,
+                        autoCorrect = false,
+                        imeAction = ImeAction.Next
+                    ),
+                    minLines = 1,
+                    maxLines = 1,
+                    singleLine = true,
+                    textStyle = TextStyle.Default.copy(
+                        color = ComposeFieldTheme.textColor,
+                        fontSize = responsiveTextSize(
+                            ComposeFieldTheme.stickFontSize).sp,
+                        fontWeight = FontWeight.Medium,
+                        textAlign = TextAlign.End,
+                        fontFamily = MaterialTheme.typography.bodyLarge.fontFamily,
+                    ),
+                    decorationBox = { innerTextField ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.End,
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            //Prefix
+                            Text(
+                                text = phoneNumberUtil.prefix,
+                                modifier = Modifier.clickable { toggleDropdown() },
+                                color = ComposeFieldTheme.textColor,
+                                textAlign = TextAlign.End,
+                                fontWeight = FontWeight.Medium,
+                                fontSize = responsiveTextSize(size = ComposeFieldTheme.stickFontSize).sp
+                            )
+                            // TextField content
+                            Box(
+                                modifier = Modifier.wrapContentWidth(),
+                                contentAlignment = Alignment.CenterEnd,
+
+                            ) {
+                                if (state.text.isEmpty()) {
+                                    GetPlaceHolder(
+                                        label = if (state.field.required == ComposeFieldYesNo.YES) "Required" else "Optional"
+                                    )
+                                }
+                                innerTextField()
+                            }
+
+                        }
+                    }
+                )
+            }
+            if (state.hasError) {
+                Text(
+                    text = state.errorMessage,
+                    color = ComposeFieldTheme.errorMessageColor,
+                    style = MaterialTheme.typography.labelSmall,
+                    modifier = Modifier.padding(start = 16.dp)
+                        .align(Alignment.BottomEnd)
                 )
             }
             if(expanded && phoneNumberUtil.shouldShowPicker) {
@@ -394,11 +542,6 @@ class ComposeMobileField : ComposeField() {
                         errorTextColor = ComposeFieldTheme.textColor
                     ),
                 modifier = Modifier.then(modifier),
-                trailingIcon = {
-                    TrailingIcon(field = state.field, passwordVisible = false) {
-                        //                        passwordVisible = passwordVisible.not()
-                    }
-                }
             )
             if (state.hasError) {
                 Text(
