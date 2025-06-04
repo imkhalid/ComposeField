@@ -37,16 +37,20 @@ internal fun updateDependantChildren(
             getFieldByFieldName(it, fields)?.let {
                 if (currentChildName.contains(it.state.field.name)) {
                     it.updatedField(
-                        it.state.field.copy(
+                        pair = true to "",
+                        fieldModule = it.state.field.copy(
                             required = ComposeFieldYesNo.YES,
-                            hidden = ComposeFieldYesNo.NO
+                            hidden = ComposeFieldYesNo.NO,
+                            hideInitial = ComposeFieldYesNo.NO
                         )
                     )
                 } else {
                     it.updatedField(
-                        it.state.field.copy(
+                        pair = true to "",
+                        fieldModule = it.state.field.copy(
                             required = ComposeFieldYesNo.NO,
-                            hidden = ComposeFieldYesNo.YES
+                            hidden = ComposeFieldYesNo.YES,
+                            hideInitial = ComposeFieldYesNo.YES
                         )
                     )
                 }
@@ -119,7 +123,7 @@ internal fun validatedSection(sectionState: List<ComposeFieldStateHolder>): Bool
 
 internal fun invalidFamily(familyData: FamilyData?): List<Int> {
     return familyData?.snapshotStateList?.mapIndexedNotNull { index, map ->
-        if(map.getOrDefault("isValidated","") !="1")
+        if (map.getOrDefault("isValidated", "") != "1")
             index
         else null
 
@@ -141,10 +145,26 @@ fun getFieldByFieldName(
     return null
 }
 
+fun getFieldByFieldNameStartsWith(
+    name: String,
+    state: HashMap<String, List<ComposeFieldStateHolder>>
+): ComposeFieldStateHolder? {
+    for (i in 0 until state.entries.size) {
+        val foundState =
+            state.entries.toList()[i].value.find { x -> x.state.field.name.startsWith(name) }
+        if (foundState != null) {
+            return foundState
+        }
+    }
+    return null
+}
+
 
 fun Sections.getCurrentSection(): List<ComposeFieldStateHolder>? {
     return sectionState[nav.currentDestination?.route.orEmpty()]
 }
+
+fun Sections.getCurrentSectionName(): String = nav.currentDestination?.route.orEmpty()
 
 fun List<ComposeFieldStateHolder>.getFieldByFieldName(name: String): ComposeFieldStateHolder? {
     for (i in 0 until this.size) {
@@ -154,8 +174,7 @@ fun List<ComposeFieldStateHolder>.getFieldByFieldName(name: String): ComposeFiel
 }
 
 
-
-fun String.getAgeFromDOBYear(year:Int): String {
+fun String.getAgeFromDOBYear(year: Int): String {
     var age = ""
     try {
         this.takeIf { it.isNotEmpty() }?.let {
@@ -169,7 +188,6 @@ fun String.getAgeFromDOBYear(year:Int): String {
 }
 
 
-
 fun ArrayList<MutableStateFlow<ComposeFieldState>>.validateSection(): Boolean {
     return this.all { x ->
         val state = x.value
@@ -179,7 +197,7 @@ fun ArrayList<MutableStateFlow<ComposeFieldState>>.validateSection(): Boolean {
     }
 }
 
-fun java.util.HashMap<String, List<ComposeFieldStateHolder>>.validate(showError: Boolean=false): Boolean {
+fun java.util.HashMap<String, List<ComposeFieldStateHolder>>.validate(showError: Boolean = false): Boolean {
     val res = this.all { x ->
         x.value.all {
             it.state.field.required == ComposeFieldYesNo.YES &&

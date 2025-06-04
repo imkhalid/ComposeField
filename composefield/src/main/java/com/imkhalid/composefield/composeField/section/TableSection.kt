@@ -78,15 +78,15 @@ class TableSection(
         onValueChange: ((name: String, newValue: String) -> Unit)? = null,
         valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
         SingleItemHeader:
-            @Composable
+        @Composable
             (
-                onEditClick: () -> Unit,
-                onDeleteClick: () -> Unit,
-                onExpandClick: () -> Unit,
-                textTitle: String
-            ) -> Unit,
+            onEditClick: () -> Unit,
+            onDeleteClick: () -> Unit,
+            onExpandClick: () -> Unit,
+            textTitle: String
+        ) -> Unit,
         errorDialog:
-            (@Composable
+        (@Composable
             (onClick: (positive: Boolean) -> Unit, onDismiss: () -> Unit) -> Unit)? =
             null
     ) {
@@ -123,8 +123,8 @@ class TableSection(
             if (tableConfig.showLimit) {
                 Text(
                     text =
-                    if ((min == max && min > 0)||(min == 0 && max > 0)) "Maximum $max ${tableConfig.validationName}  can be Added"
-                    else "You can add between  $min and $max ${tableConfig.validationName}.",
+                        if ((min == max && min > 0)||(min == 0 && max > 0)) "Maximum $max ${tableConfig.validationName}  can be Added"
+                        else "You can add between  $min and $max ${tableConfig.validationName}.",
                     fontSize = responsiveTextSize(size = 12).sp,
                     color = tableConfig.tableColors.sectionLimitColor
                 )
@@ -145,15 +145,22 @@ class TableSection(
 
             Spacer(modifier = Modifier.height(responsiveHeight(size = 10)))
 
-            LazyColumn(modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(responsiveHeight(10))) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(responsiveHeight(10))
+            ) {
                 items(tableDataList.size) {
                     if (tableDataList[it].isDeleted.not()) {
+                        var itemName = tableName.replace("_", " ")
                         val item =
                             LinkedHashMap<String, Pair<String, String>>().apply {
                                 tableDataList[it].data.forEach { x ->
                                     x.value.sortedBy { y -> y.state.field.sortNumber }
                                         .forEach { y ->
+                                            if (y.state.field.isDisplay) {
+                                                itemName += " (${y.state.field.getTextFromValue(y.state.text)})"
+
+                                            }
                                             put(
                                                 y.state.field.name,
                                                 Pair(
@@ -166,7 +173,7 @@ class TableSection(
                             }
                         TableItem(
                             tableConfig.tableColors,
-                            tableName,
+                            itemName,
                             it,
                             item,
                             SingleItemHeader = {
@@ -178,7 +185,7 @@ class TableSection(
                                             expandedItem = -1
                                         } else expandedItem = it
                                     },
-                                    /*textTitle = */"${it.plus(1)}. ${tableName.replace("_", " ")}"
+                                    /*textTitle = */"${it.plus(1)}. ${itemName.replace("_", " ")}"
                                 )
                             },
                             expandedItem
@@ -193,7 +200,7 @@ class TableSection(
                 preState = tableDataList.getOrNull(editItem)?.data,
                 sections = sections,
                 valueChangeForChild = valueChangeForChild,
-                onValueChange = onValueChange,
+                onValueChange = tableConfig.onChangeValue,
                 DoneButton = tableConfig.tablePopupButton,
                 onDismiss = {
                     showDialog = false
@@ -306,7 +313,7 @@ class TableSection(
         name: String,
         modifier: Modifier = Modifier,
         preState: HashMap<String, List<ComposeFieldStateHolder>>?,
-        onValueChange: ((name: String, newValue: String) -> Unit)? = null,
+        onValueChange: ((name: String, newValue: String, states: List<ComposeFieldStateHolder>, sectionName: String) -> Unit)? = null,
         valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
         DoneButton: (@Composable BoxScope.(onClick: () -> Unit,data:HashMap<String, List<ComposeFieldStateHolder>>) -> Unit)?,
         sections: List<ComposeSectionModule>,
@@ -342,9 +349,9 @@ class TableSection(
                             painter = painterResource(android.R.drawable.ic_menu_close_clear_cancel),
                             contentDescription = null,
                             modifier =
-                            Modifier
-                                .align(Alignment.CenterEnd)
-                                .clickable { onDismiss.invoke() }
+                                Modifier
+                                    .align(Alignment.CenterEnd)
+                                    .clickable { onDismiss.invoke() }
                         )
                     }
                     Build(
@@ -380,22 +387,22 @@ fun TableItemHeader(
 ) {
     Row(
         modifier =
-        Modifier
-            .fillMaxWidth()
-            .height(responsiveHeight(size = 60))
-            .dashedBorder(
-                1.dp,
-                tableColors.headerBorderColor,
-                RoundedCornerShape(responsiveSize(size = 12)),
-                5.dp,
-                5.dp
-            )
-            .background(
-                color = tableColors.headerBackgroundColor,
-                shape = RoundedCornerShape(responsiveSize(size = 12))
-            )
-            .clickable { onExpandClick.invoke() }
-            .padding(responsiveSize(size = 15)),
+            Modifier
+                .fillMaxWidth()
+                .height(responsiveHeight(size = 60))
+                .dashedBorder(
+                    1.dp,
+                    tableColors.headerBorderColor,
+                    RoundedCornerShape(responsiveSize(size = 12)),
+                    5.dp,
+                    5.dp
+                )
+                .background(
+                    color = tableColors.headerBackgroundColor,
+                    shape = RoundedCornerShape(responsiveSize(size = 12))
+                )
+                .clickable { onExpandClick.invoke() }
+                .padding(responsiveSize(size = 15)),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.Top
     ) {

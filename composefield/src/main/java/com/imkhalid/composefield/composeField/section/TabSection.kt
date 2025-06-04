@@ -155,7 +155,7 @@ private fun Sections.TabSections(
                                     tableName = section.name.replace("_", " "),
                                     description = "",
                                     tableDataList =
-                                    tableData.getOrDefault(section.name, SnapshotStateList()),
+                                        tableData.getOrDefault(section.name, SnapshotStateList()),
                                     preState = null,
                                     onItemAdded = { data ->
                                         //Here First Filter only fields that are not hidden so it does not show empty values
@@ -188,7 +188,6 @@ private fun Sections.TabSections(
                                             }
                                     },
                                     valueChangeForChild = valueChangeForChild,
-                                    onValueChange = onValueChange,
                                     SingleItemHeader = { onEditClick,
                                                          onDeleteClick,
                                                          onExpandClick,
@@ -208,14 +207,18 @@ private fun Sections.TabSections(
                                     section.subSections.forEachIndexed { itemindex, item ->
                                         this.buildInnerSection(
                                             section = item,
-                                            onValueChange = onValueChange,
+                                            onValueChange = { name, value, stateList ->
+                                                onValueChange?.invoke(name, value)
+                                            },
                                             valueChangeForChild = valueChangeForChild
                                         )
                                     }
                                 } else {
                                     buildInnerSection(
                                         section = section,
-                                        onValueChange = onValueChange,
+                                        onValueChange = { name, value, stateList ->
+                                            onValueChange?.invoke(name, value)
+                                        },
                                         valueChangeForChild = valueChangeForChild
                                     )
                                 }
@@ -283,12 +286,12 @@ private fun Tabs(
     LazyRow(
         state = listState,
         modifier =
-        Modifier
-            .padding(bottom = responsiveHeight(size = 20))
-            .background(
-                color = Color.White,
-                shape = RoundedCornerShape(size = responsiveSize(size = 17))
-            )
+            Modifier
+                .padding(bottom = responsiveHeight(size = 20))
+                .background(
+                    color = Color.White,
+                    shape = RoundedCornerShape(size = responsiveSize(size = 17))
+                )
     ) {
         items(sectionNames.size) {
             if (sectionType is SectionType.TAB) {

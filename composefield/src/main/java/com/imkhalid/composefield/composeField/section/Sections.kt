@@ -42,7 +42,7 @@ open class Sections(
 ) {
     val sectionState: HashMap<String, List<ComposeFieldStateHolder>> = LinkedHashMap()
     val tableData:
-        HashMap<String, SnapshotStateList<TaggedMap>> =
+            HashMap<String, SnapshotStateList<TaggedMap>> =
         HashMap()
     val sectionNames: ArrayList<String> = arrayListOf()
 
@@ -55,7 +55,7 @@ open class Sections(
         showTitle: Boolean = false,
         preState: HashMap<String, List<ComposeFieldStateHolder>>? = null,
         button: (@Composable BoxScope.(currentSectionName:String,onClick: () -> Unit) -> Unit)? = null,
-        onValueChange: ((name: String, newValue: String) -> Unit)? = null,
+        onValueChange: ((name: String, newValue: String, List<ComposeFieldStateHolder>, sectionName: String) -> Unit)? = null,
         valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
         onLastPageReach: ((Sections) -> Unit)? = null,
     ){
@@ -114,7 +114,7 @@ open class Sections(
         showTitle: Boolean = false,
         preState: HashMap<String, List<ComposeFieldStateHolder>>? = null,
         button: (@Composable BoxScope.(currentSectionName:String,onClick: () -> Unit) -> Unit)? = null,
-        onValueChange: ((name: String, newValue: String) -> Unit)? = null,
+        onValueChange: ((name: String, newValue: String, List<ComposeFieldStateHolder>, sectionName: String) -> Unit)? = null,
         valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
         onLastPageReach: ((Sections) -> Unit)? = null,
     ) {
@@ -142,43 +142,43 @@ open class Sections(
                     }
                 else
                     sectionState[sec.name] = sec.subSections.flatMap {
-                            it.fields.map { field ->
-                                val preFieldState =
-                                    preState?.getOrDefault(sec.name, emptyList())?.find { x ->
-                                        x.state.field.name == field.name
-                                    }
-                                rememberFieldState(fieldModule = field, stateHolder = preFieldState)
-                            }
+                        it.fields.map { field ->
+                            val preFieldState =
+                                preState?.getOrDefault(sec.name, emptyList())?.find { x ->
+                                    x.state.field.name == field.name
+                                }
+                            rememberFieldState(fieldModule = field, stateHolder = preFieldState)
                         }
+                    }
 
             }
         }
         val myNav = MyNavHost(nav,sectionNames,this,onLastPageReach)
         if(sectionType is SectionType.SIMPLE){
-                if (sectionType.horizontalSection) {
-                    SimpleSections(
-                        nav = myNav,
-                        modifier = modifier,
-                        sections = sections,
-                        showTitle = showTitle,
-                        valueChangeForChild = valueChangeForChild,
-                        button = button,
-                        onLastPageReach = onLastPageReach,
-                        onValueChange = onValueChange
-                    )
-                }else{
-                    SimpleVertical(
-                        nav = myNav,
-                        modifier = modifier,
-                        sections = sections,
-                        showTitle = showTitle,
-                        familyData = familyData,
-                        valueChangeForChild = valueChangeForChild,
-                        button = button,
-                        onLastPageReach = onLastPageReach,
-                        onValueChange = onValueChange
-                    )
-                }
+            if (sectionType.horizontalSection) {
+                SimpleSections(
+                    nav = myNav,
+                    modifier = modifier,
+                    sections = sections,
+                    showTitle = showTitle,
+                    valueChangeForChild = valueChangeForChild,
+                    button = button,
+                    onLastPageReach = onLastPageReach,
+                    onValueChange = onValueChange
+                )
+            }else{
+                SimpleVertical(
+                    nav = myNav,
+                    modifier = modifier,
+                    sections = sections,
+                    showTitle = showTitle,
+                    familyData = familyData,
+                    valueChangeForChild = valueChangeForChild,
+                    button = button,
+                    onLastPageReach = onLastPageReach,
+                    onValueChange = onValueChange
+                )
+            }
         }
     }
 
@@ -191,7 +191,7 @@ open class Sections(
         valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
         button: (@Composable BoxScope.(currentSectionName:String,onClick: () -> Unit) -> Unit)?,
         onLastPageReach: ((Sections) -> Unit)? = null,
-        onValueChange: ((name: String, newValue: String) -> Unit)?
+        onValueChange: ((name: String, newValue: String, List<ComposeFieldStateHolder>, sectionName: String) -> Unit)?
     ) {
         Box(modifier = modifier) {
             NavHost(
@@ -211,7 +211,9 @@ open class Sections(
                                         section = item,
                                         showSectionName = showTitle,
                                         valueChangeForChild = valueChangeForChild,
-                                        onValueChange = onValueChange
+                                        onValueChange = { name, value, states ->
+                                            onValueChange?.invoke(name, value, states, section.name)
+                                        }
                                     )
                                 }
                             } else {
@@ -219,7 +221,9 @@ open class Sections(
                                     section = section,
                                     showSectionName = showTitle,
                                     valueChangeForChild = valueChangeForChild,
-                                    onValueChange = onValueChange
+                                    onValueChange = { name, value, states ->
+                                        onValueChange?.invoke(name, value, states, section.name)
+                                    }
                                 )
                             }
                         }
@@ -240,15 +244,15 @@ open class Sections(
         valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
         button: (@Composable BoxScope.(currentSectionName:String,onClick: () -> Unit) -> Unit)?,
         onLastPageReach: ((Sections) -> Unit)? = null,
-        onValueChange: ((name: String, newValue: String) -> Unit)?
+        onValueChange: ((name: String, newValue: String, List<ComposeFieldStateHolder>, sectionName: String) -> Unit)?
     ) {
         Box(modifier = modifier) {
             LazyColumn(
                 modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.TopCenter)
-                    .padding(bottom = responsiveHeight(size = 60)),
+                    Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.TopCenter)
+                        .padding(bottom = responsiveHeight(size = 60)),
             ) {
                 sections.forEach { section ->
                     if (section.subSections.isNotEmpty()) {
@@ -257,7 +261,9 @@ open class Sections(
                                 section = item,
                                 showSectionName = showTitle,
                                 valueChangeForChild = valueChangeForChild,
-                                onValueChange = onValueChange
+                                onValueChange = { name, value, states ->
+                                    onValueChange?.invoke(name, value, states, section.name)
+                                }
                             )
                         }
                     } else {
@@ -265,7 +271,9 @@ open class Sections(
                             section = section,
                             showSectionName = showTitle,
                             valueChangeForChild = valueChangeForChild,
-                            onValueChange = onValueChange
+                            onValueChange = { name, value, states ->
+                                onValueChange?.invoke(name, value, states, section.name)
+                            }
                         )
                     }
                 }
@@ -279,8 +287,8 @@ open class Sections(
         }
     }
 
-/**
- * parentSectionName is Used to send main section name so it can retrieve state fields*/
+    /**
+     * parentSectionName is Used to send main section name so it can retrieve state fields*/
     internal fun LazyListScope.buildInnerSection(
         modifier: Modifier = Modifier,
         section: ComposeSectionModule,
@@ -289,7 +297,7 @@ open class Sections(
         clickCallback: (() -> Unit)? = null,
         parentSectionName:String?=null,
         valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
-        onValueChange: ((name: String, newValue: String) -> Unit)? = null
+        onValueChange: ((name: String, newValue: String, List<ComposeFieldStateHolder>) -> Unit)? = null
     ) {
         item {
             if (showSectionName)
@@ -318,7 +326,7 @@ open class Sections(
                         stateHolder = state,
                         onValueChange = {name,value->
                             updateDependantChildren(sectionState,state,value)
-                            onValueChange?.invoke(name,value)
+                            onValueChange?.invoke(name,value, sectionsStateList)
                         }
                         ,
                         onValueChangeForChild = {

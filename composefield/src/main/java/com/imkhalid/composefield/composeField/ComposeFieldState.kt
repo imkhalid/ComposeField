@@ -133,6 +133,11 @@ class ComposeFieldStateHolder(initialField: ComposeFieldState) {
         state = state.copy(field = field)
     }
 
+    fun updatedField(pair: Pair<Boolean, String>, fieldModule: ComposeFieldModule) {
+        updateValidation(pair)
+        updatedField(fieldModule)
+    }
+
     fun updatedFieldDefaultValues(list: List<DefaultValues>) {
         state = state.copy(field = state.field.copy(defaultValues = list))
     }

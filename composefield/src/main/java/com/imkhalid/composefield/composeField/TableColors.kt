@@ -13,6 +13,7 @@ data class TableConfig(
     val validationName:String = "Record(s)",
     val tableAddButton: @Composable (ColumnScope.(onClick: () -> Unit) -> Unit)? = null,
     val tablePopupButton: @Composable (BoxScope.(onClick: () -> Unit, data:HashMap<String,List<ComposeFieldStateHolder>>) -> Unit)?=null,
+    val onChangeValue: (name:String, value:String, states: List<ComposeFieldStateHolder>, sectionName: String) -> Unit = { _, _, _, _-> },
 )
 
 data class TableColors(

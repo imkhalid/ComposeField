@@ -34,22 +34,25 @@ data class ComposeFieldModule(
         if (hideInitial == ComposeFieldYesNo.YES) ComposeFieldYesNo.YES else ComposeFieldYesNo.NO,
     val helperText: String = "",
     var visualTransformation:String = "",
-    val parent_field_value_id:String?=null,
+    val parent_field_value_id: String? = null,
+    val isCurrencyField: Boolean = false,
+    val isDisplay : Boolean = false,
 ) {
 
     fun parseCustomField(
         customField: CustomFields,
         sortNumber: Int = 0,
     ): ComposeFieldModule {
-        val selected_value = customField.selectedValue?.takeIf { x->x.isNotEmpty() }?:customField.selected_value.orEmpty()
+        val selected_value = customField.selectedValue?.takeIf { x -> x.isNotEmpty() }
+            ?: customField.selected_value.orEmpty()
         val isEmailMobile =
             (customField.field_name == "email" || customField.field_name == "mobile_no")
         val showIcon =
             customField.label.contains("date", true) ||
-                customField.field_name.contains("cnic", true)
+                    customField.field_name.contains("cnic", true)
         return ComposeFieldModule(
             id = customField.id.toString(),
-            parent_field_value_id=customField.parent_field_value_id,
+            parent_field_value_id = customField.parent_field_value_id,
             name = customField.field_name,
             childID = customField.child_id.toString(),
             type = customField.type.fieldType(),
@@ -80,25 +83,34 @@ data class ComposeFieldModule(
                 customField.selected_value
             ),
             pattern = customField.regex.orEmpty(),
-            helperText = getHelperText(customField.field_hint,customField.field_name),
-            patternMessage = if (customField.regex.isNullOrEmpty().not()) customField.field_hint.orEmpty() else ""
+            helperText = getHelperText(customField.field_hint, customField.field_name),
+            patternMessage = if (customField.regex.isNullOrEmpty()
+                    .not()
+            ) customField.field_hint.orEmpty() else "",
+            isDisplay = customField.display == 1
         )
     }
 
-    private fun getHelperText(hint: String?,name:String):String{
-        return if (hint.isNullOrEmpty().not())
-            hint?:""
-        else if(name.contains("dob",true)|| name.contains("date_of_birth",true)){
+    private fun getHelperText(hint: String?, name: String): String {
+        return if (hint.orEmpty().isNotEmpty())
+            hint.orEmpty()
+        else if (name.contains("dob", true) || name.contains("date_of_birth", true)) {
             "DOB should be same as National ID Card"
-        }else
+        } else
             ""
     }
 
-    private fun getHiddenValue(field: Int,parentFieldValueId:String?,selectedValue: String?): ComposeFieldYesNo {
+    private fun getHiddenValue(
+        field: Int,
+        parentFieldValueId: String?,
+        selectedValue: String?
+    ): ComposeFieldYesNo {
         //parent id null or empty means it should not hide,
         //checking selected value if its prefilled than it should not hide
         // field == 1 means it should not hide.
-        return if ((parentFieldValueId.isNullOrEmpty().not() && selectedValue.isNullOrEmpty()) || field==0)
+        return if ((parentFieldValueId.isNullOrEmpty()
+                .not() && selectedValue.isNullOrEmpty()) || field == 0
+        )
             ComposeFieldYesNo.YES
         else
             ComposeFieldYesNo.NO
@@ -111,8 +123,8 @@ data class ComposeFieldModule(
                 customField.default_values
                     .find { x ->
                         x.text.contains("no", true) ||
-                            x.text.contains("false", true) ||
-                            x.text.contains("female", true)
+                                x.text.contains("false", true) ||
+                                x.text.contains("female", true)
                     }
                     ?.id ?: ""
             falseValue
@@ -182,11 +194,12 @@ data class ComposeFieldModule(
 }
 
 fun String?.CHOICE(): ComposeFieldYesNo {
-    return if (this==null ||
+    return if (this == null ||
         this.equals("0", true) ||
         this.equals("false", true) ||
         this.equals("no", true) ||
-        this.isEmpty())
+        this.isEmpty()
+    )
         ComposeFieldYesNo.NO
     else ComposeFieldYesNo.YES
 }
@@ -204,16 +217,21 @@ fun String.fieldType(): ComposeFieldType {
     }
 }
 
-fun String.keyboardType(type:ComposeFieldType,fieldName:String,hint: String?): ComposeKeyboardTypeAdv {
+fun String.keyboardType(
+    type: ComposeFieldType,
+    fieldName: String,
+    hint: String?
+): ComposeKeyboardTypeAdv {
     return when (this.lowercase()) {
-        "text" ->{
-            if (type==ComposeFieldType.DATE_PICKER){
-                val isDob = fieldName.isMatchingAny("dob","date_of_birth")
+        "text" -> {
+            if (type == ComposeFieldType.DATE_PICKER) {
+                val isDob = fieldName.isMatchingAny("dob", "date_of_birth")
                 ComposeKeyboardTypeAdv.DATE(
                     ageCalculation = isDob,
-                    helperText = hint?:if (isDob)"DOB should be same as National ID Card." else ""
+                    helperText = hint
+                        ?: if (isDob) "DOB should be same as National ID Card." else ""
                 )
-            }else
+            } else
                 ComposeKeyboardTypeAdv.TEXT
         }
         "cnic" -> ComposeKeyboardTypeAdv.CNIC

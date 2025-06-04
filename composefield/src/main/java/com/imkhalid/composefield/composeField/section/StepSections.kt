@@ -29,7 +29,7 @@ internal fun Sections.StepsSections(
     stepSectionContentItem:
     (@Composable
     LazyItemScope.(name: String, clickCallback: (sectionName: String) -> Unit) -> Unit)?,
-    onValueChange: ((name: String, newValue: String) -> Unit)? = null,
+    onValueChange: ((name: String, newValue: String, List<ComposeFieldStateHolder>, sectionName: String) -> Unit)? = null,
     valueChangeForChild: ((childValueMode: ChildValueModel) -> Unit)? = null,
     errorDialog:
     (@Composable
@@ -60,7 +60,9 @@ internal fun Sections.StepsSections(
                                     section = subSec,
                                     showButton = false,
                                     showSectionName = true,
-                                    onValueChange = onValueChange,
+                                    onValueChange = { name, value, states ->
+                                        onValueChange?.invoke(name, value, states, subSec.name)
+                                    },
                                     valueChangeForChild = valueChangeForChild,
                                 )
                             }
@@ -87,7 +89,9 @@ internal fun Sections.StepsSections(
                                 modifier = modifier,
                                 section = it,
                                 showButton = true,
-                                onValueChange = onValueChange,
+                                onValueChange = { name, value, states ->
+                                    onValueChange?.invoke(name, value, states, it.name)
+                                },
                                 valueChangeForChild = valueChangeForChild,
                                 clickCallback = {
                                     val isValidated =

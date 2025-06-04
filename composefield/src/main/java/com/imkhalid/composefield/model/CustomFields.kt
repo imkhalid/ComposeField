@@ -32,4 +32,5 @@ data class CustomFields(
     var sectionSortNumber: Int? = 0,
     val parent_field_value_id:String?=null,
     val is_readonly: Int=0,
+    val display: Int = 0,
 )
