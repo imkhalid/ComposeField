@@ -50,7 +50,7 @@ sealed class ComposeKeyboardTypeAdv : Parcelable {
         }
     }
 
-    data class MOBILE_NO(val isSelectionDisabled: Boolean = false, val countryCode: String = "") :
+    data class MOBILE_NO(val isSelectionDisabled: Boolean = false, val countryCode: String = "",val showPicker: Boolean=false) :
         ComposeKeyboardTypeAdv() {
 
         constructor(parcel: Parcel) : this(

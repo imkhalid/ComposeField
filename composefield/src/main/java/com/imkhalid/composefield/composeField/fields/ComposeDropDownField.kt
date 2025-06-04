@@ -128,7 +128,7 @@ class ComposeDropDownField : ComposeField() {
                             text = state.field.label,
                             fontSize = responsiveTextSize(ComposeFieldTheme.stickLabelFontSize).sp,
                             color = ComposeFieldTheme.focusedLabelColor,
-                            fontWeight = FontWeight.Medium
+                            fontWeight = ComposeFieldTheme.fontWeight
                         )
 
                         Text(
@@ -138,7 +138,7 @@ class ComposeDropDownField : ComposeField() {
                             text = dropDownText,
                             textAlign = TextAlign.End,
                             fontSize = responsiveTextSize(size = ComposeFieldTheme.stickFontSize).sp,
-                            fontWeight = FontWeight.Medium,
+                            fontWeight = ComposeFieldTheme.fontWeight,
                         )
                     }
                 }
@@ -177,7 +177,7 @@ class ComposeDropDownField : ComposeField() {
                                 else ComposeFieldTheme.textColor,
                             text = dropDownText,
                             fontSize = responsiveTextSize(size = 15).sp,
-                            fontWeight = if (state.text.isEmpty()) FontWeight.Normal else FontWeight.Medium,
+                            fontWeight = ComposeFieldTheme.fontWeight,
                         )
                     }
                     Icon(

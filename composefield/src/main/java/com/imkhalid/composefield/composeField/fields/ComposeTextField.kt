@@ -304,7 +304,7 @@ class ComposeTextField : ComposeField() {
                     text = state.field.label,
                     fontSize = responsiveTextSize(ComposeFieldTheme.stickLabelFontSize).sp,
                     color = ComposeFieldTheme.focusedLabelColor,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = ComposeFieldTheme.fontWeight
                 )
                 if (state.field.hint.isNotEmpty())
                     ShowToolTip(info=state.field.hint, modifier = Modifier)
@@ -329,7 +329,7 @@ class ComposeTextField : ComposeField() {
                         color = ComposeFieldTheme.textColor,
                         fontSize = responsiveTextSize(
                             ComposeFieldTheme.stickFontSize).sp,
-                        fontWeight = FontWeight.Medium,
+                        fontWeight = ComposeFieldTheme.fontWeight,
                         textAlign = TextAlign.End,
                         fontFamily = MaterialTheme.typography.bodyLarge.fontFamily,
                     ),
@@ -697,7 +697,7 @@ fun GetPlaceHolder(modifier: Modifier = Modifier, label:String)  {
             text = label,
             color = ComposeFieldTheme.textColor,
             textAlign = TextAlign.End,
-            fontWeight = FontWeight.Medium,
+            fontWeight = ComposeFieldTheme.fontWeight,
             fontSize= responsiveTextSize(ComposeFieldTheme.stickFontSize).sp
         )
     }

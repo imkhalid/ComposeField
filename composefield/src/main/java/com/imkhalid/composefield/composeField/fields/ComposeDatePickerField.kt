@@ -133,7 +133,7 @@ class ComposeDatePickerField : ComposeField() {
                                 text = state.field.label,
                                 fontSize = responsiveTextSize(ComposeFieldTheme.stickLabelFontSize).sp,
                                 color = ComposeFieldTheme.focusedLabelColor,
-                                fontWeight = FontWeight.Medium
+                                fontWeight = ComposeFieldTheme.fontWeight
                             )
 
                             Text(
@@ -141,7 +141,7 @@ class ComposeDatePickerField : ComposeField() {
                                 color = ComposeFieldTheme.textColor,
                                 text = dropDownText,
                                 textAlign = TextAlign.End,
-                                fontWeight = FontWeight.Medium,
+                                fontWeight = ComposeFieldTheme.fontWeight,
                                 fontSize = responsiveTextSize(size = ComposeFieldTheme.stickFontSize).sp,
                             )
                         }
@@ -156,8 +156,7 @@ class ComposeDatePickerField : ComposeField() {
                                 if (state.text.isEmpty()) ComposeFieldTheme.unfocusedLabelColor
                                 else ComposeFieldTheme.textColor,
                             text = dropDownText,
-                            fontWeight =
-                                if (state.text.isEmpty()) FontWeight.Normal else FontWeight.Medium,
+                            fontWeight = ComposeFieldTheme.fontWeight,
                             fontSize = responsiveTextSize(size = 15).sp
                         )
                         Text(

@@ -1,22 +1,30 @@
 package com.imkhalid.composefield.composeField.fields
 
-import androidx.compose.foundation.ExperimentalFoundationApi
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.provider.ContactsContract
+import androidx.activity.compose.ManagedActivityResultLauncher
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContract
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
@@ -36,11 +44,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -49,19 +60,18 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.imkhalid.composefield.R
 import com.imkhalid.composefield.composeField.ComposeFieldState
 import com.imkhalid.composefield.composeField.PhoneNumberUtil
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardTypeAdv
-import com.imkhalid.composefield.composeField.model.ComposeFieldModule
 import com.imkhalid.composefield.composeField.responsiveSize
-import com.imkhalid.composefield.theme.ComposeFieldTheme
-import com.imkhalid.composefieldproject.composeField.fields.ComposeField
 import com.imkhalid.composefield.composeField.responsiveTextSize
 import com.imkhalid.composefield.composeField.util.ShowToolTip
+import com.imkhalid.composefield.theme.ComposeFieldTheme
+import com.imkhalid.composefieldproject.composeField.fields.ComposeField
 import com.imkhalid.composefieldproject.composeField.fields.GetPlaceHolder
 
 class ComposeMobileField : ComposeField() {
@@ -101,27 +111,58 @@ class ComposeMobileField : ComposeField() {
         modifier: Modifier = Modifier,
         phoneNumberUtil: PhoneNumberUtil
     ) {
+        val context = LocalContext.current
+        val launcher= if(state.field.keyboardType is ComposeKeyboardTypeAdv.MOBILE_NO && state.field.keyboardType.showPicker){
+            rememberLauncherForActivityResult(PickContact()) { uri ->
+                uri?.let { contactUri ->
+                    val projection = arrayOf(
+                        ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
+                        ContactsContract.CommonDataKinds.Phone.NORMALIZED_NUMBER
+                    )
+
+                    context.contentResolver.query(contactUri, projection, null, null, null)?.use { cursor ->
+                        if (cursor.moveToFirst()) {
+                            val nameIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)
+                            val phoneIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NORMALIZED_NUMBER)
+
+                            val name = cursor.getString(nameIndex)
+                            var phone = cursor.getString(phoneIndex)
+
+                            phone = phone?.replace("+92", "")?.removePrefix("0") ?: ""
+                            selectedContactCallback?.invoke(
+                                name ?: "",
+                                phone
+                            )
+                        }
+                    }
+                }
+            }
+        } else null
+
         when (ComposeFieldTheme.fieldStyle) {
             ComposeFieldTheme.FieldStyle.OUTLINE ->
                 OutlineField(
                     modifier = modifier,
                     state = state,
                     newValue = newValue,
-                    phoneNumberUtil = phoneNumberUtil
+                    phoneNumberUtil = phoneNumberUtil,
+                    launcher= launcher
                 )
             ComposeFieldTheme.FieldStyle.CONTAINER ->
                 ContainerField(
                     modifier = modifier,
                     state = state,
                     newValue = newValue,
-                    phoneNumberUtil = phoneNumberUtil
+                    phoneNumberUtil = phoneNumberUtil,
+                    launcher= launcher
                 )
             ComposeFieldTheme.FieldStyle.NORMAL ->
                 NormalField(
                     modifier = modifier,
                     state = state,
                     newValue = newValue,
-                    phoneNumberUtil = phoneNumberUtil
+                    phoneNumberUtil = phoneNumberUtil,
+                    launcher= launcher
                 )
 
             ComposeFieldTheme.FieldStyle.STICK_LABEL->
@@ -129,7 +170,8 @@ class ComposeMobileField : ComposeField() {
                     modifier = modifier,
                     state = state,
                     newValue = newValue,
-                    phoneNumberUtil = phoneNumberUtil
+                    phoneNumberUtil = phoneNumberUtil,
+                    launcher= launcher
                 )
         }
     }
@@ -139,7 +181,8 @@ class ComposeMobileField : ComposeField() {
         modifier: Modifier = Modifier,
         state: ComposeFieldState,
         newValue: (Pair<Boolean, String>, String) -> Unit,
-        phoneNumberUtil: PhoneNumberUtil
+        phoneNumberUtil: PhoneNumberUtil,
+        launcher: ManagedActivityResultLauncher<Unit, Uri?>?
     ) {
         var expanded by remember { mutableStateOf(false) }
         val toggleDropdown: () -> Unit = { expanded = !expanded }
@@ -222,13 +265,14 @@ class ComposeMobileField : ComposeField() {
         }
     }
 
-    @OptIn(ExperimentalFoundationApi::class)
+
     @Composable
     private fun ContainerField(
         modifier: Modifier = Modifier,
         state: ComposeFieldState,
         newValue: (Pair<Boolean, String>, String) -> Unit,
-        phoneNumberUtil: PhoneNumberUtil
+        phoneNumberUtil: PhoneNumberUtil,
+        launcher: ManagedActivityResultLauncher<Unit, Uri?>?
     ) {
         val focusRequester = remember { FocusRequester() }
         var isFocused by remember { mutableStateOf(false) }
@@ -279,6 +323,9 @@ class ComposeMobileField : ComposeField() {
                         }
                     }
                     Text(label, fontSize = responsiveTextSize(size = 13).sp)
+                },
+                trailingIcon = trailingIcon(field = state.field,false){
+                    launcher?.launch(Unit)
                 },
                 textStyle = TextStyle.Default.copy(fontSize = responsiveTextSize(size = 15).sp),
                 minLines = 1,
@@ -343,20 +390,14 @@ class ComposeMobileField : ComposeField() {
         }
     }
 
-    @OptIn(ExperimentalFoundationApi::class)
-    @Preview
+
     @Composable
     private fun StickyLabelField(
         modifier: Modifier = Modifier,
-        state: ComposeFieldState = ComposeFieldState(
-            field = ComposeFieldModule(
-                label = "Email"
-            ),
-            hasError = true,
-            errorMessage = "Some Error Message"
-        ),
-        newValue: (Pair<Boolean, String>, String) -> Unit={pair,str->},
-        phoneNumberUtil: PhoneNumberUtil = PhoneNumberUtil()
+        state: ComposeFieldState,
+        newValue: (Pair<Boolean, String>, String) -> Unit,
+        phoneNumberUtil: PhoneNumberUtil,
+        launcher: ManagedActivityResultLauncher<Unit, Uri?>?
     ) {
         localRequester = remember { BringIntoViewRequester() }
         var expanded by remember { mutableStateOf(false) }
@@ -374,13 +415,30 @@ class ComposeMobileField : ComposeField() {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(responsiveSize(5))
             ) {
-                Text(
-                    modifier=Modifier,
-                    text = state.field.label,
-                    fontSize = responsiveTextSize(ComposeFieldTheme.stickLabelFontSize).sp,
-                    color = ComposeFieldTheme.focusedLabelColor,
-                    fontWeight = FontWeight.Medium
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(responsiveSize(5))
+                ) {
+                    Text(
+                        modifier=Modifier,
+                        text = state.field.label,
+                        fontSize = responsiveTextSize(ComposeFieldTheme.stickLabelFontSize).sp,
+                        color = ComposeFieldTheme.focusedLabelColor,
+                        fontWeight = ComposeFieldTheme.fontWeight
+                    )
+
+                    if (state.field.keyboardType is ComposeKeyboardTypeAdv.MOBILE_NO && state.field.keyboardType.showPicker) {
+                        Image(
+                            painter = painterResource(R.drawable.ic_lib_contact),
+                            contentDescription = "",
+                            modifier = Modifier.size(responsiveSize(31))
+                                .clip(CircleShape)
+                                .clickable {
+                                    launcher?.launch(Unit)
+                                }
+                        )
+                    }
+                }
                 if (state.field.hint.isNotEmpty())
                     ShowToolTip(info = state.field.hint, modifier = Modifier)
 
@@ -412,7 +470,7 @@ class ComposeMobileField : ComposeField() {
                         color = ComposeFieldTheme.textColor,
                         fontSize = responsiveTextSize(
                             ComposeFieldTheme.stickFontSize).sp,
-                        fontWeight = FontWeight.Medium,
+                        fontWeight = ComposeFieldTheme.fontWeight,
                         textAlign = TextAlign.End,
                         fontFamily = MaterialTheme.typography.bodyLarge.fontFamily,
                     ),
@@ -428,7 +486,7 @@ class ComposeMobileField : ComposeField() {
                                 modifier = Modifier.clickable { toggleDropdown() },
                                 color = ComposeFieldTheme.textColor,
                                 textAlign = TextAlign.End,
-                                fontWeight = FontWeight.Medium,
+                                fontWeight = ComposeFieldTheme.fontWeight,
                                 fontSize = responsiveTextSize(size = ComposeFieldTheme.stickFontSize).sp
                             )
                             // TextField content
@@ -494,7 +552,8 @@ class ComposeMobileField : ComposeField() {
         modifier: Modifier = Modifier,
         state: ComposeFieldState,
         newValue: (Pair<Boolean, String>, String) -> Unit,
-        phoneNumberUtil: PhoneNumberUtil
+        phoneNumberUtil: PhoneNumberUtil,
+        launcher: ManagedActivityResultLauncher<Unit, Uri?>?
     ) {
         var expanded by remember { mutableStateOf(false) }
         val toggleDropdown: () -> Unit = { expanded = !expanded }
@@ -619,4 +678,15 @@ class ComposeMobileField : ComposeField() {
             confirmButton = { Text(text = "Done", Modifier.clickable { onDone() }) }
         )
     }
+
+    class PickContact : ActivityResultContract<Unit, Uri?>() {
+        override fun createIntent(context: Context, input: Unit): Intent {
+            return Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI)
+        }
+
+        override fun parseResult(resultCode: Int, intent: Intent?): Uri? {
+            return if (resultCode == Activity.RESULT_OK) intent?.data else null
+        }
+    }
+
 }

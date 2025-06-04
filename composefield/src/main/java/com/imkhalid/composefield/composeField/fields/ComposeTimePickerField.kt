@@ -165,7 +165,7 @@ class ComposeTimePickerField : ComposeField() {
                         else ComposeFieldTheme.textColor,
                         text = dropDownText,
                         fontWeight =
-                        if (state.text.isEmpty()) FontWeight.Normal else FontWeight.Medium,
+                        if (state.text.isEmpty()) FontWeight.Normal else ComposeFieldTheme.fontWeight,
                         fontSize = responsiveTextSize(size = 15).sp
                     )
                     Text(

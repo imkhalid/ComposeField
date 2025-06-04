@@ -96,7 +96,7 @@ class ComposeSwitchField : ComposeField() {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = label, fontWeight = FontWeight.Medium)
+            Text(text = label, fontWeight = ComposeFieldTheme.fontWeight)
             Spacer(modifier = Modifier.padding(start = 10.dp))
             Switch(
                 checked = state.text == trueValue,

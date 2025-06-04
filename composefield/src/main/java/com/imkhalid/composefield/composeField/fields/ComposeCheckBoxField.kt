@@ -166,7 +166,7 @@ class ComposeCheckBoxField : ComposeField() {
                                             Text(
                                                 text = element,
                                                 fontSize = 10.sp,
-                                                fontWeight = FontWeight.Medium,
+                                                fontWeight = ComposeFieldTheme.fontWeight,
                                                 color = ComposeFieldTheme.textColor
                                             )
                                         }

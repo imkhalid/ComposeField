@@ -1,15 +1,18 @@
 package com.imkhalid.composefieldproject.composeField.fields
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.imkhalid.composefield.R
@@ -33,6 +36,7 @@ import com.imkhalid.composefield.composeField.states.rememberFieldState
 abstract class ComposeField {
     var currentUserCountryCode = ""
     var focusCallback: ((isValidated: Boolean, fieldName: String) -> Unit)? = null
+    var selectedContactCallback:((name: String,number: String)-> Unit)?= null
     @OptIn(ExperimentalFoundationApi::class)
     lateinit var localRequester:BringIntoViewRequester
 
@@ -71,6 +75,18 @@ abstract class ComposeField {
                     modifier = Modifier
                         .size(responsiveSize(16))
                         .clickable { onClick?.invoke() }
+                )
+            }
+        }else if (field.keyboardType is ComposeKeyboardTypeAdv.MOBILE_NO && field.keyboardType.showPicker){
+            {
+                Image(
+                    painter = painterResource(R.drawable.ic_lib_contact),
+                    contentDescription = "",
+                    modifier = Modifier.size(responsiveSize(31))
+                        .clip(CircleShape)
+                        .clickable{
+                            onClick?.invoke()
+                        }
                 )
             }
         } else null
@@ -113,7 +129,8 @@ class ComposeFieldBuilder {
         stateHolder: ComposeFieldStateHolder = rememberFieldState(name = "", label = ""),
         focusCallback: ((isValidated: Boolean, fieldName: String) -> Unit)? = null,
         onValueChangeForChild: ((value: String) -> Unit)? = null,
-        onValueChange: ((name: String, value: String) -> Unit)? = null
+        onValueChange: ((name: String, value: String) -> Unit)? = null,
+        contactCallback:((name: String,number: String)-> Unit)?= null
     ) {
         val state = stateHolder.state
         val field =
@@ -121,7 +138,9 @@ class ComposeFieldBuilder {
                 ComposeFieldType.TEXT_BOX,
                 ComposeFieldType.TEXT_AREA -> {
                     if (state.field.keyboardType is ComposeKeyboardTypeAdv.MOBILE_NO) {
-                        ComposeMobileField()
+                        ComposeMobileField().apply {
+                            selectedContactCallback = contactCallback
+                        }
                     } else if (state.field.keyboardType is ComposeKeyboardTypeAdv.CURRENCY){
                       ComposeCurrencyField()
                     } else {
