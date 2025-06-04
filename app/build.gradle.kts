@@ -3,10 +3,10 @@ val hiltWork by extra("1.2.0")
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("kotlin-kapt")
     id("dagger.hilt.android.plugin")
     id("com.google.dagger.hilt.android") version "2.52" apply false
     id ("org.jetbrains.kotlin.plugin.compose")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -75,8 +75,8 @@ dependencies {
     implementation("com.google.dagger:hilt-android:$dagger2") //Hilt
     implementation ("androidx.hilt:hilt-work:$hiltWork")
     implementation ("androidx.hilt:hilt-common:$hiltWork")
-    kapt ("com.google.dagger:hilt-android-compiler:$dagger2") //Hilt-Compiler
-    kapt ("androidx.hilt:hilt-compiler:$hiltWork")
+    ksp("com.google.dagger:hilt-android-compiler:$dagger2") //Hilt-Compiler
+    ksp("androidx.hilt:hilt-compiler:$hiltWork")
     implementation("androidx.hilt:hilt-navigation-compose:$hiltWork")
 
     implementation("com.squareup.okhttp3:okhttp:4.12.0") // Use the latest version
