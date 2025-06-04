@@ -1,7 +1,6 @@
 package com.imkhalid.composefield.composeField.fields
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -92,7 +91,6 @@ class ComposeDropDownField : ComposeField() {
         newValue: (Pair<Boolean, String>, String) -> Unit = {pair,s->},
         modifier: Modifier = Modifier
     ) {
-        localRequester = remember { BringIntoViewRequester() }
         var expanded by remember { mutableStateOf(false) }
         val toggleDropdown: () -> Unit = { expanded = !expanded }
         val options = state.field.defaultValues.map { it.text }

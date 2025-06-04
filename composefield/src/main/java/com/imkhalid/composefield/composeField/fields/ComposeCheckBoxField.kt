@@ -6,7 +6,6 @@ import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -83,7 +82,7 @@ class ComposeCheckBoxField : ComposeField() {
         MyBuild(state = state, newValue = newValue, modifier = modifier)
     }
 
-    @OptIn(ExperimentalFoundationApi::class)
+
     @Composable
     private fun MyBuild(
         state: ComposeFieldState,

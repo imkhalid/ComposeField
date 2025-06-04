@@ -1,6 +1,6 @@
 package com.imkhalid.composefield.composeField.fields
 
-import androidx.compose.foundation.ExperimentalFoundationApi
+
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -193,7 +193,7 @@ class ComposeCurrencyField : ComposeField() {
         }
     }
 
-    @OptIn(ExperimentalFoundationApi::class)
+
     @Composable
     private fun ContainerField(
         modifier: Modifier = Modifier,

@@ -1,7 +1,6 @@
 package com.imkhalid.composefield.composeField.util
 
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.compose.ui.util.fastFilteredMap
 import com.imkhalid.composefield.composeField.ComposeFieldStateHolder
 import com.imkhalid.composefield.composeField.model.TaggedMap
 import com.imkhalid.composefield.composeField.section.Sections
@@ -12,11 +11,9 @@ import com.imkhalid.composefield.model.TableDataModel
 private fun HashMap<String, SnapshotStateList<TaggedMap>>.convertTableData(): List<TableDataModel> {
     val mainList = arrayListOf<TableDataModel>()
     forEach { (sectionName, value) ->
-        val data = value.fastFilteredMap(
-            predicate = {
-                it.isDeleted.not()
-            }
-        ) {
+        val data = value.filter {
+            it.isDeleted.not()
+        }.map {
             buildMap {
                 it.data.forEach {
                     it.value.forEach {
@@ -31,6 +28,7 @@ private fun HashMap<String, SnapshotStateList<TaggedMap>>.convertTableData(): Li
                 }
             }
         }
+
 
         mainList.add(
             TableDataModel(

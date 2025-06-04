@@ -399,7 +399,6 @@ class ComposeMobileField : ComposeField() {
         phoneNumberUtil: PhoneNumberUtil,
         launcher: ManagedActivityResultLauncher<Unit, Uri?>?
     ) {
-        localRequester = remember { BringIntoViewRequester() }
         var expanded by remember { mutableStateOf(false) }
         val toggleDropdown: () -> Unit = { expanded = !expanded }
 

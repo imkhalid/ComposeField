@@ -1,7 +1,6 @@
 package com.imkhalid.composefield.composeField.fields
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -59,7 +58,7 @@ class ComposeTimePickerField : ComposeField() {
         MyBuild(state = state, newValue = newValue, modifier = modifier)
     }
 
-    @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     private fun MyBuild(
         state: ComposeFieldState,

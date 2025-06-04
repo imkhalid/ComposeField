@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         minSdk = 26
-        lint.targetSdk = 35
+        targetSdk = 35
         multiDexEnabled = true
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

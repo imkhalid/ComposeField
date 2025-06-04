@@ -1,6 +1,6 @@
 package com.imkhalid.composefieldproject.composeField.fields
 
-import androidx.compose.foundation.ExperimentalFoundationApi
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
@@ -37,7 +37,6 @@ abstract class ComposeField {
     var currentUserCountryCode = ""
     var focusCallback: ((isValidated: Boolean, fieldName: String) -> Unit)? = null
     var selectedContactCallback:((name: String,number: String)-> Unit)?= null
-    @OptIn(ExperimentalFoundationApi::class)
     lateinit var localRequester:BringIntoViewRequester
 
     @Composable
@@ -94,7 +93,6 @@ abstract class ComposeField {
 
 
 
-    @OptIn(ExperimentalFoundationApi::class)
     @Composable
     fun PreBuild(
         modifier: Modifier,

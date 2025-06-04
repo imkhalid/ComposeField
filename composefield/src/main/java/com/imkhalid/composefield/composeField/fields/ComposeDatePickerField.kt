@@ -1,7 +1,6 @@
 package com.imkhalid.composefield.composeField.fields
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -80,7 +79,6 @@ class ComposeDatePickerField : ComposeField() {
         MyBuild(state = state, newValue = newValue, modifier = modifier)
     }
 
-    @OptIn(ExperimentalFoundationApi::class)
     @Composable
     private fun MyBuild(
         state: ComposeFieldState,
