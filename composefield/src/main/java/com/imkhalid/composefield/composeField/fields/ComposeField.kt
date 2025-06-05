@@ -65,14 +65,14 @@ abstract class ComposeField {
     ): (@Composable () -> Unit)? {
         return if (field.keyboardType is ComposeKeyboardTypeAdv.PASSWORD) {
             {
-                Icon(
+                Image(
                     painter = if (passwordVisible)
                         painterResource(id = R.drawable.ic_open_password)
                     else
                         painterResource(id = R.drawable.ic_close_password),
                     contentDescription = "Hide/Show",
                     modifier = Modifier
-                        .size(responsiveSize(16))
+                        .size(responsiveSize(31))
                         .clickable { onClick?.invoke() }
                 )
             }

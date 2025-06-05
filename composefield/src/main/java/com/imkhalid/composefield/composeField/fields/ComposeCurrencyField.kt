@@ -3,11 +3,17 @@ package com.imkhalid.composefield.composeField.fields
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -20,6 +26,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
@@ -32,17 +39,25 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.imkhalid.composefield.composeField.ComposeFieldState
+import com.imkhalid.composefield.composeField.Patterns
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardTypeAdv
 import com.imkhalid.composefield.composeField.mask.rememberCurrencyVisualTransformation
+import com.imkhalid.composefield.composeField.model.ComposeFieldModule
+import com.imkhalid.composefield.composeField.responsiveSize
 import com.imkhalid.composefield.composeField.util.EnglishNumberToWords
 import com.imkhalid.composefield.theme.ComposeFieldTheme
 import com.imkhalid.composefieldproject.composeField.fields.ComposeField
 import com.imkhalid.composefield.composeField.responsiveTextSize
+import com.imkhalid.composefield.composeField.util.ErrorView
+import com.imkhalid.composefield.composeField.util.ShowToolTip
+import com.imkhalid.composefieldproject.composeField.fields.GetPlaceHolder
 import java.text.DecimalFormat
 
 
@@ -96,7 +111,11 @@ class ComposeCurrencyField : ComposeField() {
                         newValue = newValue
                     )
 
-                ComposeFieldTheme.FieldStyle.STICK_LABEL,
+                ComposeFieldTheme.FieldStyle.STICK_LABEL->
+                    StickLabelField(
+                        state = state,
+                        newValue = newValue
+                    )
                 ComposeFieldTheme.FieldStyle.CONTAINER ->
                     ContainerField(
                         modifier = Modifier.fillMaxWidth(),
@@ -360,6 +379,120 @@ class ComposeCurrencyField : ComposeField() {
         }
     }
 
+    @Preview
+    @Composable
+    private fun StickLabelField(
+        modifier: Modifier = Modifier,
+        state: ComposeFieldState,
+        newValue: (Pair<Boolean, String>, String) -> Unit = {pair,s->}
+    ) {
+        val focusRequester = remember { FocusRequester() }
+        var isFocused by remember { mutableStateOf(false) }
+        var passwordVisible by remember { mutableStateOf(false) }
+        val currency =
+            if (currentUserCountryCode == "2") "KES" else if (currentUserCountryCode == "3") "TZS" else "UGX"
+        val visualTransformation = rememberCurrencyVisualTransformation(currency = currency)
+        var helper by remember {
+            mutableStateOf("")
+        }
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(TextFieldDefaults.MinHeight)
+                .padding(horizontal = 8.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(responsiveSize(5))
+            ) {
+                Text(
+                    text = state.field.label,
+                    fontSize = responsiveTextSize(ComposeFieldTheme.stickLabelFontSize).sp,
+                    color = ComposeFieldTheme.focusedLabelColor,
+                    fontWeight = ComposeFieldTheme.fontWeight
+                )
+                if (state.field.hint.isNotEmpty())
+                    ShowToolTip(info=state.field.hint, modifier = Modifier)
+
+                BasicTextField(
+                    modifier = Modifier
+                        .then(modifier)
+                        .bringIntoViewRequester(localRequester)
+                        .focusRequester(focusRequester)
+                        .onFocusChanged { s -> isFocused = s.isFocused }
+                        .fillMaxWidth()
+                        .fillMaxHeight()
+                    ,
+                    value = state.text,
+                    onValueChange = { curVal ->
+                        handleValueChange(curVal,state,newValue, onHelper = {
+                            helper= it
+                        })
+                    },
+                    enabled = state.field.isEditable.value,
+                    keyboardOptions = getKeyboardOptions(),
+                    maxLines = 1,
+                    singleLine = true,
+                    visualTransformation = visualTransformation,
+                    textStyle = TextStyle.Default.copy(
+                        color = ComposeFieldTheme.textColor,
+                        fontSize = responsiveTextSize(
+                            ComposeFieldTheme.stickFontSize).sp,
+                        fontWeight = ComposeFieldTheme.fontWeight,
+                        textAlign = TextAlign.End,
+                        fontFamily = MaterialTheme.typography.bodyLarge.fontFamily,
+                    ),
+                    decorationBox = { innerTextField ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            // TextField content
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f),
+                                contentAlignment = Alignment.CenterEnd
+                            ) {
+                                if (state.text.isEmpty()) {
+                                    GetPlaceHolder(label = if (state.field.required == ComposeFieldYesNo.YES) "Required" else "Optional")
+                                }
+                                innerTextField()
+                            }
+
+                            TrailingIconBasic(
+                                state.field,
+                                passwordVisible,
+                                onClick = {
+                                    passwordVisible = passwordVisible.not()
+                                }
+                            )
+
+                        }
+                    }
+                )
+            }
+            if (helper.isNotEmpty())
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.BottomStart),
+                    color = ComposeFieldTheme.errorMessageColor,
+                    text =helper,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = responsiveTextSize(size = 12).sp
+                )
+            ErrorView(
+                modifier =  Modifier.padding(start = 16.dp),
+                hasError = state.hasError,
+                errorMessage = state.errorMessage
+            )
+        }
+
+    }
+
 
     private fun getKeyboardOptions(): KeyboardOptions {
         val type = KeyboardType.NumberPassword
@@ -398,6 +531,24 @@ class ComposeCurrencyField : ComposeField() {
                 helperCallback.invoke("")
             }
             newValue.invoke(Pair(bool, message), curVal)
+        }
+    }
+
+
+    private fun handleValueChange(
+        currentText: String,
+        state: ComposeFieldState,
+        onValidated: (Pair<Boolean, String>, String) -> Unit,
+        onHelper: (String) -> Unit
+    ) {
+        builtinValidations(
+            currentText,
+            state,
+            helperCallback = {
+                onHelper.invoke(it)
+            }
+        ) { validated, newVal ->
+            onValidated.invoke(validated, newVal)
         }
     }
 
