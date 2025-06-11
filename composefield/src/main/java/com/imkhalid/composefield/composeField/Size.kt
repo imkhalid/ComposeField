@@ -4,7 +4,7 @@ package com.imkhalid.composefield.composeField
 data class Size(val width: Float, val height: Float) {
     companion object {
         fun getBaseDesignSize(): Size {
-            return Size(width = 414f, height = 896f)
+            return Size(width = 428f, height = 926f)
         }
     }
 }
