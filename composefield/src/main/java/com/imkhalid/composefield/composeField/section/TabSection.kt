@@ -28,6 +28,7 @@ import com.imkhalid.composefield.composeField.MyNavHost
 import com.imkhalid.composefield.composeField.TableConfig
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
 import com.imkhalid.composefield.composeField.fieldTypes.SectionType
+import com.imkhalid.composefield.composeField.model.CHOICE
 import com.imkhalid.composefield.composeField.model.ChildValueModel
 import com.imkhalid.composefield.composeField.model.ComposeSectionModule
 import com.imkhalid.composefield.composeField.model.FamilyData
@@ -36,6 +37,7 @@ import com.imkhalid.composefield.composeField.navigateToNext
 import com.imkhalid.composefield.composeField.rememberFieldState
 import com.imkhalid.composefield.composeField.responsiveHeight
 import com.imkhalid.composefield.composeField.responsiveSize
+import com.imkhalid.composefield.composeField.util.getFieldByFieldId
 import com.imkhalid.composefield.composeField.util.invalidFamily
 import com.imkhalid.composefield.composeField.util.validate
 import kotlinx.coroutines.launch
@@ -53,24 +55,25 @@ fun Sections.TabBuild(
     onLastPageReach: ((Sections) -> Unit)? = null,
 ) {
     if (sectionNames.isEmpty()) {
+        val hashMap = hashMapOf<String, String>()
         sections.mapTo(sectionNames) { it.name }
         if (familyData != null && familyData.snapshotStateList.isNotEmpty()) {
             if (familyData.isEditView) {
                 sectionNames.add("Family Details")
             }
         }
-        sections.forEach {sc->
+        sections.forEach { sc ->
             if (sc.isTable) {
                 tableData[sc.name] = SnapshotStateList<TaggedMap>().apply {
-                    sc.prefilledTableData?.onEach {singleRow->
+                    sc.prefilledTableData?.onEach { singleRow ->
                         var id = ""
-                        val list =singleRow.keys.mapNotNull {key->
-                            val value = singleRow.getOrDefault(key,"")
-                            if (value.isNotEmpty()){
-                                if (key =="_id"|| key=="id") {
-                                    id=value
+                        val list = singleRow.keys.mapNotNull { key ->
+                            val value = singleRow.getOrDefault(key, "")
+                            if (value.isNotEmpty()) {
+                                if (key == "_id" || key == "id") {
+                                    id = value
                                     null
-                                }else {
+                                } else {
                                     sc.fields.find { x -> x.name == key }?.let { fiel ->
                                         rememberFieldState(
                                             fieldModule = fiel.copy(
@@ -83,18 +86,52 @@ fun Sections.TabBuild(
                                     }
 
                                 }
-                            }else null
+                            } else null
                         }
                         this.add(TaggedMap(data = hashMapOf(sc.name to list), tag = id))
                     }
                 }
             } else {
-                sectionState[sc.name] =
-                    sc.fields.map { field ->
-                        rememberFieldState(fieldModule = field, stateHolder = null)
+                val stateLists = arrayListOf<ComposeFieldStateHolder>()
+
+                sc.fields.forEach { field ->
+                    val f = if (
+                        field.parentFieldValueId.orEmpty()
+                            .isNotEmpty() && field.parentId.orEmpty().isNotEmpty()
+                    ) {
+
+                        val isVisible =
+                            if (hashMap.containsKey(field.parentId.orEmpty())) {
+                                hashMap[field.parentId] == field.parentFieldValueId
+                            } else {
+                                val parentField = getFieldByFieldId(field.parentId.orEmpty(), sectionState)
+                                    ?: stateLists.getFieldByFieldId(
+                                        field.parentId.orEmpty()
+                                    )
+                                hashMap[field.parentId.orEmpty()] = parentField?.state?.text.orEmpty()
+                                field.parentFieldValueId == parentField?.state?.text
+                            }
+
+
+                        field.copy(
+                            hidden = isVisible.not().toString().CHOICE(),
+                            hideInitial = isVisible.not().toString().CHOICE(),
+                            required = isVisible.toString().CHOICE(),
+                            value = if (isVisible) field.value else ""
+                        )
+
+                    } else {
+                        field.copy()
                     }
+                    stateLists.add(
+                        rememberFieldState(fieldModule = f, stateHolder = null)
+                    )
+                }
+                sectionState[sc.name] = stateLists
+
             }
         }
+
     }
     TabSections(
         modifier = modifier,

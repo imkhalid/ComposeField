@@ -34,7 +34,8 @@ data class ComposeFieldModule(
         if (hideInitial == ComposeFieldYesNo.YES) ComposeFieldYesNo.YES else ComposeFieldYesNo.NO,
     val helperText: String = "",
     var visualTransformation:String = "",
-    val parent_field_value_id: String? = null,
+    val parentFieldValueId: String? = null,
+    val parentId: String? = null,
     val isCurrencyField: Boolean = false,
     val isDisplay : Boolean = false,
 ) {
@@ -52,7 +53,8 @@ data class ComposeFieldModule(
                     customField.field_name.contains("cnic", true)
         return ComposeFieldModule(
             id = customField.id.toString(),
-            parent_field_value_id = customField.parent_field_value_id,
+            parentFieldValueId = customField.parent_field_value_id,
+            parentId = customField.parent_id,
             name = customField.field_name,
             childID = customField.child_id.toString(),
             type = customField.type.fieldType(),

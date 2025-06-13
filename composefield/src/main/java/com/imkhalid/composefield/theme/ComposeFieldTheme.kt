@@ -8,7 +8,7 @@ import com.imkhalid.composefield.composeField.Size
 
 object ComposeFieldTheme {
 
-    val baseDesignSize: Size = Size(width = 414f, height = 896f)
+    var baseDesignSize: Size = Size(width = 414f, height = 896f)
 
     var focusedBorderColor = Color.Black
     var unfocusedBorderColor = Color.LightGray

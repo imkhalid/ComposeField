@@ -245,3 +245,24 @@ fun List<ComposeFieldStateHolder>.validate(showError: Boolean = false): Boolean 
 
     return res
 }
+
+fun getFieldByFieldId(
+    id: String,
+    state: HashMap<String, List<ComposeFieldStateHolder>>
+): ComposeFieldStateHolder? {
+    for (i in 0 until state.entries.size) {
+        val foundState =
+            state.entries.toList().get(i).value.find { x -> x.state.field.id == id }
+        if (foundState != null) {
+            return foundState
+        }
+    }
+    return null
+}
+
+fun List<ComposeFieldStateHolder>.getFieldByFieldId(id: String): ComposeFieldStateHolder? {
+    for (i in 0 until this.size) {
+        if (this[i].state.field.id == id) return this[i]
+    }
+    return null
+}
