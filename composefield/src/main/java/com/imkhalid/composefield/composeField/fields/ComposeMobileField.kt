@@ -53,11 +53,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
@@ -187,6 +189,7 @@ class ComposeMobileField : ComposeField() {
     ) {
         var expanded by remember { mutableStateOf(false) }
         val toggleDropdown: () -> Unit = { expanded = !expanded }
+        val fieldStyle = state.field.fieldStyle
         Column {
             TextField(
                 value = state.text.removePrefix(phoneNumberUtil.prefix),
@@ -203,7 +206,7 @@ class ComposeMobileField : ComposeField() {
                         Text(
                             text = "${phoneNumberUtil.currentCountryFlag}${phoneNumberUtil.prefix}",
                             modifier = Modifier.clickable { toggleDropdown() },
-                            fontSize = responsiveTextSize(size = 15).sp
+                            style = fieldStyle.getTextStyle()
                         )
                     else null
                 },
@@ -217,21 +220,21 @@ class ComposeMobileField : ComposeField() {
                 label = { Text(state.field.label) },
                 minLines = 1,
                 maxLines = 1,
-                textStyle = TextStyle.Default.copy(fontSize = responsiveTextSize(size = 15).sp),
+                textStyle = fieldStyle.getTextStyle(),
                 colors =
                     TextFieldDefaults.colors(
                         focusedContainerColor = Color.White,
                         unfocusedContainerColor = Color.White,
-                        errorLabelColor = ComposeFieldTheme.errorColor,
-                        focusedLabelColor = ComposeFieldTheme.focusedBorderColor,
-                        unfocusedPlaceholderColor = ComposeFieldTheme.hintColor,
-                        focusedTextColor = ComposeFieldTheme.textColor,
-                        unfocusedTextColor = ComposeFieldTheme.textColor,
-                        focusedSupportingTextColor = ComposeFieldTheme.infoColor,
+                        errorLabelColor = fieldStyle.colors.errorColor,
+                        focusedLabelColor = fieldStyle.colors.focusedBorderColor,
+                        unfocusedPlaceholderColor = fieldStyle.colors.hintColor,
+                        focusedTextColor = fieldStyle.colors.textColor,
+                        unfocusedTextColor = fieldStyle.colors.textColor,
+                        focusedSupportingTextColor = fieldStyle.colors.infoColor,
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
                         errorContainerColor = Color(0xFFfaebeb),
-                        errorTextColor = ComposeFieldTheme.textColor
+                        errorTextColor = fieldStyle.colors.textColor
                     ),
                 shape = RoundedCornerShape(8.dp),
                 modifier =
@@ -239,14 +242,10 @@ class ComposeMobileField : ComposeField() {
                         .padding(5.dp)
                         .shadow(elevation = 5.dp, shape = RoundedCornerShape(8.dp)),
             )
-            if (state.hasError) {
-                Text(
-                    text = state.errorMessage,
-                    color = ComposeFieldTheme.errorMessageColor,
-                    style = MaterialTheme.typography.labelSmall,
-                    modifier = Modifier.padding(start = 16.dp)
-                )
-            }
+            ErrorView(
+                state = state,
+                modifier = Modifier.padding(start = 16.dp)
+            )
             if (expanded && phoneNumberUtil.shouldShowPicker) {
                 CountryPickerDialog(
                     onDone = { toggleDropdown() },
@@ -278,6 +277,7 @@ class ComposeMobileField : ComposeField() {
         val focusRequester = remember { FocusRequester() }
         var isFocused by remember { mutableStateOf(false) }
         var expanded by remember { mutableStateOf(false) }
+        val fieldStyle = state.field.fieldStyle
         val toggleDropdown: () -> Unit = { expanded = !expanded }
         Column {
             TextField(
@@ -295,7 +295,7 @@ class ComposeMobileField : ComposeField() {
                         Text(
                             text = "${phoneNumberUtil.currentCountryFlag}${phoneNumberUtil.prefix}",
                             modifier = Modifier.clickable { toggleDropdown() },
-                            fontSize = responsiveTextSize(size = 15).sp
+                            style =fieldStyle.getTextStyle()
                         )
                     else null
                 },
@@ -323,7 +323,10 @@ class ComposeMobileField : ComposeField() {
                             }
                         }
                     }
-                    Text(label, fontSize = responsiveTextSize(size = 13).sp)
+                    Text(
+                        text = label,
+                        style = fieldStyle.getLabelTextStyle()
+                    )
                 },
                 trailingIcon = trailingIcon(field = state.field,false){
                     launcher?.launch(Unit)
@@ -335,17 +338,17 @@ class ComposeMobileField : ComposeField() {
                     TextFieldDefaults.colors(
                         focusedContainerColor = Color.White,
                         unfocusedContainerColor = Color.White,
-                        errorLabelColor = ComposeFieldTheme.errorColor,
-                        focusedLabelColor = ComposeFieldTheme.focusedLabelColor,
-                        unfocusedLabelColor = ComposeFieldTheme.unfocusedLabelColor,
-                        unfocusedPlaceholderColor = ComposeFieldTheme.hintColor,
-                        focusedTextColor = ComposeFieldTheme.textColor,
-                        unfocusedTextColor = ComposeFieldTheme.textColor,
-                        focusedSupportingTextColor = ComposeFieldTheme.infoColor,
+                        errorLabelColor = fieldStyle.colors.errorColor,
+                        focusedLabelColor = fieldStyle.colors.focusedLabelColor,
+                        unfocusedLabelColor = fieldStyle.colors.unfocusedLabelColor,
+                        unfocusedPlaceholderColor = fieldStyle.colors.hintColor,
+                        focusedTextColor = fieldStyle.colors.textColor,
+                        unfocusedTextColor = fieldStyle.colors.textColor,
+                        focusedSupportingTextColor = fieldStyle.colors.infoColor,
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
                         errorContainerColor = Color(0xFFfaebeb),
-                        errorTextColor = ComposeFieldTheme.textColor
+                        errorTextColor = fieldStyle.colors.textColor
                     ),
                 shape = RoundedCornerShape(8.dp),
                 modifier =
@@ -364,14 +367,10 @@ class ComposeMobileField : ComposeField() {
                         )
                         .shadow(elevation = 5.dp, shape = RoundedCornerShape(8.dp)),
             )
-            if (state.hasError) {
-                Text(
-                    text = state.errorMessage,
-                    color = ComposeFieldTheme.errorMessageColor,
-                    style = MaterialTheme.typography.labelSmall,
-                    modifier = Modifier.padding(start = 16.dp)
-                )
-            }
+            ErrorView(
+                state = state,
+                modifier = Modifier.padding(start = 16.dp)
+            )
             if(expanded && phoneNumberUtil.shouldShowPicker) {
                 CountryPickerDialog(
                     onDone = { toggleDropdown() },
@@ -402,6 +401,7 @@ class ComposeMobileField : ComposeField() {
     ) {
         var expanded by remember { mutableStateOf(false) }
         val toggleDropdown: () -> Unit = { expanded = !expanded }
+        val fieldStyle = state.field.fieldStyle
 
         Box(
             modifier = Modifier
@@ -422,9 +422,7 @@ class ComposeMobileField : ComposeField() {
                     Text(
                         modifier=Modifier,
                         text = state.field.label,
-                        fontSize = responsiveTextSize(ComposeFieldTheme.stickLabelFontSize).sp,
-                        color = ComposeFieldTheme.focusedLabelColor,
-                        fontWeight = ComposeFieldTheme.fontWeight
+                        style = fieldStyle.getLabelTextStyle()
                     )
 
                     if (state.field.keyboardType is ComposeKeyboardTypeAdv.MOBILE_NO && state.field.keyboardType.showPicker) {
@@ -442,18 +440,33 @@ class ComposeMobileField : ComposeField() {
                 if (state.field.hint.isNotEmpty())
                     ShowToolTip(state = state, modifier = Modifier)
 
+                val prefix = "+"+phoneNumberUtil.prefix
+                val userInput = state.text
+
+                var textFieldValue by remember {
+                    mutableStateOf(
+                        TextFieldValue(
+                            text = userInput,
+                            selection = TextRange(userInput.length)
+                        )
+                    )
+                }
+
                 BasicTextField(
                     modifier = Modifier
                         .then(modifier)
                         .bringIntoViewRequester(localRequester),
-                    value = state.text.removePrefix("+" + phoneNumberUtil.prefix),
-                    onValueChange = { curVal ->
+                    value = textFieldValue,
+                    onValueChange = { newVal ->
+                        val curVal = newVal.text.removePrefix(prefix)
                         if (curVal.length <= phoneNumberUtil.maxLength) {
                             builtinValidations(curVal, phoneNumberUtil) { validated, newVal ->
-                                newValue.invoke(
-                                    validated,
-                                    "+" + phoneNumberUtil.prefix.plus(newVal)
+                                val finalValue =  "+" + phoneNumberUtil.prefix.plus(newVal)
+                                textFieldValue = textFieldValue.copy(
+                                    text = finalValue,
+                                    selection = TextRange(finalValue.length)
                                 )
+                                newValue.invoke(validated, finalValue)
                             }
                         }
                     },
@@ -466,13 +479,8 @@ class ComposeMobileField : ComposeField() {
                     minLines = 1,
                     maxLines = 1,
                     singleLine = true,
-                    textStyle = TextStyle.Default.copy(
-                        color = ComposeFieldTheme.textColor,
-                        fontSize = responsiveTextSize(
-                            ComposeFieldTheme.stickFontSize).sp,
-                        fontWeight = ComposeFieldTheme.fontWeight,
+                    textStyle = fieldStyle.getTextStyle().copy(
                         textAlign = TextAlign.End,
-                        fontFamily = MaterialTheme.typography.bodyLarge.fontFamily,
                     ),
                     decorationBox = { innerTextField ->
                         Row(
@@ -480,15 +488,13 @@ class ComposeMobileField : ComposeField() {
                             horizontalArrangement = Arrangement.End,
                             modifier = Modifier.fillMaxWidth(),
                         ) {
-                            //Prefix
-                            Text(
-                                text = "${phoneNumberUtil.currentCountryFlag}${phoneNumberUtil.prefix}",
-                                modifier = Modifier.clickable { toggleDropdown() },
-                                color = ComposeFieldTheme.textColor,
-                                textAlign = TextAlign.End,
-                                fontWeight = ComposeFieldTheme.fontWeight,
-                                fontSize = responsiveTextSize(size = ComposeFieldTheme.stickFontSize).sp
-                            )
+//                            //Prefix
+//                            Text(
+//                                text = "${phoneNumberUtil.currentCountryFlag}${phoneNumberUtil.prefix}",
+//                                modifier = Modifier.clickable { toggleDropdown() },
+//                                textAlign = TextAlign.End,
+//                                style = fieldStyle.getTextStyle()
+//                            )
                             // TextField content
                             Box(
                                 modifier = Modifier.wrapContentWidth(),
@@ -497,6 +503,7 @@ class ComposeMobileField : ComposeField() {
                             ) {
                                 if (state.text.isEmpty()) {
                                     GetPlaceHolder(
+                                        fieldStyle = fieldStyle,
                                         label = if (state.field.required == ComposeFieldYesNo.YES) "Required" else "Optional"
                                     )
                                 }
@@ -510,8 +517,7 @@ class ComposeMobileField : ComposeField() {
             ErrorView(
                 modifier =  Modifier
                     .align(Alignment.BottomEnd),
-                hasError = state.hasError,
-                errorMessage = state.errorMessage
+                state = state
             )
             if(expanded && phoneNumberUtil.shouldShowPicker) {
                 CountryPickerDialog(
@@ -554,6 +560,7 @@ class ComposeMobileField : ComposeField() {
     ) {
         var expanded by remember { mutableStateOf(false) }
         val toggleDropdown: () -> Unit = { expanded = !expanded }
+        val fieldStyle = state.field.fieldStyle
         Column {
             OutlinedTextField(
                 value = state.text.removePrefix(phoneNumberUtil.prefix),
@@ -580,33 +587,34 @@ class ComposeMobileField : ComposeField() {
                         imeAction = ImeAction.Next
                     ),
                 isError = state.hasError,
-                label = { Text(state.field.label) },
+                label = {
+                    Text(
+                        state.field.label,
+                        style = fieldStyle.getLabelTextStyle()
+                    )
+                },
                 minLines = 1,
                 maxLines = 1,
                 colors =
                     OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = ComposeFieldTheme.focusedBorderColor,
-                        unfocusedBorderColor = ComposeFieldTheme.unfocusedBorderColor,
-                        errorBorderColor = ComposeFieldTheme.errorColor,
-                        errorLabelColor = ComposeFieldTheme.errorColor,
-                        focusedLabelColor = ComposeFieldTheme.focusedBorderColor,
-                        unfocusedPlaceholderColor = ComposeFieldTheme.hintColor,
-                        focusedTextColor = ComposeFieldTheme.textColor,
-                        unfocusedTextColor = ComposeFieldTheme.textColor,
-                        focusedSupportingTextColor = ComposeFieldTheme.infoColor,
+                        focusedBorderColor = fieldStyle.colors.focusedBorderColor,
+                        unfocusedBorderColor = fieldStyle.colors.unfocusedBorderColor,
+                        errorBorderColor = fieldStyle.colors.errorColor,
+                        errorLabelColor = fieldStyle.colors.errorColor,
+                        focusedLabelColor = fieldStyle.colors.focusedLabelColor,
+                        unfocusedPlaceholderColor = fieldStyle.colors.hintColor,
+                        focusedTextColor = fieldStyle.colors.textColor,
+                        unfocusedTextColor = fieldStyle.colors.textColor,
+                        focusedSupportingTextColor = fieldStyle.colors.infoColor,
                         errorContainerColor = Color(0xFFfaebeb),
-                        errorTextColor = ComposeFieldTheme.textColor
+                        errorTextColor = fieldStyle.colors.errorColor
                     ),
                 modifier = Modifier.then(modifier),
             )
-            if (state.hasError) {
-                Text(
-                    text = state.errorMessage,
-                    color = ComposeFieldTheme.errorMessageColor,
-                    style = MaterialTheme.typography.labelSmall,
-                    modifier = Modifier.padding(start = 16.dp)
-                )
-            }
+            ErrorView(
+                state = state,
+                modifier = Modifier.padding(start = 16.dp)
+            )
             if (expanded) {
                 CountryPickerDialog(
                     onDone = { toggleDropdown() },
