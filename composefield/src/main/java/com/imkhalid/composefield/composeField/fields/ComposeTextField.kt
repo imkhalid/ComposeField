@@ -313,9 +313,7 @@ class ComposeTextField : ComposeField() {
                 ) {
                     Text(
                         text = state.field.label,
-                        fontSize = responsiveTextSize(ComposeFieldTheme.stickLabelFontSize).sp,
-                        color = ComposeFieldTheme.focusedLabelColor,
-                        fontWeight = ComposeFieldTheme.fontWeight
+                        style = state.field.fieldStyle.getLabelTextStyle()
                     )
                     if (state.field.hint.isNotEmpty())
                         ShowToolTip(state=state, modifier = Modifier)

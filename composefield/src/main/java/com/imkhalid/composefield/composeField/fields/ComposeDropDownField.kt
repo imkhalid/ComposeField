@@ -43,6 +43,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -124,18 +125,14 @@ class ComposeDropDownField : ComposeField() {
                     ) {
                         Text(
                             text = state.field.label,
-                            fontSize = responsiveTextSize(ComposeFieldTheme.stickLabelFontSize).sp,
-                            color = ComposeFieldTheme.focusedLabelColor,
-                            fontWeight = ComposeFieldTheme.fontWeight
+                            style = state.field.fieldStyle.getLabelTextStyle()
                         )
                         Text(
                             modifier = Modifier
                                 .fillMaxWidth(),
-                            color = ComposeFieldTheme.textColor,
                             text = dropDownText,
+                            style = state.field.fieldStyle.getTextStyle(),
                             textAlign = TextAlign.End,
-                            fontSize = responsiveTextSize(size = ComposeFieldTheme.stickFontSize).sp,
-                            fontWeight = ComposeFieldTheme.fontWeight,
                         )
                         Box(
                             contentAlignment = Alignment.BottomEnd
@@ -145,6 +142,7 @@ class ComposeDropDownField : ComposeField() {
                                 expanded = expanded,
                                 options = options,
                                 values = values,
+                                style = state.field.fieldStyle.getLabelTextStyle(),
                                 onOptionSelected = { pair, s ->
                                     focusCallback?.invoke(true, state.field.name)
                                     newValue.invoke(pair, s)
@@ -158,15 +156,7 @@ class ComposeDropDownField : ComposeField() {
                 }
                 else {
                     val label = buildAnnotatedString {
-                        withStyle(
-                            style =
-                                SpanStyle(
-                                    fontSize = responsiveTextSize(size = 13).sp,
-                                    color = ComposeFieldTheme.focusedLabelColor,
-                                )
-                        ) {
-                            append(state.field.label)
-                        }
+                        append(state.field.label)
                         if (state.field.required == ComposeFieldYesNo.YES) {
                             withStyle(
                                 style =
@@ -180,18 +170,15 @@ class ComposeDropDownField : ComposeField() {
                         Text(
                             text = label,
                             modifier = Modifier.padding(start = 20.dp, top = 7.dp),
+                            style = state.field.fieldStyle.getLabelTextStyle()
                         )
                         Text(
                             modifier =
                                 Modifier
                                     .fillMaxWidth()
                                     .padding(start = 20.dp, bottom = 7.dp),
-                            color =
-                                if (state.text.isEmpty()) ComposeFieldTheme.unfocusedLabelColor
-                                else ComposeFieldTheme.textColor,
                             text = dropDownText,
-                            fontSize = responsiveTextSize(size = 15).sp,
-                            fontWeight = ComposeFieldTheme.fontWeight,
+                            style = state.field.fieldStyle.getTextStyle()
                         )
                     }
                     Icon(
@@ -207,6 +194,7 @@ class ComposeDropDownField : ComposeField() {
                         expanded = expanded,
                         options = options,
                         values = values,
+                        style = state.field.fieldStyle.getLabelTextStyle(),
                         onOptionSelected = { pair, s ->
                             focusCallback?.invoke(true, state.field.name)
                             newValue.invoke(pair, s)
@@ -220,8 +208,7 @@ class ComposeDropDownField : ComposeField() {
             }
             ErrorView(
                 modifier = Modifier.padding(start = 16.dp),
-                hasError = state.hasError,
-                errorMessage = state.errorMessage
+                state = state
             )
         }
     }
@@ -303,6 +290,7 @@ class ComposeDropDownField : ComposeField() {
     @Composable
     fun DropdownOptions(
         modifier: Modifier = Modifier,
+        style: TextStyle,
         expanded: Boolean,
         options: List<String>,
         values: List<String>,
@@ -316,7 +304,12 @@ class ComposeDropDownField : ComposeField() {
         ) {
             options.take(6).forEach { option ->
                 DropdownMenuItem(
-                    text = { Text(text = option, color = ComposeFieldTheme.textColor) },
+                    text = {
+                        Text(
+                            text = option,
+                            style=style
+                        )
+                    },
                     onClick = {
                         options
                             .indexOf(option)
@@ -329,6 +322,7 @@ class ComposeDropDownField : ComposeField() {
         }
         if (expanded && options.size > 6) {
             DropdownDialog(
+                style = style,
                 options = options,
                 values = values,
                 onDismiss = onDismiss,
@@ -342,6 +336,7 @@ class ComposeDropDownField : ComposeField() {
 
     @Composable
     private fun DropdownDialog(
+        style: TextStyle,
         options: List<String>,
         values: List<String>,
         onDismiss:()->Unit,
@@ -386,7 +381,10 @@ class ComposeDropDownField : ComposeField() {
                                      onOptionSelected(filteredValues[index])
                                 }
                             ) {
-                                Text(option, color = ComposeFieldTheme.textColor)
+                                Text(
+                                    option,
+                                    style = style
+                                )
                             }
                         }
                     }
