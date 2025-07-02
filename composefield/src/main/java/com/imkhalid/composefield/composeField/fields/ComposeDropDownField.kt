@@ -128,7 +128,6 @@ class ComposeDropDownField : ComposeField() {
                             color = ComposeFieldTheme.focusedLabelColor,
                             fontWeight = ComposeFieldTheme.fontWeight
                         )
-
                         Text(
                             modifier = Modifier
                                 .fillMaxWidth(),
@@ -138,6 +137,23 @@ class ComposeDropDownField : ComposeField() {
                             fontSize = responsiveTextSize(size = ComposeFieldTheme.stickFontSize).sp,
                             fontWeight = ComposeFieldTheme.fontWeight,
                         )
+                        Box(
+                            contentAlignment = Alignment.BottomEnd
+                        ){
+                            DropdownOptions(
+                                modifier=  Modifier.align(Alignment.CenterEnd),
+                                expanded = expanded,
+                                options = options,
+                                values = values,
+                                onOptionSelected = { pair, s ->
+                                    focusCallback?.invoke(true, state.field.name)
+                                    newValue.invoke(pair, s)
+                                },
+                                onDismiss = {
+                                    expanded=false
+                                }
+                            )
+                        }
                     }
                 }
                 else {
@@ -185,19 +201,21 @@ class ComposeDropDownField : ComposeField() {
                             .align(Alignment.CenterEnd)
                             .padding(10.dp)
                     )
+                    DropdownOptions(
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd),
+                        expanded = expanded,
+                        options = options,
+                        values = values,
+                        onOptionSelected = { pair, s ->
+                            focusCallback?.invoke(true, state.field.name)
+                            newValue.invoke(pair, s)
+                        },
+                        onDismiss = {
+                            expanded=false
+                        }
+                    )
                 }
-                DropdownOptions(
-                    expanded = expanded,
-                    options = options,
-                    values = values,
-                    onOptionSelected = { pair, s ->
-                        focusCallback?.invoke(true, state.field.name)
-                        newValue.invoke(pair, s)
-                    },
-                    onDismiss = {
-                        expanded=false
-                    }
-                )
 
             }
             ErrorView(

@@ -284,36 +284,31 @@ class ComposeTextField : ComposeField() {
         ),
         newValue: (Pair<Boolean, String>, String) -> Unit = {pair,s->}
     ) {
-
-
+        val modifier =  if (state.field.type== ComposeFieldType.TEXT_BOX)
+            Modifier
+            .fillMaxWidth()
+            .height(TextFieldDefaults.MinHeight)
+            .padding(horizontal = 8.dp)
+        else
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp)
 
         Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(TextFieldDefaults.MinHeight)
-                .padding(horizontal = 8.dp),
+            modifier =modifier,
             contentAlignment = Alignment.Center
         ) {
             if (state.field.type == ComposeFieldType.TEXT_AREA){
-                Column(
-                    modifier = modifier
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(responsiveSize(5))
-                    ) {
-                        Text(
-                            text = state.field.label,
-                            fontSize = responsiveTextSize(ComposeFieldTheme.stickLabelFontSize).sp,
-                            color = ComposeFieldTheme.focusedLabelColor,
-                            fontWeight = ComposeFieldTheme.fontWeight
-                        )
-                        if (state.field.hint.isNotEmpty())
-                            ShowToolTip(state = state, modifier = Modifier)
-                    }
+                Column {
+                    Text(
+                        text = state.field.label,
+                        fontSize = responsiveTextSize(ComposeFieldTheme.stickLabelFontSize).sp,
+                        color = ComposeFieldTheme.focusedLabelColor,
+                        fontWeight = ComposeFieldTheme.fontWeight
+                    )
                     StickyBasicField(
-                        modifier = modifier,
+                        modifier = Modifier
+                            .fillMaxWidth(),
                         state = state,
                         newValue = newValue
                     )
@@ -334,7 +329,9 @@ class ComposeTextField : ComposeField() {
                         ShowToolTip(state=state, modifier = Modifier)
 
                     StickyBasicField(
-                        modifier = Modifier,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight(),
                         state = state,
                         newValue = newValue
                     )
@@ -352,17 +349,14 @@ class ComposeTextField : ComposeField() {
 
     @Composable
     private fun StickyBasicField(
-        modifier: Modifier,
+        modifier: Modifier = Modifier,
         state: ComposeFieldState,
         newValue: (Pair<Boolean, String>, String) -> Unit
     ){
         val mask = getFieldMask(state.field)
         var passwordVisible by remember { mutableStateOf(false) }
         BasicTextField(
-            modifier = Modifier
-                .then(modifier)
-                .fillMaxWidth()
-                .fillMaxHeight()
+            modifier = modifier
             ,
             value = state.text,
             onValueChange = { curVal ->
@@ -372,14 +366,14 @@ class ComposeTextField : ComposeField() {
             keyboardOptions = getKeyboardOptions(state.field),
             minLines = getMinLine(state.field.type),
             maxLines = getMaxLine(state.field.type),
-            singleLine = true,
             visualTransformation = getVisualTransformation(mask, state.field, passwordVisible),
             textStyle = TextStyle.Default.copy(
                 color = ComposeFieldTheme.textColor,
                 fontSize = responsiveTextSize(
-                    ComposeFieldTheme.stickFontSize).sp,
+                    ComposeFieldTheme.stickFontSize
+                ).sp,
                 fontWeight = ComposeFieldTheme.fontWeight,
-                textAlign = TextAlign.End,
+                textAlign = if (state.field.type == ComposeFieldType.TEXT_AREA) TextAlign.Start else TextAlign.End,
                 fontFamily = MaterialTheme.typography.bodyLarge.fontFamily,
             ),
             decorationBox = { innerTextField ->
@@ -388,13 +382,28 @@ class ComposeTextField : ComposeField() {
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     // TextField content
+                    val boxModifier = if (state.field.type == ComposeFieldType.TEXT_AREA)
+                        Modifier
+                    else
+                        Modifier.weight(1f)
+                    val alignment = if (state.field.type == ComposeFieldType.TEXT_AREA)
+                        Alignment.TopStart
+                    else
+                        Alignment.CenterEnd
                     Box(
-                        modifier = Modifier
-                            .weight(1f),
-                        contentAlignment = Alignment.CenterEnd
+                        modifier = boxModifier,
+                        contentAlignment = alignment
                     ) {
                         if (state.text.isEmpty()) {
-                            GetPlaceHolder(label = if (state.field.required == ComposeFieldYesNo.YES) "Required" else "Optional")
+                            GetPlaceHolder(
+                                label = if (state.field.hint.isEmpty()){
+                                    if (state.field.required == ComposeFieldYesNo.YES)
+                                        "Required"
+                                    else
+                                        "Optional"
+                                }else
+                                    state.field.hint
+                            )
                         }
                         innerTextField()
                     }
@@ -415,7 +424,7 @@ class ComposeTextField : ComposeField() {
     private fun getMinLine(type: ComposeFieldType): Int {
         return when (type) {
             ComposeFieldType.TEXT_BOX -> 1
-            ComposeFieldType.TEXT_AREA -> 3
+            ComposeFieldType.TEXT_AREA -> 5
             else -> 1
         }
     }
@@ -423,7 +432,7 @@ class ComposeTextField : ComposeField() {
     private fun getMaxLine(type: ComposeFieldType): Int {
         return when (type) {
             ComposeFieldType.TEXT_BOX -> 1
-            ComposeFieldType.TEXT_AREA -> 4
+            ComposeFieldType.TEXT_AREA -> 5
             else -> 1
         }
     }

@@ -3,6 +3,7 @@ package com.imkhalid.composefield.theme
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.RichTooltipColors
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import com.imkhalid.composefield.composeField.Size
 
@@ -27,6 +28,7 @@ object ComposeFieldTheme {
     var stickLabelFontSize = 20
     var stickFontSize = 16
     var fontWeight = FontWeight.Normal
+    var fontFamily: FontFamily = FontFamily.Default
 
     @OptIn(ExperimentalMaterial3Api::class)
     var toolTipColors: RichTooltipColors?=null

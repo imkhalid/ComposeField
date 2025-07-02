@@ -12,7 +12,10 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -37,6 +40,7 @@ import com.imkhalid.composefield.composeField.fields.ComposeTimePickerField
 import com.imkhalid.composefield.composeField.model.ComposeFieldModule
 import com.imkhalid.composefield.composeField.responsiveSize
 import com.imkhalid.composefield.composeField.states.rememberFieldState
+import com.imkhalid.composefield.theme.ComposeFieldTheme
 
 abstract class ComposeField {
     var currentUserCountryCode = ""
@@ -138,40 +142,48 @@ class ComposeFieldBuilder {
         onValueChange: ((name: String, value: String) -> Unit)? = null,
         contactCallback:((name: String,number: String)-> Unit)?= null
     ) {
-        val state = stateHolder.state
-        val field =
-            when (state.field.type) {
-                ComposeFieldType.TEXT_BOX,
-                ComposeFieldType.TEXT_AREA -> {
-                    if (state.field.keyboardType is ComposeKeyboardTypeAdv.MOBILE_NO) {
-                        ComposeMobileField().apply {
-                            selectedContactCallback = contactCallback
-                        }
-                    } else if (state.field.keyboardType is ComposeKeyboardTypeAdv.CURRENCY){
-                      ComposeCurrencyField()
-                    } else {
-                        ComposeTextField().setFocusCallback(focusCallback)
-                    }
-                }
-                ComposeFieldType.DROP_DOWN -> ComposeDropDownField()
-                ComposeFieldType.DATE_PICKER -> ComposeDatePickerField()
-                ComposeFieldType.TIME_PICKER -> ComposeTimePickerField()
-                ComposeFieldType.DATE_TIME_PICKER -> ComposeDatePickerField()
-                ComposeFieldType.SWITCH -> ComposeSwitchField()
-                ComposeFieldType.CHECK_BOX -> ComposeCheckBoxField()
-                ComposeFieldType.RADIO_BUTTON -> ComposeRadioGroupField()
-            }
-
-        field.currentUserCountryCode = userCountry
-        if (state.field.hidden == ComposeFieldYesNo.NO)
-            field.PreBuild(
-                state = state,
-                newValue = { error, newVal ->
-                    updateFieldState(error, newVal, stateHolder, onValueChangeForChild)
-                    onValueChange?.invoke(state.field.name, newVal)
-                },
-                modifier = modifier
+        CompositionLocalProvider(
+            LocalTextStyle provides MaterialTheme.typography.bodyLarge.copy(
+                fontFamily = ComposeFieldTheme.fontFamily // Or your custom font
             )
+        ) {
+
+            val state = stateHolder.state
+            val field =
+                when (state.field.type) {
+                    ComposeFieldType.TEXT_BOX,
+                    ComposeFieldType.TEXT_AREA -> {
+                        if (state.field.keyboardType is ComposeKeyboardTypeAdv.MOBILE_NO) {
+                            ComposeMobileField().apply {
+                                selectedContactCallback = contactCallback
+                            }
+                        } else if (state.field.keyboardType is ComposeKeyboardTypeAdv.CURRENCY) {
+                            ComposeCurrencyField()
+                        } else {
+                            ComposeTextField().setFocusCallback(focusCallback)
+                        }
+                    }
+
+                    ComposeFieldType.DROP_DOWN -> ComposeDropDownField()
+                    ComposeFieldType.DATE_PICKER -> ComposeDatePickerField()
+                    ComposeFieldType.TIME_PICKER -> ComposeTimePickerField()
+                    ComposeFieldType.DATE_TIME_PICKER -> ComposeDatePickerField()
+                    ComposeFieldType.SWITCH -> ComposeSwitchField()
+                    ComposeFieldType.CHECK_BOX -> ComposeCheckBoxField()
+                    ComposeFieldType.RADIO_BUTTON -> ComposeRadioGroupField()
+                }
+
+            field.currentUserCountryCode = userCountry
+            if (state.field.hidden == ComposeFieldYesNo.NO)
+                field.PreBuild(
+                    state = state,
+                    newValue = { error, newVal ->
+                        updateFieldState(error, newVal, stateHolder, onValueChangeForChild)
+                        onValueChange?.invoke(state.field.name, newVal)
+                    },
+                    modifier = modifier
+                )
+        }
     }
 
     fun updateFieldState(
