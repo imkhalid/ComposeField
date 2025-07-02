@@ -64,9 +64,11 @@ import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldType
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardTypeAdv
 import com.imkhalid.composefield.composeField.model.ComposeFieldModule
+import com.imkhalid.composefield.composeField.model.ComposeFieldStyle
 import com.imkhalid.composefield.composeField.responsiveSize
 import com.imkhalid.composefield.theme.ComposeFieldTheme
 import com.imkhalid.composefield.composeField.responsiveTextSize
+import com.imkhalid.composefield.composeField.responsiveVPaddings
 import com.imkhalid.composefield.composeField.util.ErrorView
 import com.imkhalid.composefield.composeField.util.ShowToolTip
 import java.util.regex.Pattern
@@ -170,8 +172,7 @@ class ComposeTextField : ComposeField() {
         )
         ErrorView(
             modifier =  Modifier.padding(start = 16.dp),
-            hasError = state.hasError,
-            errorMessage = state.errorMessage
+            state = state
         )
     }
 
@@ -226,8 +227,7 @@ class ComposeTextField : ComposeField() {
         )
         ErrorView(
             modifier =  Modifier.padding(start = 16.dp),
-            hasError = state.hasError,
-            errorMessage = state.errorMessage
+            state = state
         )
     }
 
@@ -247,11 +247,6 @@ class ComposeTextField : ComposeField() {
             onValueChange = { curVal ->
                 handleValueChange(curVal,mask,state,newValue)
             },
-            prefix = {
-                if (state.field.keyboardType is ComposeKeyboardTypeAdv.MOBILE_NO)
-                    Text(text = "+1", modifier = Modifier.clickable {})
-                else null
-            },
             keyboardOptions = getKeyboardOptions(state.field),
             isError = state.hasError,
             label = { GetLabel(field = state.field) },
@@ -267,8 +262,7 @@ class ComposeTextField : ComposeField() {
         )
         ErrorView(
             modifier =  Modifier.padding(start = 16.dp),
-            hasError = state.hasError,
-            errorMessage = state.errorMessage
+            state = state
         )
     }
 
@@ -302,9 +296,7 @@ class ComposeTextField : ComposeField() {
                 Column {
                     Text(
                         text = state.field.label,
-                        fontSize = responsiveTextSize(ComposeFieldTheme.stickLabelFontSize).sp,
-                        color = ComposeFieldTheme.focusedLabelColor,
-                        fontWeight = ComposeFieldTheme.fontWeight
+                        style = state.field.fieldStyle.getLabelTextStyle(),
                     )
                     StickyBasicField(
                         modifier = Modifier
@@ -340,8 +332,7 @@ class ComposeTextField : ComposeField() {
             if (state.field.keyboardType !is ComposeKeyboardTypeAdv.PASSWORD || state.field.hint.isEmpty())
                 ErrorView(
                     modifier =  Modifier.align(Alignment.BottomEnd),
-                    hasError = state.hasError,
-                    errorMessage = state.errorMessage
+                    state = state
                 )
         }
 
@@ -355,6 +346,7 @@ class ComposeTextField : ComposeField() {
     ){
         val mask = getFieldMask(state.field)
         var passwordVisible by remember { mutableStateOf(false) }
+        val fieldStyle = state.field.fieldStyle
         BasicTextField(
             modifier = modifier
             ,
@@ -367,14 +359,11 @@ class ComposeTextField : ComposeField() {
             minLines = getMinLine(state.field.type),
             maxLines = getMaxLine(state.field.type),
             visualTransformation = getVisualTransformation(mask, state.field, passwordVisible),
-            textStyle = TextStyle.Default.copy(
-                color = ComposeFieldTheme.textColor,
-                fontSize = responsiveTextSize(
-                    ComposeFieldTheme.stickFontSize
-                ).sp,
-                fontWeight = ComposeFieldTheme.fontWeight,
-                textAlign = if (state.field.type == ComposeFieldType.TEXT_AREA) TextAlign.Start else TextAlign.End,
-                fontFamily = MaterialTheme.typography.bodyLarge.fontFamily,
+            textStyle = fieldStyle.getTextStyle().copy(
+                textAlign = if (state.field.type == ComposeFieldType.TEXT_AREA)
+                    TextAlign.Start
+                else
+                    TextAlign.End,
             ),
             decorationBox = { innerTextField ->
                 Row(
@@ -383,7 +372,7 @@ class ComposeTextField : ComposeField() {
                 ) {
                     // TextField content
                     val boxModifier = if (state.field.type == ComposeFieldType.TEXT_AREA)
-                        Modifier
+                        Modifier.padding(top = responsiveVPaddings(10))
                     else
                         Modifier.weight(1f)
                     val alignment = if (state.field.type == ComposeFieldType.TEXT_AREA)
@@ -396,6 +385,7 @@ class ComposeTextField : ComposeField() {
                     ) {
                         if (state.text.isEmpty()) {
                             GetPlaceHolder(
+                                fieldStyle = fieldStyle,
                                 label = if (state.field.hint.isEmpty()){
                                     if (state.field.required == ComposeFieldYesNo.YES)
                                         "Required"
@@ -725,7 +715,7 @@ fun getColors(type: ComposeFieldTheme.FieldStyle): TextFieldColors{
 }
 
 @Composable
-fun GetPlaceHolder(modifier: Modifier = Modifier, label:String)  {
+fun GetPlaceHolder(modifier: Modifier = Modifier, label:String,fieldStyle: ComposeFieldStyle)  {
     when(ComposeFieldTheme.fieldStyle){
         ComposeFieldTheme.FieldStyle.OUTLINE -> null
         ComposeFieldTheme.FieldStyle.CONTAINER -> null
@@ -733,10 +723,8 @@ fun GetPlaceHolder(modifier: Modifier = Modifier, label:String)  {
         ComposeFieldTheme.FieldStyle.STICK_LABEL -> Text(
             modifier = Modifier.then(modifier),
             text = label,
-            color = ComposeFieldTheme.textColor,
+            style = fieldStyle.getHintTextStyle(),
             textAlign = TextAlign.End,
-            fontWeight = ComposeFieldTheme.fontWeight,
-            fontSize= responsiveTextSize(ComposeFieldTheme.stickFontSize).sp
         )
     }
 }
@@ -762,9 +750,9 @@ fun GetLabel(modifier: Modifier = Modifier, field: ComposeFieldModule) {
                     }
                 }
             }
-            Text(label, fontSize = responsiveTextSize(size = 13).sp)
+            Text(label, style = field.fieldStyle.getLabelTextStyle())
         }
-        ComposeFieldTheme.FieldStyle.NORMAL -> Text(field.label)
+        ComposeFieldTheme.FieldStyle.NORMAL -> Text(field.label, style = field.fieldStyle.getLabelTextStyle())
         ComposeFieldTheme.FieldStyle.STICK_LABEL -> null
     }
 }
