@@ -6,6 +6,7 @@ import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardTypeAdv
 import com.imkhalid.composefield.composeField.util.isMatchingAny
 import com.imkhalid.composefield.model.CustomFields
 import com.imkhalid.composefield.model.DefaultValues
+import com.imkhalid.composefield.theme.ComposeFieldTheme
 
 /** This Class is Used for parsing Server Field to Compose Field */
 data class ComposeFieldModule(
@@ -38,6 +39,7 @@ data class ComposeFieldModule(
     val parentId: String? = null,
     val isCurrencyField: Boolean = false,
     val isDisplay : Boolean = false,
+    val fieldStyle: ComposeFieldStyle = ComposeFieldTheme.composeFieldStyle
 ) {
 
     fun parseCustomField(

@@ -12,6 +12,7 @@ import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardType
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardTypeAdv
 import com.imkhalid.composefield.composeField.model.ComposeFieldModule
+import com.imkhalid.composefield.composeField.model.ComposeFieldStyle
 import com.imkhalid.composefield.model.DefaultValues
 import com.imkhalid.composefield.model.LoadingModel
 
@@ -191,6 +192,7 @@ class ComposeFieldStateHolder(initialField: ComposeFieldState) {
                         it.state.field.pattern,
                         it.state.field.patternMessage,
                         it.state.field.hidden,
+                        it.state.field.fieldStyle
                     )
                 },
                 restore = {
@@ -220,7 +222,8 @@ class ComposeFieldStateHolder(initialField: ComposeFieldState) {
                                     autoFocusable = it[19] as ComposeFieldYesNo,
                                     pattern = it[20] as String,
                                     patternMessage = it[21] as String,
-                                    hidden = it[22] as ComposeFieldYesNo
+                                    hidden = it[22] as ComposeFieldYesNo,
+                                    fieldStyle = it[23] as ComposeFieldStyle
                                 )
                         )
                     )

@@ -6,8 +6,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import com.imkhalid.composefield.composeField.Size
+import com.imkhalid.composefield.composeField.model.ComposeFieldStyle
 
 object ComposeFieldTheme {
+
+    var composeFieldStyle: ComposeFieldStyle = ComposeFieldStyle.defaultComposeFieldStyle()
 
     var baseDesignSize: Size = Size(width = 414f, height = 896f)
 
