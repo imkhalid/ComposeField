@@ -134,14 +134,12 @@ fun ShowToolTipA(modifier: Modifier = Modifier,info: String) {
 
 
 @Composable
-fun ErrorView(modifier: Modifier = Modifier,hasError: Boolean,errorMessage: String) {
-    if (hasError) {
+fun ErrorView(modifier: Modifier = Modifier,state: ComposeFieldState) {
+    if (state.hasError) {
         Text(
-            text = errorMessage,
+            text = state.errorMessage,
             color = ComposeFieldTheme.errorMessageColor,
-            style = MaterialTheme.typography.labelSmall,
-            fontSize = 12.sp,
-            fontWeight = FontWeight.Medium,
+            style = state.field.fieldStyle.getErrorTextStyle(),
             modifier =modifier
         )
     }
