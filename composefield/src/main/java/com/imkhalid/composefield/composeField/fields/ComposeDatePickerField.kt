@@ -59,6 +59,7 @@ import com.imkhalid.composefield.composeField.responsiveSize
 import com.imkhalid.composefield.theme.ComposeFieldTheme
 import com.imkhalid.composefieldproject.composeField.fields.ComposeField
 import com.imkhalid.composefield.composeField.responsiveTextSize
+import com.imkhalid.composefield.composeField.util.ErrorView
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.Period
@@ -85,16 +86,9 @@ class ComposeDatePickerField : ComposeField() {
         newValue: (Pair<Boolean, String>, String) -> Unit,
         modifier: Modifier = Modifier
     ) {
+        val style = state.field.fieldStyle
         val label = buildAnnotatedString {
-            withStyle(
-                style =
-                SpanStyle(
-                    fontSize = responsiveTextSize(size = 13).sp,
-                    color = ComposeFieldTheme.focusedLabelColor
-                )
-            ) {
-                append(state.field.label)
-            }
+            append(state.field.label)
             if (state.field.required == ComposeFieldYesNo.YES) {
                 withStyle(
                     style =
@@ -129,18 +123,15 @@ class ComposeDatePickerField : ComposeField() {
                         ) {
                             Text(
                                 text = state.field.label,
-                                fontSize = responsiveTextSize(ComposeFieldTheme.stickLabelFontSize).sp,
-                                color = ComposeFieldTheme.focusedLabelColor,
-                                fontWeight = ComposeFieldTheme.fontWeight
+                                style= style.getLabelTextStyle()
                             )
 
                             Text(
                                 modifier = Modifier.fillMaxWidth(),
-                                color = ComposeFieldTheme.textColor,
                                 text = dropDownText,
-                                textAlign = TextAlign.End,
-                                fontWeight = ComposeFieldTheme.fontWeight,
-                                fontSize = responsiveTextSize(size = ComposeFieldTheme.stickFontSize).sp,
+                                style = style.getTextStyle().copy(
+                                    textAlign = TextAlign.End,
+                                )
                             )
                         }
                     }else {
@@ -150,18 +141,15 @@ class ComposeDatePickerField : ComposeField() {
                                     .fillMaxWidth()
                                     .padding(start = 20.dp, top = 7.dp)
                                     .align(Alignment.CenterStart),
+                            style = style.getTextStyle(),
                             color =
-                                if (state.text.isEmpty()) ComposeFieldTheme.unfocusedLabelColor
-                                else ComposeFieldTheme.textColor,
+                                if (state.text.isEmpty()) style.colors.unfocusedLabelColor
+                                else style.colors.textColor,
                             text = dropDownText,
-                            fontWeight = ComposeFieldTheme.fontWeight,
-                            fontSize = responsiveTextSize(size = 15).sp
                         )
                         Text(
                             text = label,
-                            color = ComposeFieldTheme.hintColor,
-                            fontSize = responsiveTextSize(size = 13).sp,
-                            modifier = Modifier.padding(start = 20.dp, top = 7.dp)
+                            style = style.getLabelTextStyle()
                         )
                         EndIcons(state){
                             newValue(Pair(true,""),"")
@@ -169,14 +157,10 @@ class ComposeDatePickerField : ComposeField() {
                     }
                 }
             }
-            if (state.hasError) {
-                Text(
-                    text = state.errorMessage,
-                    color = ComposeFieldTheme.errorMessageColor,
-                    style = MaterialTheme.typography.labelSmall,
-                    modifier = Modifier.padding(start = 16.dp)
-                )
-            }
+            ErrorView(
+                state = state,
+                modifier = Modifier.padding(start = 16.dp)
+            )
             HelperText(state = state)
         }
     }
