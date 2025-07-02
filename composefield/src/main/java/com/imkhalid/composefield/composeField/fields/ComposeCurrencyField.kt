@@ -82,15 +82,16 @@ class ComposeCurrencyField : ComposeField() {
         newValue: (Pair<Boolean, String>, String) -> Unit,
         modifier: Modifier = Modifier,
     ) {
+        val fieldStyle = state.field.fieldStyle
 
         val colors = TextFieldDefaults.colors(
             focusedContainerColor = Color.White,
             unfocusedContainerColor = Color.White,
-            errorLabelColor = ComposeFieldTheme.errorColor,
-            focusedLabelColor = ComposeFieldTheme.hintColor,
-            focusedTextColor = ComposeFieldTheme.textColor,
-            unfocusedTextColor = ComposeFieldTheme.textColor,
-            focusedSupportingTextColor = ComposeFieldTheme.infoColor,
+            errorLabelColor = fieldStyle.colors.errorColor,
+            focusedLabelColor = fieldStyle.colors.labelColor,
+            focusedTextColor = fieldStyle.colors.textColor,
+            unfocusedTextColor = fieldStyle.colors.textColor,
+            focusedSupportingTextColor = fieldStyle.colors.infoColor,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
             disabledTextColor = Color(0xFFBDBDBD),
@@ -98,7 +99,7 @@ class ComposeCurrencyField : ComposeField() {
             disabledPlaceholderColor = Color(0xFFBDBDBD),
             disabledContainerColor = Color(0xFFE0E0E0),
             errorContainerColor = Color(0xFFfaebeb),
-            errorTextColor = ComposeFieldTheme.textColor
+            errorTextColor = fieldStyle.colors.textColor
         )
 
         Column {
@@ -122,13 +123,13 @@ class ComposeCurrencyField : ComposeField() {
                         colors = TextFieldDefaults.colors(
                             focusedContainerColor = Color.White,
                             unfocusedContainerColor = Color.White,
-                            errorLabelColor = ComposeFieldTheme.errorColor,
-                            focusedLabelColor = ComposeFieldTheme.focusedLabelColor,
-                            unfocusedLabelColor = ComposeFieldTheme.unfocusedLabelColor,
-                            unfocusedPlaceholderColor = ComposeFieldTheme.unfocusedLabelColor,
-                            focusedTextColor = ComposeFieldTheme.textColor,
-                            unfocusedTextColor = ComposeFieldTheme.textColor,
-                            focusedSupportingTextColor = ComposeFieldTheme.infoColor,
+                            errorLabelColor = fieldStyle.colors.errorColor,
+                            focusedLabelColor = fieldStyle.colors.focusedLabelColor,
+                            unfocusedLabelColor = fieldStyle.colors.unfocusedLabelColor,
+                            unfocusedPlaceholderColor = fieldStyle.colors.unfocusedLabelColor,
+                            focusedTextColor = fieldStyle.colors.textColor,
+                            unfocusedTextColor = fieldStyle.colors.textColor,
+                            focusedSupportingTextColor = fieldStyle.colors.infoColor,
                             focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent,
                             disabledTextColor = Color(0xFFBDBDBD),
@@ -136,7 +137,7 @@ class ComposeCurrencyField : ComposeField() {
                             disabledPlaceholderColor = Color(0xFFBDBDBD),
                             disabledContainerColor = Color(0xFFE0E0E0),
                             errorContainerColor = Color(0xFFfaebeb),
-                            errorTextColor = ComposeFieldTheme.textColor,
+                            errorTextColor = fieldStyle.colors.textColor,
                         ),
                         state = state,
                         newValue = newValue
@@ -245,11 +246,7 @@ class ComposeCurrencyField : ComposeField() {
                     newValue.invoke(validated, newVal)
                 }
             },
-            prefix = {
-                if (state.field.keyboardType is ComposeKeyboardTypeAdv.MOBILE_NO)
-                    Text(text = "+1", modifier = Modifier.clickable {})
-                else null
-            },
+
             keyboardOptions = getKeyboardOptions(),
             isError = state.hasError,
             label = {
@@ -269,9 +266,9 @@ class ComposeCurrencyField : ComposeField() {
                         }
                     }
                 }
-                Text(label, fontSize = responsiveTextSize(size = 13).sp)
+                Text(label, style = state.field.fieldStyle.getLabelTextStyle())
             },
-            textStyle = TextStyle.Default.copy(fontSize = responsiveTextSize(size = 15).sp),
+            textStyle = state.field.fieldStyle.getTextStyle(),
             maxLines = 1,
             visualTransformation = visualTransformation,
             colors = colors,
@@ -299,19 +296,13 @@ class ComposeCurrencyField : ComposeField() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 20.dp, bottom = 5.dp),
-                color = ComposeFieldTheme.errorMessageColor,
                 text =helper,
-                fontWeight = FontWeight.Normal,
-                fontSize = responsiveTextSize(size = 12).sp
+                style = state.field.fieldStyle.getHelderTextStyle()
             )
-        if (state.hasError) {
-            Text(
-                text = state.errorMessage,
-                color = ComposeFieldTheme.errorMessageColor,
-                style = MaterialTheme.typography.labelSmall,
-                modifier = Modifier.padding(start = 16.dp)
-            )
-        }
+        ErrorView(
+            state = state,
+            modifier = Modifier.padding(start = 16.dp)
+        )
     }
 
     @Composable
@@ -329,6 +320,7 @@ class ComposeCurrencyField : ComposeField() {
             mutableStateOf("")
         }
 
+        val style = state.field.fieldStyle
         OutlinedTextField(
             value = state.text,
             enabled = state.field.isEditable.value,
@@ -343,9 +335,7 @@ class ComposeCurrencyField : ComposeField() {
             isError = state.hasError,
             label = {
                 val label = buildAnnotatedString {
-                    withStyle(style = SpanStyle(fontSize = responsiveTextSize(size = 13).sp)) {
-                        append(state.field.label)
-                    }
+                    append(state.field.label)
                     if (state.field.required == ComposeFieldYesNo.YES) {
                         withStyle(
                             style =
@@ -358,9 +348,9 @@ class ComposeCurrencyField : ComposeField() {
                         }
                     }
                 }
-                Text(label, fontSize = responsiveTextSize(size = 13).sp)
+                Text(label, style = style.getLabelTextStyle())
             },
-            textStyle = TextStyle.Default.copy(fontSize = responsiveTextSize(size = 16).sp),
+            textStyle = style.getTextStyle(),
             maxLines = 1,
             visualTransformation = visualTransformation,
             colors = colors,
@@ -369,14 +359,10 @@ class ComposeCurrencyField : ComposeField() {
                 passwordVisible = passwordVisible.not()
             }
         )
-        if (state.hasError) {
-            Text(
-                text = state.errorMessage,
-                color = ComposeFieldTheme.errorMessageColor,
-                style = MaterialTheme.typography.labelSmall,
-                modifier = Modifier.padding(start = 16.dp)
-            )
-        }
+        ErrorView(
+            state = state,
+            modifier = Modifier.padding(start = 16.dp)
+        )
     }
 
     @Preview
@@ -396,6 +382,8 @@ class ComposeCurrencyField : ComposeField() {
             mutableStateOf("")
         }
 
+        val fieldStyle = state.field.fieldStyle
+
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -410,9 +398,7 @@ class ComposeCurrencyField : ComposeField() {
             ) {
                 Text(
                     text = state.field.label,
-                    fontSize = responsiveTextSize(ComposeFieldTheme.stickLabelFontSize).sp,
-                    color = ComposeFieldTheme.focusedLabelColor,
-                    fontWeight = ComposeFieldTheme.fontWeight
+                    style = fieldStyle.getLabelTextStyle()
                 )
                 if (state.field.hint.isNotEmpty())
                     ShowToolTip(state=state, modifier = Modifier)
@@ -437,13 +423,8 @@ class ComposeCurrencyField : ComposeField() {
                     maxLines = 1,
                     singleLine = true,
                     visualTransformation = visualTransformation,
-                    textStyle = TextStyle.Default.copy(
-                        color = ComposeFieldTheme.textColor,
-                        fontSize = responsiveTextSize(
-                            ComposeFieldTheme.stickFontSize).sp,
-                        fontWeight = ComposeFieldTheme.fontWeight,
+                    textStyle = fieldStyle.getTextStyle().copy(
                         textAlign = TextAlign.End,
-                        fontFamily = MaterialTheme.typography.bodyLarge.fontFamily,
                     ),
                     decorationBox = { innerTextField ->
                         Row(
@@ -457,7 +438,10 @@ class ComposeCurrencyField : ComposeField() {
                                 contentAlignment = Alignment.CenterEnd
                             ) {
                                 if (state.text.isEmpty()) {
-                                    GetPlaceHolder(label = if (state.field.required == ComposeFieldYesNo.YES) "Required" else "Optional")
+                                    GetPlaceHolder(
+                                        fieldStyle = fieldStyle,
+                                        label = if (state.field.required == ComposeFieldYesNo.YES) "Required" else "Optional"
+                                    )
                                 }
                                 innerTextField()
                             }
@@ -476,18 +460,15 @@ class ComposeCurrencyField : ComposeField() {
             }
             if (helper.isNotEmpty())
                 Text(
+                    text = helper,
                     modifier = Modifier
                         .fillMaxWidth()
                         .align(Alignment.BottomStart),
-                    color = ComposeFieldTheme.errorMessageColor,
-                    text =helper,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = responsiveTextSize(size = 12).sp
+                    style = state.field.fieldStyle.getHelderTextStyle()
                 )
             ErrorView(
                 modifier =  Modifier.padding(start = 16.dp),
-                hasError = state.hasError,
-                errorMessage = state.errorMessage
+                state = state
             )
         }
 
