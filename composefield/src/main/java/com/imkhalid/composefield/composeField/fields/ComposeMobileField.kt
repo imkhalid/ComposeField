@@ -69,6 +69,7 @@ import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardTypeAdv
 import com.imkhalid.composefield.composeField.responsiveSize
 import com.imkhalid.composefield.composeField.responsiveTextSize
+import com.imkhalid.composefield.composeField.util.ErrorView
 import com.imkhalid.composefield.composeField.util.ShowToolTip
 import com.imkhalid.composefield.theme.ComposeFieldTheme
 import com.imkhalid.composefieldproject.composeField.fields.ComposeField
@@ -439,7 +440,7 @@ class ComposeMobileField : ComposeField() {
                     }
                 }
                 if (state.field.hint.isNotEmpty())
-                    ShowToolTip(info = state.field.hint, modifier = Modifier)
+                    ShowToolTip(state = state, modifier = Modifier)
 
                 BasicTextField(
                     modifier = Modifier
@@ -481,7 +482,7 @@ class ComposeMobileField : ComposeField() {
                         ) {
                             //Prefix
                             Text(
-                                text = phoneNumberUtil.prefix,
+                                text = "${phoneNumberUtil.currentCountryFlag}${phoneNumberUtil.prefix}",
                                 modifier = Modifier.clickable { toggleDropdown() },
                                 color = ComposeFieldTheme.textColor,
                                 textAlign = TextAlign.End,
@@ -506,15 +507,12 @@ class ComposeMobileField : ComposeField() {
                     }
                 )
             }
-            if (state.hasError) {
-                Text(
-                    text = state.errorMessage,
-                    color = ComposeFieldTheme.errorMessageColor,
-                    style = MaterialTheme.typography.labelSmall,
-                    modifier = Modifier.padding(start = 16.dp)
-                        .align(Alignment.BottomEnd)
-                )
-            }
+            ErrorView(
+                modifier =  Modifier
+                    .align(Alignment.BottomEnd),
+                hasError = state.hasError,
+                errorMessage = state.errorMessage
+            )
             if(expanded && phoneNumberUtil.shouldShowPicker) {
                 CountryPickerDialog(
                     onDone = { toggleDropdown() },

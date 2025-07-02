@@ -110,6 +110,7 @@ dependencies {
     api("androidx.compose.ui:ui")
     api("androidx.compose.ui:ui-graphics")
     api("androidx.compose.ui:ui-tooling-preview")
+    implementation("androidx.compose.material:material-icons-extended")
     api("androidx.compose.material3:material3:1.3.2")
 //    api(project(":library"))
 

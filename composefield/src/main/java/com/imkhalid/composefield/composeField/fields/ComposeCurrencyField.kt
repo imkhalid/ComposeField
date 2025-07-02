@@ -415,7 +415,7 @@ class ComposeCurrencyField : ComposeField() {
                     fontWeight = ComposeFieldTheme.fontWeight
                 )
                 if (state.field.hint.isNotEmpty())
-                    ShowToolTip(info=state.field.hint, modifier = Modifier)
+                    ShowToolTip(state=state, modifier = Modifier)
 
                 BasicTextField(
                     modifier = Modifier

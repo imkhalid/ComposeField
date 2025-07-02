@@ -5,6 +5,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
@@ -27,41 +29,66 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
+import com.imkhalid.composefield.composeField.ComposeFieldState
+import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardTypeAdv
 import com.imkhalid.composefield.composeField.responsiveSize
+import com.imkhalid.composefield.composeField.responsiveTextSize
+import com.imkhalid.composefield.composeField.responsiveWidth
 import com.imkhalid.composefield.theme.ComposeFieldTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
 @Composable
 fun ShowToolTip(
     modifier: Modifier = Modifier,
-    info: String = "Rich tooltips support multiple lines of informational text."
+    state: ComposeFieldState
 ) {
+    val tooltipState = rememberTooltipState()
+    val coroutineScope = rememberCoroutineScope()
+    val passwordValidated = state.field.keyboardType is ComposeKeyboardTypeAdv.PASSWORD && state.hasError.not() && state.text.isNotEmpty()
+    val message = if (passwordValidated)
+        "Strong and secure password. You may\nproceed!"
+    else state.field.hint
+
+    val color = if (passwordValidated)
+        Color(0xff1B7C44)
+    else if (state.field.keyboardType is ComposeKeyboardTypeAdv.PASSWORD && state.hasError)
+        Color(0xffD11B1B)
+    else Color(0xff9D9D9D)
+
     TooltipBox(
-        modifier = modifier,
+        modifier = Modifier.then(modifier)
+            .widthIn(max= responsiveWidth(295)),
         positionProvider = TooltipDefaults.rememberRichTooltipPositionProvider(),
         tooltip = {
             RichTooltip(
                 colors = ComposeFieldTheme.toolTipColors?: TooltipDefaults.richTooltipColors(),
-                title = { Text("Info") }
             ) {
-                Text(info)
+                Text(
+                    message,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = responsiveTextSize(12).sp,
+                    color = color
+                )
             }
         },
-        state = rememberTooltipState()
+        state = tooltipState
     ) {
-        IconButton(onClick = { /* Icon button's click event */ }) {
+        IconButton(onClick = {coroutineScope.launch { tooltipState.show() } }) {
             Icon(
                 imageVector = Icons.Outlined.Info,
-                contentDescription = "Show more information"
+                tint =color,
+                contentDescription = "Show more information",
+                modifier = Modifier.size(responsiveSize(20))
             )
         }
     }
@@ -114,6 +141,7 @@ fun ErrorView(modifier: Modifier = Modifier,hasError: Boolean,errorMessage: Stri
             color = ComposeFieldTheme.errorMessageColor,
             style = MaterialTheme.typography.labelSmall,
             fontSize = 12.sp,
+            fontWeight = FontWeight.Medium,
             modifier =modifier
         )
     }

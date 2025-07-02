@@ -284,8 +284,7 @@ class ComposeTextField : ComposeField() {
         ),
         newValue: (Pair<Boolean, String>, String) -> Unit = {pair,s->}
     ) {
-        val mask = getFieldMask(state.field)
-        var passwordVisible by remember { mutableStateOf(false) }
+
 
 
         Box(
@@ -295,80 +294,122 @@ class ComposeTextField : ComposeField() {
                 .padding(horizontal = 8.dp),
             contentAlignment = Alignment.Center
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(responsiveSize(5))
-            ) {
-                Text(
-                    text = state.field.label,
-                    fontSize = responsiveTextSize(ComposeFieldTheme.stickLabelFontSize).sp,
-                    color = ComposeFieldTheme.focusedLabelColor,
-                    fontWeight = ComposeFieldTheme.fontWeight
-                )
-                if (state.field.hint.isNotEmpty())
-                    ShowToolTip(info=state.field.hint, modifier = Modifier)
-
-                BasicTextField(
-                    modifier = Modifier
-                        .then(modifier)
-                        .fillMaxWidth()
-                        .fillMaxHeight()
-                    ,
-                    value = state.text,
-                    onValueChange = { curVal ->
-                        handleValueChange(curVal,mask,state,newValue)
-                    },
-                    enabled = state.field.isEditable.value,
-                    keyboardOptions = getKeyboardOptions(state.field),
-                    minLines = getMinLine(state.field.type),
-                    maxLines = getMaxLine(state.field.type),
-                    singleLine = true,
-                    visualTransformation = getVisualTransformation(mask, state.field, passwordVisible),
-                    textStyle = TextStyle.Default.copy(
-                        color = ComposeFieldTheme.textColor,
-                        fontSize = responsiveTextSize(
-                            ComposeFieldTheme.stickFontSize).sp,
-                        fontWeight = ComposeFieldTheme.fontWeight,
-                        textAlign = TextAlign.End,
-                        fontFamily = MaterialTheme.typography.bodyLarge.fontFamily,
-                    ),
-                    decorationBox = { innerTextField ->
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            // TextField content
-                            Box(
-                                modifier = Modifier
-                                    .weight(1f),
-                                contentAlignment = Alignment.CenterEnd
-                            ) {
-                                if (state.text.isEmpty()) {
-                                    GetPlaceHolder(label = if (state.field.required == ComposeFieldYesNo.YES) "Required" else "Optional")
-                                }
-                                innerTextField()
-                            }
-
-                            TrailingIconBasic(
-                                state.field,
-                                passwordVisible,
-                                onClick = {
-                                    passwordVisible = passwordVisible.not()
-                                }
-                            )
-
-                        }
+            if (state.field.type == ComposeFieldType.TEXT_AREA){
+                Column(
+                    modifier = modifier
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(responsiveSize(5))
+                    ) {
+                        Text(
+                            text = state.field.label,
+                            fontSize = responsiveTextSize(ComposeFieldTheme.stickLabelFontSize).sp,
+                            color = ComposeFieldTheme.focusedLabelColor,
+                            fontWeight = ComposeFieldTheme.fontWeight
+                        )
+                        if (state.field.hint.isNotEmpty())
+                            ShowToolTip(state = state, modifier = Modifier)
                     }
-                )
+                    StickyBasicField(
+                        modifier = modifier,
+                        state = state,
+                        newValue = newValue
+                    )
+                }
+            } else {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(responsiveSize(5))
+                ) {
+                    Text(
+                        text = state.field.label,
+                        fontSize = responsiveTextSize(ComposeFieldTheme.stickLabelFontSize).sp,
+                        color = ComposeFieldTheme.focusedLabelColor,
+                        fontWeight = ComposeFieldTheme.fontWeight
+                    )
+                    if (state.field.hint.isNotEmpty())
+                        ShowToolTip(state=state, modifier = Modifier)
+
+                    StickyBasicField(
+                        modifier = Modifier,
+                        state = state,
+                        newValue = newValue
+                    )
+                }
             }
-            ErrorView(
-                modifier =  Modifier.align(Alignment.BottomEnd),
-                hasError = state.hasError,
-                errorMessage = state.errorMessage
-            )
+            if (state.field.keyboardType !is ComposeKeyboardTypeAdv.PASSWORD || state.field.hint.isEmpty())
+                ErrorView(
+                    modifier =  Modifier.align(Alignment.BottomEnd),
+                    hasError = state.hasError,
+                    errorMessage = state.errorMessage
+                )
         }
 
+    }
+
+    @Composable
+    private fun StickyBasicField(
+        modifier: Modifier,
+        state: ComposeFieldState,
+        newValue: (Pair<Boolean, String>, String) -> Unit
+    ){
+        val mask = getFieldMask(state.field)
+        var passwordVisible by remember { mutableStateOf(false) }
+        BasicTextField(
+            modifier = Modifier
+                .then(modifier)
+                .fillMaxWidth()
+                .fillMaxHeight()
+            ,
+            value = state.text,
+            onValueChange = { curVal ->
+                handleValueChange(curVal,mask,state,newValue)
+            },
+            enabled = state.field.isEditable.value,
+            keyboardOptions = getKeyboardOptions(state.field),
+            minLines = getMinLine(state.field.type),
+            maxLines = getMaxLine(state.field.type),
+            singleLine = true,
+            visualTransformation = getVisualTransformation(mask, state.field, passwordVisible),
+            textStyle = TextStyle.Default.copy(
+                color = ComposeFieldTheme.textColor,
+                fontSize = responsiveTextSize(
+                    ComposeFieldTheme.stickFontSize).sp,
+                fontWeight = ComposeFieldTheme.fontWeight,
+                textAlign = TextAlign.End,
+                fontFamily = MaterialTheme.typography.bodyLarge.fontFamily,
+            ),
+            decorationBox = { innerTextField ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    // TextField content
+                    Box(
+                        modifier = Modifier
+                            .weight(1f),
+                        contentAlignment = Alignment.CenterEnd
+                    ) {
+                        if (state.text.isEmpty()) {
+                            GetPlaceHolder(label = if (state.field.required == ComposeFieldYesNo.YES) "Required" else "Optional")
+                        }
+                        innerTextField()
+                    }
+
+                    TrailingIconBasic(
+                        state.field,
+                        passwordVisible,
+                        onClick = {
+                            passwordVisible = passwordVisible.not()
+                        }
+                    )
+
+                }
+            }
+        )
     }
 
     private fun getMinLine(type: ComposeFieldType): Int {
@@ -521,18 +562,6 @@ class ComposeTextField : ComposeField() {
                 }
             is ComposeKeyboardTypeAdv.EMAIL -> Patterns.EMAIL
             is ComposeKeyboardTypeAdv.NUMBER -> {
-                //                module.maxValue.takeIf { x->x?.isNotEmpty()==true }?.let {
-                //                    var mask = ""
-                //                    it.indices.forEachIndexed { index, i ->
-                //                        if (index < it.lastIndex)
-                //                            mask+="#"
-                //                        if (index.plus(1)/3==1 && index<it.lastIndex)
-                //                            mask+=","
-                //                    }
-                //                    return@let mask.reversed()
-                //                }?:run {
-                //                    ""
-                //                }
                 Patterns.NONE
             }
             else -> Patterns.NONE
