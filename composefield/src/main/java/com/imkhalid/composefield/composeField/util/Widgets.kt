@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -13,9 +12,7 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RichTooltip
-import androidx.compose.material3.RichTooltipColors
 import androidx.compose.material3.Text
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
@@ -30,10 +27,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import com.imkhalid.composefield.composeField.ComposeFieldState
@@ -48,12 +43,10 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ShowToolTip(
+fun ShowToolTipField(
     modifier: Modifier = Modifier,
     state: ComposeFieldState
 ) {
-    val tooltipState = rememberTooltipState()
-    val coroutineScope = rememberCoroutineScope()
     val passwordValidated = state.field.keyboardType is ComposeKeyboardTypeAdv.PASSWORD && state.hasError.not() && state.text.isNotEmpty()
     val message = if (passwordValidated)
         "Strong and secure password. You may\nproceed!"
@@ -64,6 +57,25 @@ fun ShowToolTip(
     else if (state.field.keyboardType is ComposeKeyboardTypeAdv.PASSWORD && state.hasError)
         Color(0xffD11B1B)
     else Color(0xff9D9D9D)
+    ShowToolTip(
+        modifier = modifier,
+        message = message,
+        messageColor = color,
+        iconColor = color
+    )
+
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ShowToolTip(
+    modifier: Modifier = Modifier,
+    message: String,
+    messageColor: Color,
+    iconColor: Color
+) {
+    val tooltipState = rememberTooltipState()
+    val coroutineScope = rememberCoroutineScope()
 
     TooltipBox(
         modifier = Modifier.then(modifier)
@@ -77,7 +89,7 @@ fun ShowToolTip(
                     message,
                     fontWeight = FontWeight.Medium,
                     fontSize = responsiveTextSize(12).sp,
-                    color = color
+                    color = messageColor
                 )
             }
         },
@@ -86,7 +98,7 @@ fun ShowToolTip(
         IconButton(onClick = {coroutineScope.launch { tooltipState.show() } }) {
             Icon(
                 imageVector = Icons.Outlined.Info,
-                tint =color,
+                tint =iconColor,
                 contentDescription = "Show more information",
                 modifier = Modifier.size(responsiveSize(20))
             )

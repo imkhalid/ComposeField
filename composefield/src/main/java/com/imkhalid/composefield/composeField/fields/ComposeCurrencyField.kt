@@ -34,9 +34,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -45,18 +43,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.imkhalid.composefield.composeField.ComposeFieldState
-import com.imkhalid.composefield.composeField.Patterns
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardTypeAdv
 import com.imkhalid.composefield.composeField.mask.rememberCurrencyVisualTransformation
-import com.imkhalid.composefield.composeField.model.ComposeFieldModule
 import com.imkhalid.composefield.composeField.responsiveSize
 import com.imkhalid.composefield.composeField.util.EnglishNumberToWords
 import com.imkhalid.composefield.theme.ComposeFieldTheme
 import com.imkhalid.composefieldproject.composeField.fields.ComposeField
 import com.imkhalid.composefield.composeField.responsiveTextSize
 import com.imkhalid.composefield.composeField.util.ErrorView
-import com.imkhalid.composefield.composeField.util.ShowToolTip
+import com.imkhalid.composefield.composeField.util.ShowToolTipField
 import com.imkhalid.composefieldproject.composeField.fields.GetPlaceHolder
 import java.text.DecimalFormat
 
@@ -401,7 +397,7 @@ class ComposeCurrencyField : ComposeField() {
                     style = fieldStyle.getLabelTextStyle()
                 )
                 if (state.field.hint.isNotEmpty())
-                    ShowToolTip(state=state, modifier = Modifier)
+                    ShowToolTipField(state=state, modifier = Modifier)
 
                 BasicTextField(
                     modifier = Modifier

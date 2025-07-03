@@ -2,7 +2,6 @@ package com.imkhalid.composefieldproject.composeField.fields
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,8 +18,6 @@ import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -43,11 +40,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalTextToolbar
 import androidx.compose.ui.platform.TextToolbar
 import androidx.compose.ui.platform.TextToolbarStatus
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -56,8 +50,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.imkhalid.composefield.R
 import com.imkhalid.composefield.composeField.ComposeFieldState
 import com.imkhalid.composefield.composeField.mask.FieldMaskTransformation
 import com.imkhalid.composefield.composeField.Patterns
@@ -68,10 +60,9 @@ import com.imkhalid.composefield.composeField.model.ComposeFieldModule
 import com.imkhalid.composefield.composeField.model.ComposeFieldStyle
 import com.imkhalid.composefield.composeField.responsiveSize
 import com.imkhalid.composefield.theme.ComposeFieldTheme
-import com.imkhalid.composefield.composeField.responsiveTextSize
 import com.imkhalid.composefield.composeField.responsiveVPaddings
 import com.imkhalid.composefield.composeField.util.ErrorView
-import com.imkhalid.composefield.composeField.util.ShowToolTip
+import com.imkhalid.composefield.composeField.util.ShowToolTipField
 import java.util.regex.Pattern
 
 class ComposeTextField : ComposeField() {
@@ -312,7 +303,7 @@ class ComposeTextField : ComposeField() {
                         style = state.field.fieldStyle.getLabelTextStyle()
                     )
                     if (state.field.hint.isNotEmpty())
-                        ShowToolTip(state=state, modifier = Modifier)
+                        ShowToolTipField(state=state, modifier = Modifier)
 
                     StickyBasicField(
                         modifier = Modifier

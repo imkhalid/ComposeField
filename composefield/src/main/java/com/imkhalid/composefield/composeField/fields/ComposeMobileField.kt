@@ -22,14 +22,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -54,25 +52,21 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextRange
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.imkhalid.composefield.R
 import com.imkhalid.composefield.composeField.ComposeFieldState
 import com.imkhalid.composefield.composeField.PhoneNumberUtil
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardTypeAdv
 import com.imkhalid.composefield.composeField.responsiveSize
-import com.imkhalid.composefield.composeField.responsiveTextSize
 import com.imkhalid.composefield.composeField.util.ErrorView
-import com.imkhalid.composefield.composeField.util.ShowToolTip
+import com.imkhalid.composefield.composeField.util.ShowToolTipField
 import com.imkhalid.composefield.theme.ComposeFieldTheme
 import com.imkhalid.composefieldproject.composeField.fields.ComposeField
 import com.imkhalid.composefieldproject.composeField.fields.GetPlaceHolder
@@ -430,15 +424,15 @@ class ComposeMobileField : ComposeField() {
                     }
                 }
                 if (state.field.hint.isNotEmpty())
-                    ShowToolTip(state = state, modifier = Modifier)
+                    ShowToolTipField(state = state, modifier = Modifier)
 
                 val prefix = "+"+phoneNumberUtil.prefix
-                val userInput = state.text
+                val userInput = state.text.ifEmpty { prefix }
 
                 var textFieldValue by remember {
                     mutableStateOf(
                         TextFieldValue(
-                            text = userInput.ifEmpty { prefix },
+                            text = userInput,
                             selection = TextRange(userInput.length)
                         )
                     )
@@ -483,20 +477,13 @@ class ComposeMobileField : ComposeField() {
                             horizontalArrangement = Arrangement.End,
                             modifier = Modifier.fillMaxWidth(),
                         ) {
-//                            //Prefix
-//                            Text(
-//                                text = "${phoneNumberUtil.currentCountryFlag}${phoneNumberUtil.prefix}",
-//                                modifier = Modifier.clickable { toggleDropdown() },
-//                                textAlign = TextAlign.End,
-//                                style = fieldStyle.getTextStyle()
-//                            )
                             // TextField content
                             Box(
                                 modifier = Modifier.wrapContentWidth(),
                                 contentAlignment = Alignment.CenterEnd,
 
                             ) {
-                                if (state.text.isEmpty()) {
+                                if (textFieldValue.text.isEmpty()) {
                                     GetPlaceHolder(
                                         fieldStyle = fieldStyle,
                                         label = if (state.field.required == ComposeFieldYesNo.YES) "Required" else "Optional"
