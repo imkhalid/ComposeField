@@ -195,15 +195,10 @@ class ComposeTextField : ComposeField() {
             onValueChange = { curVal ->
                 handleValueChange(curVal,mask,state,newValue)
             },
-            prefix = {
-                if (state.field.keyboardType is ComposeKeyboardTypeAdv.MOBILE_NO)
-                    Text(text = "+1", modifier = Modifier.clickable {})
-                else null
-            },
             keyboardOptions = getKeyboardOptions(state.field),
             isError = state.hasError,
             label = { GetLabel(field = state.field) },
-            textStyle = TextStyle.Default.copy(fontSize = responsiveTextSize(size = 15).sp),
+            textStyle = state.field.fieldStyle.getTextStyle(),
             minLines = getMinLine(state.field.type),
             maxLines = getMaxLine(state.field.type),
             visualTransformation = getVisualTransformation(mask, state.field, passwordVisible),
@@ -251,7 +246,7 @@ class ComposeTextField : ComposeField() {
             keyboardOptions = getKeyboardOptions(state.field),
             isError = state.hasError,
             label = { GetLabel(field = state.field) },
-            textStyle = TextStyle.Default.copy(fontSize = responsiveTextSize(size = 16).sp),
+            textStyle = state.field.fieldStyle.getTextStyle(),
             minLines = getMinLine(state.field.type),
             maxLines = getMaxLine(state.field.type),
             visualTransformation = getVisualTransformation(mask, state.field, passwordVisible),
@@ -752,17 +747,9 @@ fun GetLabel(modifier: Modifier = Modifier, field: ComposeFieldModule) {
         ComposeFieldTheme.FieldStyle.OUTLINE ,
         ComposeFieldTheme.FieldStyle.CONTAINER -> {
             val label = buildAnnotatedString {
-                withStyle(style = SpanStyle(fontSize = responsiveTextSize(size = 13).sp)) {
-                    append(field.label)
-                }
+                append(field.label)
                 if (field.required == ComposeFieldYesNo.YES) {
-                    withStyle(
-                        style =
-                            SpanStyle(
-                                fontSize = responsiveTextSize(size = 13).sp,
-                                color = Color.Red
-                            )
-                    ) {
+                    withStyle(style = SpanStyle(color = Color.Red)) {
                         append("*")
                     }
                 }

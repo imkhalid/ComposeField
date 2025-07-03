@@ -308,17 +308,9 @@ class ComposeMobileField : ComposeField() {
                 isError = state.hasError,
                 label = {
                     val label = buildAnnotatedString {
-                        withStyle(style = SpanStyle(fontSize = responsiveTextSize(size = 13).sp)) {
-                            append(state.field.label)
-                        }
+                        append(state.field.label)
                         if (state.field.required == ComposeFieldYesNo.YES) {
-                            withStyle(
-                                style =
-                                    SpanStyle(
-                                        fontSize = responsiveTextSize(size = 13).sp,
-                                        color = Color.Red
-                                    )
-                            ) {
+                            withStyle(style = SpanStyle(color = Color.Red)) {
                                 append("*")
                             }
                         }
@@ -331,7 +323,7 @@ class ComposeMobileField : ComposeField() {
                 trailingIcon = trailingIcon(field = state.field,false){
                     launcher?.launch(Unit)
                 },
-                textStyle = TextStyle.Default.copy(fontSize = responsiveTextSize(size = 15).sp),
+                textStyle = fieldStyle.getTextStyle(),
                 minLines = 1,
                 maxLines = 1,
                 colors =

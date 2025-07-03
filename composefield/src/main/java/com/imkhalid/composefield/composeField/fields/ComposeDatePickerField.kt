@@ -150,7 +150,8 @@ class ComposeDatePickerField : ComposeField() {
                         )
                         Text(
                             text = label,
-                            style = style.getLabelTextStyle()
+                            style = style.getLabelTextStyle(),
+                            modifier = Modifier.padding(start = 20.dp, top = 7.dp)
                         )
                         EndIcons(state){
                             newValue(Pair(true,""),"")
