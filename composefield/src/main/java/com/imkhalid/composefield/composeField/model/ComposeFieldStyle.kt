@@ -1,7 +1,13 @@
 package com.imkhalid.composefield.composeField.model
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.mapSaver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -13,8 +19,10 @@ data class ComposeFieldStyle(
     val textSizes:ComposeFieldTextStyle,
     val colors:ComposeFieldColors,
     val fieldStyle: ComposeFieldTheme.FieldStyle,
-    val fontFamily: FontFamily,
 ){
+    fun getFontFamily(): FontFamily{
+        return ComposeFontRegistry.resolve("customFont")
+    }
     @Composable fun getTextStyle(): TextStyle{
         return TextStyle.Default.copy(
             color = colors.textColor,
@@ -22,7 +30,7 @@ data class ComposeFieldStyle(
                 textSizes.textSize
             ).sp,
             fontWeight = textSizes.fontWeight,
-            fontFamily = fontFamily,
+            fontFamily = getFontFamily(),
         )
     }
 
@@ -33,7 +41,7 @@ data class ComposeFieldStyle(
                 textSizes.infoSize
             ).sp,
             fontWeight = textSizes.infoFontWeight,
-            fontFamily = fontFamily,
+            fontFamily = getFontFamily(),
         )
     }
 
@@ -44,7 +52,7 @@ data class ComposeFieldStyle(
                 textSizes.labelSize
             ).sp,
             fontWeight = textSizes.labelFontWeight,
-            fontFamily = fontFamily,
+            fontFamily = getFontFamily(),
         )
     }
 
@@ -55,7 +63,7 @@ data class ComposeFieldStyle(
                 textSizes.errorSize
             ).sp,
             fontWeight = textSizes.errorFontWeight,
-            fontFamily = fontFamily,
+            fontFamily = getFontFamily(),
         )
     }
 
@@ -66,20 +74,27 @@ data class ComposeFieldStyle(
                 textSizes.hintSize
             ).sp,
             fontWeight = textSizes.hintFontWeight,
-            fontFamily = fontFamily,
+            fontFamily = getFontFamily(),
         )
     }
 
+    fun toMap(): Map<String, Any> = mapOf(
+        "textSizes" to textSizes.toMap(),
+        "colors" to colors.toMap(),
+        "fieldStyle" to fieldStyle.name,
+    )
+
     companion object{
+
+
         fun defaultComposeFieldStyle():ComposeFieldStyle{
             return ComposeFieldStyle(
-                textSizes = getComposeFieldTextStyle(),
-                colors = getComposeFieldColors(),
+                textSizes = defaultComposeFieldTextStyle(),
+                colors = defaultComposeFieldColors(),
                 fieldStyle = ComposeFieldTheme.FieldStyle.STICK_LABEL,
-                fontFamily = FontFamily.Default,
             )
         }
-        fun getComposeFieldColors(): ComposeFieldColors {
+        fun defaultComposeFieldColors(): ComposeFieldColors {
             return ComposeFieldColors(
                 textColor = Color(0xff000000),
                 labelColor = Color(0xff000000),
@@ -95,7 +110,7 @@ data class ComposeFieldStyle(
             )
         }
 
-        fun getComposeFieldTextStyle(): ComposeFieldTextStyle {
+        fun defaultComposeFieldTextStyle(): ComposeFieldTextStyle {
             return ComposeFieldTextStyle(
                 textSize = 16,
                 labelSize = 16,
@@ -109,7 +124,16 @@ data class ComposeFieldStyle(
                 infoFontWeight = FontWeight.Normal,
             )
         }
+
+        fun fromMap(map: Map<String, Any>): ComposeFieldStyle {
+            return ComposeFieldStyle(
+                textSizes = ComposeFieldTextStyle.fromMap(map["textSizes"] as Map<String, Any>),
+                colors = ComposeFieldColors.fromMap(map["colors"] as Map<String, Int>),
+                fieldStyle = ComposeFieldTheme.FieldStyle.valueOf(map["fieldStyle"] as String),
+            )
+        }
     }
+
 
 }
 
@@ -124,7 +148,36 @@ data class ComposeFieldTextStyle(
     val hintFontWeight: FontWeight,
     val errorFontWeight: FontWeight,
     val infoFontWeight: FontWeight,
-)
+){
+    fun toMap(): Map<String, Any> = mapOf(
+        "textSize" to textSize,
+        "labelSize" to labelSize,
+        "hintSize" to hintSize,
+        "errorSize" to errorSize,
+        "infoSize" to infoSize,
+        "fontWeight" to fontWeight.weight,
+        "labelFontWeight" to labelFontWeight.weight,
+        "hintFontWeight" to hintFontWeight.weight,
+        "errorFontWeight" to errorFontWeight.weight,
+        "infoFontWeight" to infoFontWeight.weight
+    )
+
+    companion object {
+        fun fromMap(map: Map<String, Any>) = ComposeFieldTextStyle(
+            map["textSize"] as Int,
+            map["labelSize"] as Int,
+            map["hintSize"] as Int,
+            map["errorSize"] as Int,
+            map["infoSize"] as Int,
+            FontWeight(map["fontWeight"] as Int),
+            FontWeight(map["labelFontWeight"] as Int),
+            FontWeight(map["hintFontWeight"] as Int),
+            FontWeight(map["errorFontWeight"] as Int),
+            FontWeight(map["infoFontWeight"] as Int),
+        )
+    }
+
+}
 
 data class ComposeFieldColors(
     val textColor : Color,
@@ -138,4 +191,48 @@ data class ComposeFieldColors(
     val unfocusedBorderColor: Color,
     val errorBorderColor: Color,
     val containerColor: Color,
-)
+){
+    fun toMap(): Map<String, Int> = mapOf(
+        "textColor" to textColor.toArgb(),
+        "labelColor" to labelColor.toArgb(),
+        "hintColor" to hintColor.toArgb(),
+        "infoColor" to infoColor.toArgb(),
+        "errorColor" to errorColor.toArgb(),
+        "focusedLabelColor" to focusedLabelColor.toArgb(),
+        "unfocusedLabelColor" to unfocusedLabelColor.toArgb(),
+        "focusedBorderColor" to focusedBorderColor.toArgb(),
+        "unfocusedBorderColor" to unfocusedBorderColor.toArgb(),
+        "errorBorderColor" to errorBorderColor.toArgb(),
+        "containerColor" to containerColor.toArgb()
+    )
+
+    companion object {
+        fun fromMap(map: Map<String, Int>) = ComposeFieldColors(
+            Color(map["textColor"]!!),
+            Color(map["labelColor"]!!),
+            Color(map["hintColor"]!!),
+            Color(map["infoColor"]!!),
+            Color(map["errorColor"]!!),
+            Color(map["focusedLabelColor"]!!),
+            Color(map["unfocusedLabelColor"]!!),
+            Color(map["focusedBorderColor"]!!),
+            Color(map["unfocusedBorderColor"]!!),
+            Color(map["errorBorderColor"]!!),
+            Color(map["containerColor"]!!)
+        )
+    }
+
+}
+
+
+internal object ComposeFontRegistry {
+    private val fontMap = mutableMapOf<String, FontFamily>()
+
+    fun register(id: String, fontFamily: FontFamily) {
+        fontMap[id] = fontFamily
+    }
+
+    fun resolve(id: String): FontFamily = fontMap[id] ?: FontFamily.Default
+}
+
+

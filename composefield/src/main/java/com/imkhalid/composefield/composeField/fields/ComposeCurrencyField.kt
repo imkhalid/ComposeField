@@ -103,7 +103,7 @@ class ComposeCurrencyField : ComposeField() {
         )
 
         Column {
-            when (ComposeFieldTheme.fieldStyle) {
+            when (fieldStyle.fieldStyle) {
                 ComposeFieldTheme.FieldStyle.OUTLINE ->
                     OutlineField(
                         modifier = Modifier.fillMaxWidth(),

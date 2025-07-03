@@ -7,6 +7,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import com.imkhalid.composefield.composeField.Size
 import com.imkhalid.composefield.composeField.model.ComposeFieldStyle
+import com.imkhalid.composefield.composeField.model.ComposeFontRegistry
 
 object ComposeFieldTheme {
 
@@ -23,7 +24,6 @@ object ComposeFieldTheme {
     var textColor = Color.Black
     var unfocusedLabelColor = Color.Gray
     var focusedLabelColor = Color.Gray
-    var fieldStyle = FieldStyle.STICK_LABEL
     var datePickerHint = "Choose Date"
     var dropDownHint = "Choose an Option"
     var timePickerHint = "Choose Time"
@@ -31,7 +31,10 @@ object ComposeFieldTheme {
     var stickLabelFontSize = 20
     var stickFontSize = 16
     var fontWeight = FontWeight.Normal
-    var fontFamily: FontFamily = FontFamily.Default
+
+    fun setFontFamily(fontFamily: FontFamily){
+        ComposeFontRegistry.register("customFont",fontFamily)
+    }
 
     @OptIn(ExperimentalMaterial3Api::class)
     var toolTipColors: RichTooltipColors?=null

@@ -127,6 +127,7 @@ class ComposeCheckBoxField : ComposeField() {
         ) {
             if (state.field.defaultValues.size > 3) {
                 CheckboxField(
+                    fieldStyle =state.field.fieldStyle.fieldStyle,
                     onClick = toggleDropdown,
                     enabled = state.field.isEditable==ComposeFieldYesNo.YES
                 ) {
@@ -202,7 +203,10 @@ class ComposeCheckBoxField : ComposeField() {
                     }
                 }
             } else {
-                CheckBoxField3Options(enabled = state.field.isEditable==ComposeFieldYesNo.YES) {
+                CheckBoxField3Options(
+                    fieldStyle=state.field.fieldStyle.fieldStyle,
+                    enabled = state.field.isEditable==ComposeFieldYesNo.YES
+                ) {
                     val label = buildAnnotatedString {
                         withStyle(
                             style =
@@ -250,13 +254,14 @@ class ComposeCheckBoxField : ComposeField() {
 
     @Composable
     private fun CheckboxField(
+        fieldStyle: ComposeFieldTheme.FieldStyle,
         onClick: () -> Unit,
         enabled:Boolean=true,
         content: @Composable BoxScope.() -> Unit,
     ) {
         val focusRequester = remember { FocusRequester() }
         var isFocused by remember { mutableStateOf(false) }
-        when (ComposeFieldTheme.fieldStyle) {
+        when (fieldStyle) {
             ComposeFieldTheme.FieldStyle.OUTLINE ->
                 Box(
                     modifier =
@@ -432,8 +437,13 @@ fun RoundedCornerCheckbox(
 }
 
 @Composable
-private fun CheckBoxField3Options(modifier: Modifier = Modifier,enabled: Boolean=true, content: @Composable () -> Unit) {
-    when (ComposeFieldTheme.fieldStyle) {
+private fun CheckBoxField3Options(
+    modifier: Modifier = Modifier,
+    fieldStyle: ComposeFieldTheme.FieldStyle,
+    enabled: Boolean=true,
+    content: @Composable () -> Unit
+) {
+    when (fieldStyle) {
         ComposeFieldTheme.FieldStyle.OUTLINE ->
             Column(
                 modifier.fillMaxWidth(),

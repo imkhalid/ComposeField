@@ -114,8 +114,12 @@ class ComposeDropDownField : ComposeField() {
             }
 
         Column(modifier = modifier.bringIntoViewRequester(localRequester)) {
-            DropDownField(onClick = toggleDropdown, enabled = state.field.isEditable==ComposeFieldYesNo.YES) {
-                if (ComposeFieldTheme.fieldStyle== ComposeFieldTheme.FieldStyle.STICK_LABEL){
+            DropDownField(
+                fieldStyle = state.field.fieldStyle.fieldStyle,
+                onClick = toggleDropdown,
+                enabled = state.field.isEditable==ComposeFieldYesNo.YES
+            ) {
+                if (state.field.fieldStyle.fieldStyle== ComposeFieldTheme.FieldStyle.STICK_LABEL){
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -215,13 +219,14 @@ class ComposeDropDownField : ComposeField() {
 
     @Composable
     private fun DropDownField(
+        fieldStyle: ComposeFieldTheme.FieldStyle,
         onClick: () -> Unit={},
         enabled:Boolean=true,
         content: @Composable (BoxScope.() -> Unit)? = null
     ) {
         val focusRequester = remember { FocusRequester() }
         var isFocused by remember { mutableStateOf(false) }
-        when (ComposeFieldTheme.fieldStyle) {
+        when (fieldStyle) {
             ComposeFieldTheme.FieldStyle.OUTLINE ->
                 Box(
                     modifier =

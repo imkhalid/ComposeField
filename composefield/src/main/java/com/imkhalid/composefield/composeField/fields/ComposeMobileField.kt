@@ -142,7 +142,7 @@ class ComposeMobileField : ComposeField() {
             }
         } else null
 
-        when (ComposeFieldTheme.fieldStyle) {
+        when (state.field.fieldStyle.fieldStyle) {
             ComposeFieldTheme.FieldStyle.OUTLINE ->
                 OutlineField(
                     modifier = modifier,

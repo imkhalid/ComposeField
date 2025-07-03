@@ -111,11 +111,12 @@ class ComposeDatePickerField : ComposeField() {
         Column(modifier = modifier) {
             Box(modifier = Modifier.fillMaxWidth().bringIntoViewRequester(localRequester)) {
                 DatePickerField(
+                    fieldStyle = style.fieldStyle,
                     modifier = Modifier.fillMaxWidth(),
                     onClick = { showDialog.value = true },
                     enabled = state.field.isEditable == ComposeFieldYesNo.YES
                 ) {
-                    if (ComposeFieldTheme.fieldStyle== ComposeFieldTheme.FieldStyle.STICK_LABEL){
+                    if (style.fieldStyle== ComposeFieldTheme.FieldStyle.STICK_LABEL){
                         Row(
                             modifier = Modifier.fillMaxWidth().fillMaxHeight(),
                             verticalAlignment = Alignment.CenterVertically,
@@ -194,11 +195,12 @@ class ComposeDatePickerField : ComposeField() {
     @Composable
     private fun DatePickerField(
         modifier: Modifier,
+        fieldStyle: ComposeFieldTheme.FieldStyle,
         onClick: () -> Unit,
         enabled: Boolean = true,
         content: @Composable (BoxScope.() -> Unit)? = null
     ) {
-        when (ComposeFieldTheme.fieldStyle) {
+        when (fieldStyle) {
             ComposeFieldTheme.FieldStyle.OUTLINE ->
                 Box(
                     modifier =

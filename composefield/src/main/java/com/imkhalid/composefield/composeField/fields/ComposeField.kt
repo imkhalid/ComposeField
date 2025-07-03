@@ -144,7 +144,7 @@ class ComposeFieldBuilder {
     ) {
         CompositionLocalProvider(
             LocalTextStyle provides MaterialTheme.typography.bodyLarge.copy(
-                fontFamily = ComposeFieldTheme.fontFamily // Or your custom font
+                fontFamily = stateHolder.state.field.fieldStyle.getFontFamily() // Or your custom font
             )
         ) {
 

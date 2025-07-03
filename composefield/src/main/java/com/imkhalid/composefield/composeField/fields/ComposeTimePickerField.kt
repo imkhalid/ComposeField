@@ -150,6 +150,7 @@ class ComposeTimePickerField : ComposeField() {
             Box {
                 TimePickerField(
                     modifier = Modifier.fillMaxWidth(),
+                    fieldStyle = state.field.fieldStyle.fieldStyle,
                     onClick = { showDialog.value = true },
                     enabled = state.field.isEditable==ComposeFieldYesNo.YES
                 ) {
@@ -187,11 +188,12 @@ class ComposeTimePickerField : ComposeField() {
     @Composable
     private fun TimePickerField(
         modifier: Modifier,
+        fieldStyle: ComposeFieldTheme.FieldStyle,
         onClick: () -> Unit,
         enabled:Boolean = true,
         content: @Composable (BoxScope.() -> Unit)? = null
     ) {
-        when (ComposeFieldTheme.fieldStyle) {
+        when (fieldStyle) {
             ComposeFieldTheme.FieldStyle.OUTLINE ->
                 Box(
                     modifier =

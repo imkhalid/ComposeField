@@ -192,7 +192,7 @@ class ComposeFieldStateHolder(initialField: ComposeFieldState) {
                         it.state.field.pattern,
                         it.state.field.patternMessage,
                         it.state.field.hidden,
-                        it.state.field.fieldStyle
+                        it.state.field.fieldStyle.toMap()
                     )
                 },
                 restore = {
@@ -223,7 +223,7 @@ class ComposeFieldStateHolder(initialField: ComposeFieldState) {
                                     pattern = it[20] as String,
                                     patternMessage = it[21] as String,
                                     hidden = it[22] as ComposeFieldYesNo,
-                                    fieldStyle = it[23] as ComposeFieldStyle
+                                    fieldStyle = ComposeFieldStyle.fromMap(it[23] as Map<String, Any>)
                                 )
                         )
                     )

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -99,11 +100,11 @@ class ComposeTextField : ComposeField() {
                 LocalTextToolbar provides EmptyTextToolbar
             else LocalTextToolbar provides LocalTextToolbar.current
 
-        val colors = getColors(ComposeFieldTheme.fieldStyle)
+        val colors = getColors(state.field.fieldStyle.fieldStyle)
 
         Column(modifier = modifier.bringIntoViewRequester(localRequester)) {
             CompositionLocalProvider(toolbar) {
-                when (ComposeFieldTheme.fieldStyle) {
+                when (state.field.fieldStyle.fieldStyle) {
                     ComposeFieldTheme.FieldStyle.OUTLINE ->
                         OutlineField(
                             modifier = Modifier.fillMaxWidth(),
@@ -368,29 +369,17 @@ class ComposeTextField : ComposeField() {
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    // TextField content
-                    val boxModifier = if (state.field.type == ComposeFieldType.TEXT_AREA)
-                        Modifier.padding(top = responsiveVPaddings(10))
-                    else
-                        Modifier.weight(1f)
-                    val alignment = if (state.field.type == ComposeFieldType.TEXT_AREA)
-                        Alignment.TopStart
-                    else
-                        Alignment.CenterEnd
+                    //handling hint  base on password,required and optional checks
+                    val label  = getLabel(state.field)
+
                     Box(
-                        modifier = boxModifier,
-                        contentAlignment = alignment
+                        modifier = boxModifier(state.field),
+                        contentAlignment = boxAlignment(state.field)
                     ) {
                         if (state.text.isEmpty()) {
                             GetPlaceHolder(
                                 fieldStyle = fieldStyle,
-                                label = if (state.field.hint.isEmpty()){
-                                    if (state.field.required == ComposeFieldYesNo.YES)
-                                        "Required"
-                                    else
-                                        "Optional"
-                                }else
-                                    state.field.hint
+                                label = label
                             )
                         }
                         innerTextField()
@@ -407,6 +396,36 @@ class ComposeTextField : ComposeField() {
                 }
             }
         )
+    }
+
+    @Composable
+    private fun RowScope.boxModifier(field: ComposeFieldModule):Modifier  {
+        return if (field.type == ComposeFieldType.TEXT_AREA)
+            Modifier.padding(top = responsiveVPaddings(10))
+        else
+            Modifier.weight(1f)
+    }
+    @Composable
+    private fun RowScope.boxAlignment(field: ComposeFieldModule): Alignment  {
+        return  if (field.type == ComposeFieldType.TEXT_AREA)
+            Alignment.TopStart
+        else
+            Alignment.CenterEnd
+    }
+
+    private fun getLabel(field: ComposeFieldModule): String {
+        val hint = if (field.required == ComposeFieldYesNo.YES)
+            "Required"
+        else
+            "Optional"
+
+        return if (field.hint.isEmpty()){
+            hint
+        }else if (field.keyboardType !is ComposeKeyboardTypeAdv.PASSWORD && field.type == ComposeFieldType.TEXT_AREA)
+            field.hint
+        else
+            hint
+
     }
 
     private fun getMinLine(type: ComposeFieldType): Int {
@@ -714,7 +733,7 @@ fun getColors(type: ComposeFieldTheme.FieldStyle): TextFieldColors{
 
 @Composable
 fun GetPlaceHolder(modifier: Modifier = Modifier, label:String,fieldStyle: ComposeFieldStyle)  {
-    when(ComposeFieldTheme.fieldStyle){
+    when(fieldStyle.fieldStyle){
         ComposeFieldTheme.FieldStyle.OUTLINE -> null
         ComposeFieldTheme.FieldStyle.CONTAINER -> null
         ComposeFieldTheme.FieldStyle.NORMAL -> null
@@ -729,7 +748,7 @@ fun GetPlaceHolder(modifier: Modifier = Modifier, label:String,fieldStyle: Compo
 
 @Composable
 fun GetLabel(modifier: Modifier = Modifier, field: ComposeFieldModule) {
-    when(ComposeFieldTheme.fieldStyle){
+    when(field.fieldStyle.fieldStyle){
         ComposeFieldTheme.FieldStyle.OUTLINE ,
         ComposeFieldTheme.FieldStyle.CONTAINER -> {
             val label = buildAnnotatedString {

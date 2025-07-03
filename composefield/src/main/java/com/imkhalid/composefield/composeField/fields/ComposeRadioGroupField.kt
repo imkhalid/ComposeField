@@ -63,7 +63,10 @@ class ComposeRadioGroupField : ComposeField() {
         val twoOption =
             state.field.defaultValues.size == 2 &&
                 state.field.defaultValues.all { x -> x.text.length <= 30 }
-        RadioGroupField(modifier = modifier.bringIntoViewRequester(localRequester)) {
+        RadioGroupField(
+            modifier = modifier.bringIntoViewRequester(localRequester),
+            fieldStyle = state.field.fieldStyle.fieldStyle
+        ) {
             val label = buildAnnotatedString {
                 withStyle(
                     style =
@@ -115,8 +118,12 @@ class ComposeRadioGroupField : ComposeField() {
 }
 
 @Composable
-private fun RadioGroupField(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
-    when (ComposeFieldTheme.fieldStyle) {
+private fun RadioGroupField(
+    fieldStyle: ComposeFieldTheme.FieldStyle,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
+) {
+    when (fieldStyle) {
         ComposeFieldTheme.FieldStyle.OUTLINE ->
             Column(
                 modifier.fillMaxWidth(),
