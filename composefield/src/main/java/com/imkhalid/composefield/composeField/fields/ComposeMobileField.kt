@@ -438,7 +438,7 @@ class ComposeMobileField : ComposeField() {
                 var textFieldValue by remember {
                     mutableStateOf(
                         TextFieldValue(
-                            text = userInput,
+                            text = userInput.ifEmpty { prefix },
                             selection = TextRange(userInput.length)
                         )
                     )
@@ -450,6 +450,9 @@ class ComposeMobileField : ComposeField() {
                         .bringIntoViewRequester(localRequester),
                     value = textFieldValue,
                     onValueChange = { newVal ->
+                        if (textFieldValue.text==prefix && newVal.text.length <= prefix.length) {
+                            return@BasicTextField
+                        }
                         val curVal = newVal.text.removePrefix(prefix)
                         if (curVal.length <= phoneNumberUtil.maxLength) {
                             builtinValidations(curVal, phoneNumberUtil) { validated, newVal ->
