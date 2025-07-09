@@ -278,6 +278,7 @@ fun String.getPhoneNumber(): PhoneNumberUtil.PhoneNumber? {
         var  emoji = ""
         PhoneNumberUtil.getLibraryMasterCountriesEnglish()?.find { x->x.code==phoneUtil.getRegionCodeForNumber(number) }?.let {
             emoji = it.emoji
+            
         }
         PhoneNumberUtil.PhoneNumber(
             "+${number.countryCode}",
