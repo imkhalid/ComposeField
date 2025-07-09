@@ -26,6 +26,7 @@ class PhoneNumberUtil {
     data class PhoneNumber(
         val dialCode: String,
         val number: String,
+        val emoji: String
     ){
         fun getFullNumber(): String{
             return dialCode+number

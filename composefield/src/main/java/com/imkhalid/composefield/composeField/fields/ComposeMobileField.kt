@@ -136,7 +136,9 @@ class ComposeMobileField : ComposeField() {
                                     val name = cursor.getString(nameIndex)
                                     var phone = cursor.getString(phoneIndex)
 
-                                    val fullNumber = phone.getPhoneNumber()?.getFullNumber()?:""
+                                    val phoneN = phone.getPhoneNumber()
+                                    val fullNumber = phoneN?.getFullNumber()?:""
+                                    phoneNumberUtil.currentCountryFlag = phoneN?.emoji?:""
                                     selectedContactCallback?.invoke(
                                         name ?: "", fullNumber
                                     )
@@ -416,15 +418,14 @@ class ComposeMobileField : ComposeField() {
                                 })
                     }
                     if (phoneNumberUtil.shouldShowPicker) {
-                        Image(
-                            painter = painterResource(R.drawable.ic_down_arrow),
-                            contentDescription = "",
+                        Text(
+                            text = phoneNumberUtil.currentCountryFlag,
                             modifier = Modifier
-                                .size(responsiveSize(31))
-                                .clip(CircleShape)
+                                .align(Alignment.CenterVertically)
                                 .clickable {
                                     toggleDropdown()
-                                })
+                                }
+                        )
                     }
                 }
                 if (state.field.hint.isNotEmpty()) ShowToolTipField(

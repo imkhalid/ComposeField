@@ -2,6 +2,7 @@ package com.imkhalid.composefield.composeField.util
 
 import com.imkhalid.composefield.composeField.ComposeFieldState
 import com.imkhalid.composefield.composeField.ComposeFieldStateHolder
+import com.imkhalid.composefield.composeField.PhoneNumberUtil
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldType
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
 import com.imkhalid.composefield.composeField.model.FamilyData
@@ -267,17 +268,21 @@ fun List<ComposeFieldStateHolder>.getFieldByFieldId(id: String): ComposeFieldSta
     return null
 }
 
-fun String.getPhoneNumber(): com.imkhalid.composefield.composeField.PhoneNumberUtil.PhoneNumber? {
+fun String.getPhoneNumber(): PhoneNumberUtil.PhoneNumber? {
     return try {
         val phoneUtil = com.google.i18n.phonenumbers.PhoneNumberUtil.getInstance()
         val number = phoneUtil.parse(
             this,
             null
         )
-
-        com.imkhalid.composefield.composeField.PhoneNumberUtil.PhoneNumber(
+        var  emoji = ""
+        PhoneNumberUtil.getLibraryMasterCountriesEnglish()?.find { x->x.code==phoneUtil.getRegionCodeForNumber(number) }?.let {
+            emoji = it.emoji
+        }
+        PhoneNumberUtil.PhoneNumber(
             "+${number.countryCode}",
-            replace("+${number.countryCode}", "")
+            replace("+${number.countryCode}", "",),
+            emoji
         )
     } catch (e: Exception) {
         null
