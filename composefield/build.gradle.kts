@@ -113,6 +113,7 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended")
     api("androidx.compose.material3:material3:1.3.2")
 //    api(project(":library"))
+    implementation("com.googlecode.libphonenumber:libphonenumber:9.0.9")
 
     implementation("androidx.hilt:hilt-navigation-compose:$hiltWork")
 

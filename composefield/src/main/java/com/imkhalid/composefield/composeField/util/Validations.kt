@@ -266,3 +266,20 @@ fun List<ComposeFieldStateHolder>.getFieldByFieldId(id: String): ComposeFieldSta
     }
     return null
 }
+
+fun String.getPhoneNumber(): com.imkhalid.composefield.composeField.PhoneNumberUtil.PhoneNumber? {
+    return try {
+        val phoneUtil = com.google.i18n.phonenumbers.PhoneNumberUtil.getInstance()
+        val number = phoneUtil.parse(
+            this,
+            null
+        )
+
+        com.imkhalid.composefield.composeField.PhoneNumberUtil.PhoneNumber(
+            "+${number.countryCode}",
+            replace("+${number.countryCode}", "")
+        )
+    } catch (e: Exception) {
+        null
+    }
+}
