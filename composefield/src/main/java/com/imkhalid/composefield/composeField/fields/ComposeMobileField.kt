@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.ContactsContract
+import android.widget.Toast
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContract
@@ -134,14 +135,22 @@ class ComposeMobileField : ComposeField() {
                                         cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NORMALIZED_NUMBER)
 
                                     val name = cursor.getString(nameIndex)
-                                    var phone = cursor.getString(phoneIndex)
-
-                                    val phoneN = phone.getPhoneNumber()
-                                    val fullNumber = phoneN?.getFullNumber()?:""
-                                    phoneNumberUtil.currentCountryFlag = phoneN?.emoji?:""
-                                    selectedContactCallback?.invoke(
-                                        name ?: "", fullNumber
-                                    )
+                                    val phone = cursor.getString(phoneIndex)
+                                    if (phone!=null && (phone.length in 7..15 && (phone.contains("*") || phone.contains(
+                                            "#"
+                                        ))).not()
+                                    ) {
+                                        val phoneN = phone.getPhoneNumber()
+                                        val fullNumber = phoneN?.getFullNumber() ?: ""
+                                        phoneNumberUtil.currentCountryFlag = phoneN?.emoji ?: ""
+                                        selectedContactCallback?.invoke(
+                                            name ?: "", fullNumber
+                                        )
+                                    } else {
+                                        Toast.makeText(
+                                            context, "Invalid phone number", Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
                                 }
                             }
                     }
@@ -446,14 +455,13 @@ class ComposeMobileField : ComposeField() {
                             newValue.invoke((bool to "required field"),prefix)
                             return@BasicTextField
                         }
-                        if (newVal.text.length<=phoneNumberUtil.maxLength)
-                            builtinValidations(newVal.text, phoneNumberUtil) { validated, newVal ->
-                                val finalValue = newVal
-                                textFieldValue = textFieldValue.copy(
-                                    text = finalValue, selection = TextRange(finalValue.length)
-                                )
-                                newValue.invoke(validated, finalValue)
-                            }
+                        builtinValidations(newVal.text, phoneNumberUtil) { validated, newVal ->
+                            val finalValue = newVal
+                            textFieldValue = textFieldValue.copy(
+                                text = finalValue, selection = TextRange(finalValue.length)
+                            )
+                            newValue.invoke(validated, finalValue)
+                        }
                     },
                     enabled = state.field.isEditable.value,
                     keyboardOptions = KeyboardOptions(

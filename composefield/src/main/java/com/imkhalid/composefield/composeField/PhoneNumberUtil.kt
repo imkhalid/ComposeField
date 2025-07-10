@@ -83,7 +83,8 @@ class PhoneNumberUtil {
         try {
             val phoneUtil = PhoneNumberUtil.getInstance()
             val number = phoneUtil.parse(
-                input, null
+                input,
+                currentCountryCode
             )
             return phoneUtil.isValidNumber(
                 number
