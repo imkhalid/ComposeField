@@ -127,12 +127,14 @@ class ComposeDatePickerField : ComposeField() {
                                 style= style.getLabelTextStyle()
                             )
 
+                            val style =if (state.text.isEmpty())
+                                state.field.fieldStyle.getHintTextStyle()
+                            else
+                                state.field.fieldStyle.getTextStyle()
                             Text(
                                 modifier = Modifier.fillMaxWidth(),
                                 text = dropDownText,
-                                style = style.getTextStyle().copy(
-                                    textAlign = TextAlign.End,
-                                )
+                                style = style.copy(textAlign = TextAlign.End,),
                             )
                         }
                     }else {

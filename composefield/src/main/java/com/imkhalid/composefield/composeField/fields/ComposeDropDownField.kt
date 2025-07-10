@@ -135,7 +135,10 @@ class ComposeDropDownField : ComposeField() {
                             modifier = Modifier
                                 .fillMaxWidth(),
                             text = dropDownText,
-                            style = state.field.fieldStyle.getTextStyle(),
+                            style = if (state.text.isEmpty())
+                                state.field.fieldStyle.getHintTextStyle()
+                            else
+                                state.field.fieldStyle.getTextStyle(),
                             textAlign = TextAlign.End,
                         )
                         Box(
