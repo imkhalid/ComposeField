@@ -345,7 +345,7 @@ class ComposeTextField : ComposeField() {
             maxLines = getMaxLine(state.field.type),
             visualTransformation = getVisualTransformation(mask, state.field, passwordVisible),
             textStyle = fieldStyle.getTextStyle().copy(
-                color = if (state.field.keyboardType is ComposeKeyboardTypeAdv.PASSWORD){
+                color = if (state.field.keyboardType is ComposeKeyboardTypeAdv.PASSWORD && state.field.pattern.isNotEmpty()){
                     if (state.hasError.not() && state.text.isNotEmpty()){
                         Color(0xff08C055)
                     }else if (state.hasError){
