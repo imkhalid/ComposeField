@@ -19,6 +19,7 @@ data class ComposeFieldStyle(
     val textSizes:ComposeFieldTextStyle,
     val colors:ComposeFieldColors,
     val fieldStyle: ComposeFieldTheme.FieldStyle,
+    val tooltipPersisted: Boolean= false,
 ){
     fun getFontFamily(): FontFamily{
         return ComposeFontRegistry.resolve("customFont")
@@ -82,6 +83,7 @@ data class ComposeFieldStyle(
         "textSizes" to textSizes.toMap(),
         "colors" to colors.toMap(),
         "fieldStyle" to fieldStyle.name,
+        "toolTipPersisted" to tooltipPersisted.toString().lowercase()
     )
 
     companion object{
@@ -130,6 +132,7 @@ data class ComposeFieldStyle(
                 textSizes = ComposeFieldTextStyle.fromMap(map["textSizes"] as Map<String, Any>),
                 colors = ComposeFieldColors.fromMap(map["colors"] as Map<String, Int>),
                 fieldStyle = ComposeFieldTheme.FieldStyle.valueOf(map["fieldStyle"] as String),
+                tooltipPersisted = (map["toolTipPersisted"] as String).toBoolean()
             )
         }
     }

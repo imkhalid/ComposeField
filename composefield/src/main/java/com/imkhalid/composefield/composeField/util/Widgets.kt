@@ -61,7 +61,8 @@ fun ShowToolTipField(
         modifier = modifier,
         message = message,
         messageColor = color,
-        iconColor = color
+        iconColor = color,
+        isPersistent = state.field.fieldStyle.tooltipPersisted
     )
 
 }
@@ -72,9 +73,10 @@ fun ShowToolTip(
     modifier: Modifier = Modifier,
     message: String,
     messageColor: Color,
-    iconColor: Color
+    iconColor: Color,
+    isPersistent: Boolean = false
 ) {
-    val tooltipState = rememberTooltipState()
+    val tooltipState = rememberTooltipState(isPersistent = isPersistent)
     val coroutineScope = rememberCoroutineScope()
 
     TooltipBox(
