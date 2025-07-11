@@ -56,7 +56,7 @@ fun ShowToolTipField(
         Color(0xff1B7C44)
     else if (state.field.keyboardType is ComposeKeyboardTypeAdv.PASSWORD && state.hasError)
         Color(0xffD11B1B)
-    else Color(0xff9D9D9D)
+    else Color(0xff656565)
     ShowToolTip(
         modifier = modifier,
         message = message,
