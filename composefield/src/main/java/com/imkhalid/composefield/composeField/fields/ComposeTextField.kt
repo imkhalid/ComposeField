@@ -345,6 +345,17 @@ class ComposeTextField : ComposeField() {
             maxLines = getMaxLine(state.field.type),
             visualTransformation = getVisualTransformation(mask, state.field, passwordVisible),
             textStyle = fieldStyle.getTextStyle().copy(
+                color = if (state.field.keyboardType is ComposeKeyboardTypeAdv.PASSWORD){
+                    if (state.hasError.not() && state.text.isNotEmpty()){
+                        Color(0xff08C055)
+                    }else if (state.hasError){
+                        Color(0xffD11B1B)
+                    }else{
+                        fieldStyle.colors.textColor
+                    }
+                }else{
+                    fieldStyle.colors.textColor
+                },
                 textAlign = if (state.field.type == ComposeFieldType.TEXT_AREA)
                     TextAlign.Start
                 else
@@ -372,7 +383,7 @@ class ComposeTextField : ComposeField() {
                     }
 
                     TrailingIconBasic(
-                        state.field,
+                        state,
                         passwordVisible,
                         onClick = {
                             passwordVisible = passwordVisible.not()
