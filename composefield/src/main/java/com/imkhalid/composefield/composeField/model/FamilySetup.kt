@@ -159,7 +159,7 @@ data class FamilySetup(
                                 "mobile_no",
                                 "phone_no" -> ComposeKeyboardTypeAdv.MOBILE_NO()
                                 "dob"-> ComposeKeyboardTypeAdv.DATE(ageCalculation = true, helperText = "DOB should be same as Nation ID Card")
-                                else -> ComposeKeyboardTypeAdv.TEXT
+                                else -> ComposeKeyboardTypeAdv.TEXT()
                             },
                         isEditable =
                             if (data != null && it.familyDetailField.equals("relation"))

@@ -43,6 +43,7 @@ import androidx.compose.ui.platform.TextToolbarStatus
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -314,11 +315,10 @@ class ComposeTextField : ComposeField() {
                     )
                 }
             }
-            if (state.field.keyboardType !is ComposeKeyboardTypeAdv.PASSWORD || state.field.hint.isEmpty())
-                ErrorView(
-                    modifier =  Modifier.align(Alignment.BottomEnd),
-                    state = state
-                )
+            ErrorView(
+                modifier =  Modifier.align(Alignment.BottomEnd),
+                state = state
+            )
         }
 
     }
@@ -459,7 +459,19 @@ class ComposeTextField : ComposeField() {
                 is ComposeKeyboardTypeAdv.NONE -> KeyboardType.Text
                 is ComposeKeyboardTypeAdv.PASSWORD -> KeyboardType.Password
             }
-        return KeyboardOptions(keyboardType = type, autoCorrect = false, imeAction = ImeAction.Next)
+        val capitalization = when(fieldState.keyboardType){
+            is ComposeKeyboardTypeAdv.TEXT ->{
+                fieldState.keyboardType.capitalization.getKeyboardCapitalization()
+            }else -> {
+                KeyboardCapitalization.Unspecified
+            }
+        }
+        return KeyboardOptions(
+            keyboardType = type,
+            autoCorrect = false,
+            imeAction = ImeAction.Next,
+            capitalization = capitalization
+        )
     }
 
     private fun getVisualTransformation(
