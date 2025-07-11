@@ -373,7 +373,7 @@ class ComposeDropDownField : ComposeField() {
                             label = "Search",
                             id = "",
                             type = ComposeFieldType.TEXT_BOX,
-                            keyboardType = ComposeKeyboardTypeAdv.TEXT,
+                            keyboardType = ComposeKeyboardTypeAdv.TEXT(),
                             value = "",
                         ),
                         onValueChange = {_,value->

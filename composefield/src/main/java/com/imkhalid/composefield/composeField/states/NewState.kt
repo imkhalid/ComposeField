@@ -40,7 +40,7 @@ fun rememberFieldState(
     label: String,
     id: String = "",
     type: ComposeFieldType = ComposeFieldType.TEXT_BOX,
-    keyboardType: ComposeKeyboardTypeAdv = ComposeKeyboardTypeAdv.TEXT,
+    keyboardType: ComposeKeyboardTypeAdv = ComposeKeyboardTypeAdv.TEXT(),
     value: String = "",
     defaultValues: List<DefaultValues> = emptyList()
 ): ComposeFieldStateHolder {

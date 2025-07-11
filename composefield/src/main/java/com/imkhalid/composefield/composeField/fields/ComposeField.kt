@@ -63,7 +63,7 @@ abstract class ComposeField {
                 tint = Color(0xff9D9D9D),
                 contentDescription = "Hide/Show",
                 modifier = Modifier
-                    .padding(start = 5.dp)
+                    .padding(start = responsiveSize(14))
                     .size(responsiveSize(20))
                     .clickable { onClick?.invoke() }
             )

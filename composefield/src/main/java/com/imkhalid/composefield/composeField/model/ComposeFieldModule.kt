@@ -13,7 +13,7 @@ data class ComposeFieldModule(
     val id: String = "",
     val name: String = "",
     val type: ComposeFieldType = ComposeFieldType.TEXT_BOX,
-    val keyboardType: ComposeKeyboardTypeAdv = ComposeKeyboardTypeAdv.TEXT,
+    val keyboardType: ComposeKeyboardTypeAdv = ComposeKeyboardTypeAdv.TEXT(),
     val value: String = "",
     val label: String = "",
     val hint: String = "",
@@ -236,7 +236,7 @@ fun String.keyboardType(
                         ?: if (isDob) "DOB should be same as National ID Card." else ""
                 )
             } else
-                ComposeKeyboardTypeAdv.TEXT
+                ComposeKeyboardTypeAdv.TEXT()
         }
         "cnic" -> ComposeKeyboardTypeAdv.CNIC
         "email" -> ComposeKeyboardTypeAdv.EMAIL

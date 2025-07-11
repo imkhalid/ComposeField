@@ -87,13 +87,17 @@ sealed class ComposeKeyboardTypeAdv : Parcelable {
         }
     }
 
-    object TEXT : ComposeKeyboardTypeAdv() {
-        override fun writeToParcel(parcel: Parcel, flags: Int) {}
+    data class TEXT(val capitalization: ComposeKeyboardCapitalOption = ComposeKeyboardCapitalOption.UnSpecified) : ComposeKeyboardTypeAdv() {
+
+        constructor(parcel: Parcel):this(capitalization = ComposeKeyboardCapitalOption.getOption(parcel.readInt()))
+        override fun writeToParcel(parcel: Parcel, flags: Int) {
+            parcel.writeInt(capitalization.value)
+        }
         override fun describeContents() = 0
 
         @JvmField
         val CREATOR: Parcelable.Creator<TEXT> = object : Parcelable.Creator<TEXT> {
-            override fun createFromParcel(parcel: Parcel) = TEXT
+            override fun createFromParcel(parcel: Parcel) = TEXT(parcel)
             override fun newArray(size: Int): Array<TEXT?> = arrayOfNulls(size)
         }
     }

@@ -28,8 +28,6 @@ object ComposeFieldTheme {
     var dropDownHint = "Choose an Option"
     var timePickerHint = "Choose Time"
     var containerColor = Color.LightGray
-    var stickLabelFontSize = 20
-    var stickFontSize = 16
     var fontWeight = FontWeight.Normal
 
     fun setFontFamily(fontFamily: FontFamily){

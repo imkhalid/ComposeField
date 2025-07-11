@@ -346,7 +346,7 @@ class ComposeCheckBoxField : ComposeField() {
                             label = "Search",
                             id = "",
                             type = ComposeFieldType.TEXT_BOX,
-                            keyboardType = ComposeKeyboardTypeAdv.TEXT,
+                            keyboardType = ComposeKeyboardTypeAdv.TEXT(),
                             value = "",
                         ),
                         onValueChange = {_,value->
@@ -485,7 +485,7 @@ fun PreviewCheckBOx(){
                 field = ComposeFieldModule(
                     label ="Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,Khalid Saeed,",
                     type = ComposeFieldType.CHECK_BOX,
-                    keyboardType = ComposeKeyboardTypeAdv.TEXT,
+                    keyboardType = ComposeKeyboardTypeAdv.TEXT(),
                     isEditable = ComposeFieldYesNo.YES,
                     required = ComposeFieldYesNo.YES
                 )
