@@ -50,11 +50,11 @@ abstract class ComposeField {
 
     @Composable
     fun TrailingIconBasic(
-        field: ComposeFieldModule,
+        field: ComposeFieldState,
         passwordVisible: Boolean,
         onClick: (() -> Unit)? = null
     ) {
-        if (field.keyboardType is ComposeKeyboardTypeAdv.PASSWORD) {
+        if (field.field.keyboardType is ComposeKeyboardTypeAdv.PASSWORD && field.text.isNotEmpty()) {
             Icon(
                 imageVector = if (passwordVisible)
                     Icons.Outlined.Visibility

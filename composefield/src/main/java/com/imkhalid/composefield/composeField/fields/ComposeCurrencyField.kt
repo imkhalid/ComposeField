@@ -443,7 +443,7 @@ class ComposeCurrencyField : ComposeField() {
                             }
 
                             TrailingIconBasic(
-                                state.field,
+                                state,
                                 passwordVisible,
                                 onClick = {
                                     passwordVisible = passwordVisible.not()
