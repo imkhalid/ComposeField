@@ -14,7 +14,9 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.relocation.bringIntoViewRequester
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Clear
@@ -39,6 +41,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -98,9 +101,12 @@ class ComposeDatePickerField : ComposeField() {
                 }
             }
         }
-
+        val hint = if (state.field.required== ComposeFieldYesNo.YES)
+            "Required"
+        else
+            "Optional"
         val dropDownText =
-            if (state.text.isEmpty()) ComposeFieldTheme.datePickerHint
+            if (state.text.isEmpty()) hint
             else {
                 changeDateFormat(date = state.text)
             }
@@ -120,11 +126,18 @@ class ComposeDatePickerField : ComposeField() {
                         Row(
                             modifier = Modifier.fillMaxWidth().fillMaxHeight(),
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(responsiveSize(5))
+                            horizontalArrangement = Arrangement.spacedBy(responsiveSize(10))
                         ) {
                             Text(
                                 text = state.field.label,
                                 style= style.getLabelTextStyle()
+                            )
+                            Image(
+                                painter = painterResource(R.drawable.ic_cf_date_picker),
+                                contentDescription = "",
+                                modifier = Modifier
+                                    .size(responsiveSize(31))
+                                    .clip(CircleShape)
                             )
 
                             val style =if (state.text.isEmpty())
