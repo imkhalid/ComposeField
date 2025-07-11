@@ -8,8 +8,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -24,8 +26,10 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuItemColors
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -56,6 +60,7 @@ import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldType
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardTypeAdv
 import com.imkhalid.composefield.composeField.model.ComposeFieldModule
+import com.imkhalid.composefield.composeField.model.ComposeFieldStyle
 import com.imkhalid.composefield.composeField.responsiveSize
 import com.imkhalid.composefield.composeField.states.rememberFieldState
 import com.imkhalid.composefield.composeField.responsiveTextSize
@@ -146,10 +151,11 @@ class ComposeDropDownField : ComposeField() {
                         ){
                             DropdownOptions(
                                 modifier=  Modifier.align(Alignment.CenterEnd),
+                                selectedText = state.text,
                                 expanded = expanded,
                                 options = options,
                                 values = values,
-                                style = state.field.fieldStyle.getLabelTextStyle(),
+                                style = state.field.fieldStyle.getDropDownTextStyle(),
                                 onOptionSelected = { pair, s ->
                                     focusCallback?.invoke(true, state.field.name)
                                     newValue.invoke(pair, s)
@@ -298,6 +304,7 @@ class ComposeDropDownField : ComposeField() {
     @Composable
     fun DropdownOptions(
         modifier: Modifier = Modifier,
+        selectedText: String = "",
         style: TextStyle,
         expanded: Boolean,
         options: List<String>,
@@ -305,32 +312,10 @@ class ComposeDropDownField : ComposeField() {
         onOptionSelected: (Pair<Boolean, String>, String) -> Unit,
         onDismiss: () -> Unit
     ) {
-        DropdownMenu(
-            modifier = Modifier.then(modifier).background(ComposeFieldTheme.containerColor),
-            expanded = expanded && options.size <= 6,
-            onDismissRequest = onDismiss,
-        ) {
-            options.take(6).forEach { option ->
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            text = option,
-                            style=style
-                        )
-                    },
-                    onClick = {
-                        options
-                            .indexOf(option)
-                            .takeIf { it != -1 }
-                            ?.let { onOptionSelected(Pair(true, ""), values[it]) }
-                        onDismiss.invoke()
-                    }
-                )
-            }
-        }
         if (expanded && options.size > 6) {
             DropdownDialog(
                 style = style,
+                selectedText=selectedText,
                 options = options,
                 values = values,
                 onDismiss = onDismiss,
@@ -339,12 +324,78 @@ class ComposeDropDownField : ComposeField() {
                     onDismiss.invoke()
                 }
             )
+        }else{
+            DropdownMenu(
+                modifier = Modifier.then(modifier),
+                expanded = expanded && options.size <= 6,
+                containerColor = Color(0xffFBFBFB),
+                shape = RoundedCornerShape(10.dp),
+                border = BorderStroke(1.dp, color = Color(0x33A1A1A1)),
+                onDismissRequest = onDismiss,
+            ) {
+                options.take(6).forEachIndexed { index,option ->
+
+                    DropdownMenuItem(
+                        contentPadding = PaddingValues(0.dp),
+                        modifier = Modifier.height(responsiveSize(40)),
+                        text = {
+                            val modifier = if (values[index]==selectedText)
+                                Modifier
+                                    .fillMaxSize()
+                                    .padding(horizontal = responsiveSize(5), vertical = 5.dp)
+                                    .background(
+                                        color = Color(0xffFDF0F5),
+                                        shape = RoundedCornerShape(responsiveSize(7))
+                                    )
+                                    .padding(horizontal = 7.dp, vertical = 5.dp)
+                            else
+                                Modifier
+                                    .fillMaxSize()
+                                    .padding(horizontal = responsiveSize(12))
+                            Column {
+                                Box(modifier= modifier){
+                                    Text(
+                                        text = option,
+                                        modifier = Modifier.align(Alignment.CenterStart),
+                                        style=style.copy(
+                                            fontSize = responsiveTextSize(12).sp,
+                                            fontWeight = if (values[index]==selectedText)
+                                                FontWeight.Medium
+                                            else
+                                                FontWeight.Normal,
+                                            color = if (values[index]==selectedText)
+                                                Color(0xffC4285D)
+                                            else
+                                                Color(0xff919191),
+                                        )
+                                    )
+                                }
+                                if (option!=options.last())
+                                    HorizontalDivider(
+                                        modifier= Modifier.padding(horizontal = 5.dp),
+                                        thickness = 0.4.dp,
+                                        color = Color(0xffE8E8E8),
+                                    )
+                            }
+
+                        },
+                        onClick = {
+                            options
+                                .indexOf(option)
+                                .takeIf { it != -1 }
+                                ?.let { onOptionSelected(Pair(true, ""), values[it]) }
+                            onDismiss.invoke()
+                        }
+                    )
+                }
+            }
         }
     }
 
     @Composable
     private fun DropdownDialog(
         style: TextStyle,
+        selectedText: String = "",
         options: List<String>,
         values: List<String>,
         onDismiss:()->Unit,
@@ -375,7 +426,13 @@ class ComposeDropDownField : ComposeField() {
                             type = ComposeFieldType.TEXT_BOX,
                             keyboardType = ComposeKeyboardTypeAdv.TEXT(),
                             value = "",
-                        ),
+                        ).apply {
+                            this.updatedField(state.field.copy(
+                                fieldStyle =state.field.fieldStyle.copy(
+                                    fieldStyle = ComposeFieldTheme.FieldStyle.CONTAINER
+                                )
+                            ))
+                        },
                         onValueChange = {_,value->
                             searchText = value
                         }
@@ -390,9 +447,19 @@ class ComposeDropDownField : ComposeField() {
                                 }
                             ) {
                                 Text(
-                                    option,
-                                    style = style
+                                    text = option,
+                                    style=style.copy(
+                                        fontWeight = if (values[index]==selectedText)
+                                            FontWeight.Medium
+                                        else
+                                            FontWeight.Normal,
+                                        color = if (values[index]==selectedText)
+                                            Color(0xffC4285D)
+                                        else
+                                            Color(0xff919191),
+                                    )
                                 )
+
                             }
                         }
                     }

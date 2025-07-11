@@ -1,11 +1,6 @@
 package com.imkhalid.composefield.composeField.model
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.Saver
-import androidx.compose.runtime.saveable.mapSaver
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.TextStyle
@@ -53,6 +48,16 @@ data class ComposeFieldStyle(
                 textSizes.labelSize
             ).sp,
             fontWeight = textSizes.labelFontWeight,
+            fontFamily = getFontFamily(),
+        )
+    }
+
+    @Composable fun getDropDownTextStyle(): TextStyle{
+        return TextStyle.Default.copy(
+            fontSize = responsiveTextSize(
+                textSizes.labelSize
+            ).sp,
+            fontWeight = FontWeight.Normal,
             fontFamily = getFontFamily(),
         )
     }
