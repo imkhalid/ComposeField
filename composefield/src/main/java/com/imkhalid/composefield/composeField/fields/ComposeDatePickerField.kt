@@ -115,7 +115,9 @@ class ComposeDatePickerField : ComposeField() {
             newValue(Pair(true,""),it)
         }
         Column(modifier = modifier) {
-            Box(modifier = Modifier.fillMaxWidth().bringIntoViewRequester(localRequester)) {
+            Box(modifier = Modifier
+                .fillMaxWidth()
+                .bringIntoViewRequester(localRequester)) {
                 DatePickerField(
                     fieldStyle = style.fieldStyle,
                     modifier = Modifier.fillMaxWidth(),
@@ -124,7 +126,9 @@ class ComposeDatePickerField : ComposeField() {
                 ) {
                     if (style.fieldStyle== ComposeFieldTheme.FieldStyle.STICK_LABEL){
                         Row(
-                            modifier = Modifier.fillMaxWidth().fillMaxHeight(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .fillMaxHeight(),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(responsiveSize(10))
                         ) {
@@ -186,8 +190,8 @@ class ComposeDatePickerField : ComposeField() {
     fun BoxScope.EndIcons(state: ComposeFieldState,onClearCallback:()->Unit) {
         Row(
             modifier =  Modifier
-            .align(Alignment.CenterEnd)
-            .padding(horizontal = 10.dp)
+                .align(Alignment.CenterEnd)
+                .padding(horizontal = 10.dp)
         ) {
             if (
                 state.field.keyboardType is ComposeKeyboardTypeAdv.DATE &&
@@ -196,7 +200,8 @@ class ComposeDatePickerField : ComposeField() {
                 Image(
                     imageVector =  Icons.Rounded.Clear,
                     contentDescription = "",
-                    modifier =Modifier.padding(horizontal = responsiveHPaddings(5))
+                    modifier =Modifier
+                        .padding(horizontal = responsiveHPaddings(5))
                         .clickable { onClearCallback.invoke() }
                 )
             }
@@ -258,7 +263,8 @@ class ComposeDatePickerField : ComposeField() {
                 }
             ComposeFieldTheme.FieldStyle.STICK_LABEL->
                 Box(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
                         .padding(horizontal = responsiveSize(8))
                         .height(OutlinedTextFieldDefaults.MinHeight)
                         .clickable {
@@ -308,22 +314,30 @@ class ComposeDatePickerField : ComposeField() {
                 DatePickerDefaults.YearRange.last
             }
         val calendar = Calendar.getInstance()
+
+        val initialDate = if (state.text.isNotEmpty()) {
+            val selected = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
+                .apply {
+                    timeZone = TimeZone.getTimeZone("UTC")
+                }
+                .parse(state.text)?.time
+            if ((selected?:0L)>(maxMil?:0))
+                maxMil
+            else if ((selected?:0L)<(minMil?:0))
+                minMil
+            else
+                selected
+        } else if (maxMil != null && maxMil < calendar.timeInMillis)
+            maxMil
+        else if (minMil != null && minMil >= calendar.timeInMillis)
+            minMil
+        else
+            calendar.timeInMillis
+
         val datePickerState =
             DatePickerState(
                 locale = CalendarLocale.ENGLISH,
-                initialSelectedDateMillis =
-                if (state.text.isNotEmpty()) {
-                    SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
-                        .apply {
-                            timeZone = TimeZone.getTimeZone("UTC")
-                        }
-                        .parse(state.text)?.time
-                } else if (maxMil != null && maxMil < calendar.timeInMillis)
-                    maxMil
-                else if (minMil != null && minMil >= calendar.timeInMillis)
-                    minMil
-                else
-                    calendar.timeInMillis,
+                initialSelectedDateMillis =initialDate,
                 yearRange = rangeMin..rangeMax,
                 selectableDates =
                 object : SelectableDates {
