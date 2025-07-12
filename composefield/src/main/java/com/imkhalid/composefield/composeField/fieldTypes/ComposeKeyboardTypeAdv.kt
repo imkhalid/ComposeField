@@ -76,13 +76,16 @@ sealed class ComposeKeyboardTypeAdv : Parcelable {
         }
     }
 
-    object EMAIL : ComposeKeyboardTypeAdv() {
-        override fun writeToParcel(parcel: Parcel, flags: Int) {}
+    data class EMAIL(val isSensitive:Int =0) : ComposeKeyboardTypeAdv() {
+        constructor(parcel: Parcel):this(isSensitive = parcel.readInt())
+        override fun writeToParcel(parcel: Parcel, flags: Int) {
+            parcel.writeInt(isSensitive)
+        }
         override fun describeContents() = 0
 
         @JvmField
         val CREATOR: Parcelable.Creator<EMAIL> = object : Parcelable.Creator<EMAIL> {
-            override fun createFromParcel(parcel: Parcel) = EMAIL
+            override fun createFromParcel(parcel: Parcel) = EMAIL(parcel.readInt())
             override fun newArray(size: Int): Array<EMAIL?> = arrayOfNulls(size)
         }
     }

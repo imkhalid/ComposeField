@@ -88,7 +88,7 @@ class ComposeTextField : ComposeField() {
         modifier: Modifier = Modifier,
     ) {
         val toolbar =
-            if (state.field.keyboardType is ComposeKeyboardTypeAdv.SENSITIVE)
+            if (isSensitive(state.field.keyboardType))
                 LocalTextToolbar provides EmptyTextToolbar
             else LocalTextToolbar provides LocalTextToolbar.current
 
@@ -478,10 +478,10 @@ class ComposeTextField : ComposeField() {
             }
         }
         return KeyboardOptions(
+            capitalization = capitalization,
+            autoCorrectEnabled = false,
             keyboardType = type,
-            autoCorrect = false,
-            imeAction = ImeAction.Next,
-            capitalization = capitalization
+            imeAction = ImeAction.Next
         )
     }
 
@@ -618,17 +618,30 @@ class ComposeTextField : ComposeField() {
         state: ComposeFieldState,
         onValidated: (Pair<Boolean, String>, String) -> Unit
     ) {
-        if (mask != Patterns.NONE && mask.value.isNotEmpty()) {
-            if (currentText.length <= mask.length) {
+        if (isSensitive(state.field.keyboardType) &&
+            isPastedText(state.text, currentText).not()
+        ) {
+            if (mask != Patterns.NONE && mask.value.isNotEmpty()) {
+                if (currentText.length <= mask.length) {
+                    builtinValidations(currentText, state) { validated, newVal ->
+                        onValidated.invoke(validated, newVal)
+                    }
+                }
+            } else {
                 builtinValidations(currentText, state) { validated, newVal ->
                     onValidated.invoke(validated, newVal)
                 }
             }
-        } else {
-            builtinValidations(currentText, state) { validated, newVal ->
-                onValidated.invoke(validated, newVal)
-            }
         }
+    }
+
+    private fun isSensitive(keyboard: ComposeKeyboardTypeAdv): Boolean{
+        return keyboard is ComposeKeyboardTypeAdv.SENSITIVE || keyboard is ComposeKeyboardTypeAdv.PASSWORD || (keyboard is ComposeKeyboardTypeAdv.EMAIL && keyboard.isSensitive==1)
+    }
+
+    private fun isPastedText(oldText: String, newText: String): Boolean {
+        // Detect if this was likely a paste operation
+        return newText.length - oldText.length > 1
     }
 }
 

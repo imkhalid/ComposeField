@@ -32,7 +32,7 @@ enum class ComposeKeyboardType {
             CNIC -> ComposeKeyboardTypeAdv.CNIC
             ID_NO -> ComposeKeyboardTypeAdv.ID_NO
             MOBILE_NO -> ComposeKeyboardTypeAdv.MOBILE_NO()
-            EMAIL -> ComposeKeyboardTypeAdv.EMAIL
+            EMAIL -> ComposeKeyboardTypeAdv.EMAIL()
             TEXT -> ComposeKeyboardTypeAdv.TEXT()
             NUMBER -> ComposeKeyboardTypeAdv.NUMBER
             CURRENCY -> ComposeKeyboardTypeAdv.CURRENCY

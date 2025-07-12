@@ -155,7 +155,7 @@ data class FamilySetup(
                         sortNumber = orderMap.getOrDefault(it.familyDetailField,1),
                         keyboardType =
                             when (it.familyDetailField) {
-                                "email" -> ComposeKeyboardTypeAdv.EMAIL
+                                "email" -> ComposeKeyboardTypeAdv.EMAIL()
                                 "mobile_no",
                                 "phone_no" -> ComposeKeyboardTypeAdv.MOBILE_NO()
                                 "dob"-> ComposeKeyboardTypeAdv.DATE(ageCalculation = true, helperText = "DOB should be same as Nation ID Card")

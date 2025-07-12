@@ -239,7 +239,7 @@ fun String.keyboardType(
                 ComposeKeyboardTypeAdv.TEXT()
         }
         "cnic" -> ComposeKeyboardTypeAdv.CNIC
-        "email" -> ComposeKeyboardTypeAdv.EMAIL
+        "email" -> ComposeKeyboardTypeAdv.EMAIL()
         "mobile",
         "mobile_number" -> ComposeKeyboardTypeAdv.MOBILE_NO()
         "number" -> ComposeKeyboardTypeAdv.NUMBER
