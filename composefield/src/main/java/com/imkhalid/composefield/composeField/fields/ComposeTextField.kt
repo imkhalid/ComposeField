@@ -342,6 +342,7 @@ class ComposeTextField : ComposeField() {
             enabled = state.field.isEditable.value,
             keyboardOptions = getKeyboardOptions(state.field),
             minLines = getMinLine(state.field.type),
+
             maxLines = getMaxLine(state.field.type),
             visualTransformation = getVisualTransformation(mask, state.field, passwordVisible),
             textStyle = fieldStyle.getTextStyle().copy(
