@@ -452,7 +452,7 @@ class ComposeMobileField : ComposeField() {
                     onValueChange = { newVal ->
                         if (textFieldValue.text == prefix && newVal.text.length <= prefix.length) {
                             val bool = state.field.required != ComposeFieldYesNo.YES
-                            newValue.invoke((bool to "required field"),prefix)
+                            newValue.invoke((bool to "Required Field"),prefix)
                             return@BasicTextField
                         }
                         builtinValidations(newVal.text, phoneNumberUtil) { validated, newVal ->
