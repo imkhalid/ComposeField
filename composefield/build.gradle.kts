@@ -37,6 +37,13 @@ android {
         jvmToolchain(21)
     }
 
+    java {
+        toolchain {
+            languageVersion.set(JavaLanguageVersion.of(21))
+        }
+    }
+
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
@@ -104,9 +111,9 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
 
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.9.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.9.1")
     implementation("androidx.activity:activity-compose:1.10.1")
-    api(platform("androidx.compose:compose-bom:2025.05.01"))
+    api(platform("androidx.compose:compose-bom:2025.06.01"))
     api("androidx.compose.ui:ui")
     api("androidx.compose.ui:ui-graphics")
     api("androidx.compose.ui:ui-tooling-preview")
@@ -114,9 +121,7 @@ dependencies {
     api("androidx.compose.material3:material3:1.3.2")
 //    api(project(":library"))
     implementation("com.googlecode.libphonenumber:libphonenumber:9.0.9")
-
     implementation("androidx.hilt:hilt-navigation-compose:$hiltWork")
-
     implementation("org.jetbrains.kotlin:kotlin-stdlib:2.1.20")
-    debugImplementation("androidx.compose.ui:ui-tooling:1.8.2")
+    debugImplementation("androidx.compose.ui:ui-tooling:1.8.3")
 }
