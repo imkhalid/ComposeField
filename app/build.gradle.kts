@@ -71,7 +71,6 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
-
     implementation("com.google.dagger:hilt-android:$dagger2") //Hilt
     implementation ("androidx.hilt:hilt-work:$hiltWork")
     implementation ("androidx.hilt:hilt-common:$hiltWork")
