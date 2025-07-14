@@ -619,9 +619,8 @@ class ComposeTextField : ComposeField() {
         state: ComposeFieldState,
         onValidated: (Pair<Boolean, String>, String) -> Unit
     ) {
-        if (isSensitive(state.field.keyboardType) &&
-            isPastedText(state.text, currentText).not()
-        ) {
+        val isSensitive = isSensitive(state.field.keyboardType)
+        if (( isSensitive&& isPastedText(state.text, currentText).not()) || isSensitive.not()) {
             if (mask != Patterns.NONE && mask.value.isNotEmpty()) {
                 if (currentText.length <= mask.length) {
                     builtinValidations(currentText, state) { validated, newVal ->
