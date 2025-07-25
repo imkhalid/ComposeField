@@ -520,7 +520,7 @@ class ComposeTextField : ComposeField() {
                     message = "CNIC must follow xxxxx-xxxxxxx-x pattern"
                 } else if (!Pattern.matches(pattern[1], valueToBeUsed)) {
                     bool = false
-                    message = "Provide Valid CNIC"
+                    message = "Provide valid CNIC"
                 } else {
                     message = ""
                 }
@@ -572,7 +572,11 @@ class ComposeTextField : ComposeField() {
                 }
             }
         }
-        newValue.invoke(Pair(bool, message), curVal)
+        val finalBoolCheck = if(valueToBeUsed.isEmpty() && state.field.required== ComposeFieldYesNo.NO)
+            true
+        else
+            bool
+        newValue.invoke(Pair(finalBoolCheck, message), curVal)
     }
 
     private fun getFieldMask(module: ComposeFieldModule): Patterns {
@@ -621,17 +625,17 @@ class ComposeTextField : ComposeField() {
     ) {
         val isSensitive = isSensitive(state.field.keyboardType)
 //        if (( isSensitive&& isPastedText(state.text, currentText).not()) || isSensitive.not()) {
-            if (mask != Patterns.NONE && mask.value.isNotEmpty()) {
-                if (currentText.length <= mask.length) {
-                    builtinValidations(currentText, state) { validated, newVal ->
-                        onValidated.invoke(validated, newVal)
-                    }
-                }
-            } else {
+        if (mask != Patterns.NONE && mask.value.isNotEmpty()) {
+            if (currentText.length <= mask.length) {
                 builtinValidations(currentText, state) { validated, newVal ->
                     onValidated.invoke(validated, newVal)
                 }
             }
+        } else {
+            builtinValidations(currentText, state) { validated, newVal ->
+                onValidated.invoke(validated, newVal)
+            }
+        }
 //        }
     }
 
