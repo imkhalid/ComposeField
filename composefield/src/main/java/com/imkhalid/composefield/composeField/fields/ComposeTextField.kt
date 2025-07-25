@@ -538,7 +538,7 @@ class ComposeTextField : ComposeField() {
                 val pattern = Patterns.EMAIL.pattern.toList()
                 if (!Pattern.matches(pattern.first(), valueToBeUsed)) {
                     bool = false
-                    message = "Please enter valid email address"
+                    message = "Please enter valid email address" 
                 }
             }
             is ComposeKeyboardTypeAdv.TEXT -> {
