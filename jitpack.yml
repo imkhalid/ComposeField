@@ -1,2 +1,6 @@
+jdk:
+  - openjdk21
+
 before_install:
-  - ./gradlew clean --no-daemon --refresh-dependencies
+  - echo "Using Java version: $(java -version)"
+  - ./gradlew clean --no-daemon --refresh-dependencies -Dorg.gradle.jvmargs="-Xmx1G"
