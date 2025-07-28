@@ -1,6 +1,5 @@
 jdk:
   - openjdk21
 
-before_install:
-  - echo "Using Java version: $(java -version)"
-  - ./gradlew clean --no-daemon --refresh-dependencies -Dorg.gradle.jvmargs="-Xmx1G"
+install:
+  - ./gradlew clean build --no-daemon --refresh-dependencies
