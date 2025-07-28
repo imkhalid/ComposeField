@@ -285,6 +285,7 @@ class ComposeDatePickerField : ComposeField() {
         val minMil: Long? = minDate?.let {
             Calendar.getInstance().apply {
                 time = it
+                timeZone = TimeZone.getTimeZone("UTC")
                 set(Calendar.HOUR_OF_DAY, 0)
                 set(Calendar.MINUTE, 0)
                 set(Calendar.SECOND, 0)
@@ -294,6 +295,7 @@ class ComposeDatePickerField : ComposeField() {
         val maxMil: Long? = maxDate?.let {
             Calendar.getInstance().apply {
                 time = it
+                timeZone = TimeZone.getTimeZone("UTC")
                 set(Calendar.HOUR_OF_DAY, 23)
                 set(Calendar.MINUTE, 59)
                 set(Calendar.SECOND, 59)
@@ -315,24 +317,27 @@ class ComposeDatePickerField : ComposeField() {
             }
         val calendar = Calendar.getInstance()
 
+        //setting null as it shows disabled date selected and user can click ok even the date is disabled.
         val initialDate = if (state.text.isNotEmpty()) {
             val selected = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
-                .apply {
-                    timeZone = TimeZone.getTimeZone("UTC")
-                }
-                .parse(state.text)?.time
-            if ((selected?:0L)>(maxMil?:0))
-                maxMil
-            else if ((selected?:0L)<(minMil?:0))
-                minMil
-            else
-                selected
-        } else if (maxMil != null && maxMil < calendar.timeInMillis)
-            maxMil
-        else if (minMil != null && minMil >= calendar.timeInMillis)
-            minMil
-        else
-            calendar.timeInMillis
+                .apply { timeZone = TimeZone.getTimeZone("UTC") }
+                .parse(state.text)
+                ?.time
+
+            when {
+                selected == null -> null
+                maxMil != null && selected >= maxMil -> null
+                minMil != null && selected <= minMil -> null
+                else -> selected
+            }
+        } else {
+            when {
+                maxMil != null && maxMil < calendar.timeInMillis -> null
+                minMil != null && minMil >= calendar.timeInMillis -> null
+                else -> calendar.timeInMillis
+            }
+        }
+
 
         val datePickerState =
             DatePickerState(
@@ -453,16 +458,12 @@ fun changeDateFormat(
     date: String
 ): String {
     val date1 = parseToDate(from, date)
-    return date1?.let { SimpleDateFormat(to, Locale.getDefault()).format(it) } ?: run { date }
+    return date1?.let { SimpleDateFormat(to, Locale.ENGLISH).format(it) } ?: run { date }
 }
 
 fun parseToDate(to: String, date: String): Date? {
     return try {
-        SimpleDateFormat(to, Locale.getDefault())
-            .apply {
-                timeZone = TimeZone.getTimeZone("UTC")
-            }
-            .parse(date)
+        SimpleDateFormat(to, Locale.ENGLISH).parse(date)
     } catch (e: Exception) {
         null
     }
