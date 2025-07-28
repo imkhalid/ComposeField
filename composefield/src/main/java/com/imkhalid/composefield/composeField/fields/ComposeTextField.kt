@@ -527,6 +527,7 @@ class ComposeTextField : ComposeField() {
             }
             is ComposeKeyboardTypeAdv.ID_NO -> {
                 val pattern = Patterns.ID_NO.pattern.toList()
+
                 if (!Pattern.matches(pattern.first(), valueToBeUsed)) {
                     bool = false
                     message = "ID No must 8 Character Long"
@@ -538,7 +539,7 @@ class ComposeTextField : ComposeField() {
                 val pattern = Patterns.EMAIL.pattern.toList()
                 if (!Pattern.matches(pattern.first(), valueToBeUsed)) {
                     bool = false
-                    message = "Please enter valid email address" 
+                    message = "Please enter valid email address"
                 }
             }
             is ComposeKeyboardTypeAdv.TEXT -> {
