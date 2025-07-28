@@ -43,6 +43,11 @@ android {
     kotlinOptions {
         jvmTarget = "21"
     }
+    java {
+        toolchain {
+            languageVersion.set(JavaLanguageVersion.of(21))
+        }
+    }
     buildFeatures {
         compose = true
     }
