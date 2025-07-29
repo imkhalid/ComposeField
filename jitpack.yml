@@ -2,13 +2,17 @@ jdk: openjdk21
 
 cache:
   directories:
-    - $HOME/.gradle/caches
-    - $HOME/.gradle/wrapper
+    - ~/.gradle/caches
+    - ~/.gradle/wrapper
+    - ~/.sdkman/candidates/java
 
 before_install:
   - export GRADLE_USER_HOME="$(pwd)/.gradle"
-  - export GRADLE_OPTS="-Dorg.gradle.daemon=false"
+  - export GRADLE_OPTS="-Dorg.gradle.daemon=false -Dorg.gradle.caching=true"
+  - pkill -9 java || true  # Kill any lingering Java processes
 
 install:
   - chmod +x gradlew
-  - ./gradlew clean assembleRelease publishToMavenLocal --no-daemon --stacktrace
+  - ./gradlew clean assembleRelease publishToMavenLocal --no-daemon --stacktrace --console=plain
+
+timeout: 1200  # 30 minutes max build time
