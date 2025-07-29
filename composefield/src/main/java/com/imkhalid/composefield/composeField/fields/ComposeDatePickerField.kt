@@ -315,7 +315,7 @@ class ComposeDatePickerField : ComposeField() {
             } else {
                 DatePickerDefaults.YearRange.last
             }
-        val calendar = Calendar.getInstance()
+        val calendar = Calendar.getInstance().apply { timeZone = TimeZone.getTimeZone("UTC") }
 
         //setting null as it shows disabled date selected and user can click ok even the date is disabled.
         val initialDate = if (state.text.isNotEmpty()) {
@@ -327,13 +327,13 @@ class ComposeDatePickerField : ComposeField() {
             when {
                 selected == null -> null
                 maxMil != null && selected >= maxMil -> null
-                minMil != null && selected <= minMil -> null
+                minMil != null && selected < minMil -> minMil
                 else -> selected
             }
         } else {
             when {
-                maxMil != null && maxMil < calendar.timeInMillis -> null
-                minMil != null && minMil >= calendar.timeInMillis -> null
+                maxMil != null && maxMil < calendar.timeInMillis -> maxMil
+                minMil != null && minMil > calendar.timeInMillis -> minMil
                 else -> calendar.timeInMillis
             }
         }
@@ -345,12 +345,13 @@ class ComposeDatePickerField : ComposeField() {
                 initialSelectedDateMillis =initialDate,
                 yearRange = rangeMin..rangeMax,
                 selectableDates =
-                object : SelectableDates {
-                    override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-                        return (minMil == null || (minMil < utcTimeMillis)) &&
-                                (maxMil == null || (maxMil > utcTimeMillis))
+                    object : SelectableDates {
+                        override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+
+                            return (minMil == null || (minMil <= utcTimeMillis)) &&
+                                    (maxMil == null || (maxMil >= utcTimeMillis))
+                        }
                     }
-                }
             )
         if (showDialog.value) {
             val colors = DatePickerDefaults.colors(
