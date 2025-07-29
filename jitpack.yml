@@ -1,5 +1,4 @@
-jdk:
-  - openjdk21ajdk: openjdk21
+jdk: openjdk21
 
 cache:
   directories:
