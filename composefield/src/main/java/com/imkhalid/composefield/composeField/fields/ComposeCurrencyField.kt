@@ -502,7 +502,10 @@ class ComposeCurrencyField : ComposeField() {
                 bool = false
                 message = "Maximum Value must be lesser or equal to ${formatter.format(max)}"
             }
-            if (curVal.replace(",","").isNotEmpty()){
+            if (state.field.keyboardType is ComposeKeyboardTypeAdv.CURRENCY &&
+                state.field.keyboardType.showEnglishWords &&
+                curVal.replace(",","").isNotEmpty()
+                ){
                 helperCallback.invoke(EnglishNumberToWords.convert(curVal.toLong()))
             }else{
                 helperCallback.invoke("")

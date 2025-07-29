@@ -116,8 +116,12 @@ sealed class ComposeKeyboardTypeAdv : Parcelable {
         }
     }
 
-    object CURRENCY : ComposeKeyboardTypeAdv() {
-        override fun writeToParcel(parcel: Parcel, flags: Int) {}
+    data object CURRENCY : ComposeKeyboardTypeAdv() {
+        var showEnglishWords: Boolean=false
+
+        override fun writeToParcel(parcel: Parcel, flags: Int) {
+            parcel.writeByte(if(showEnglishWords) 1 else 0)
+        }
         override fun describeContents() = 0
 
         @JvmField

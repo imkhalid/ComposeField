@@ -53,52 +53,75 @@ android {
 group = "com.github.imkhalid" // ✅ Required for JitPack
 version = "1.0.16" // ✅ Must match Git tag
 
-afterEvaluate {
-    publishing {
-        publications {
-            create<MavenPublication>("jitpack") {
-                groupId = "com.github.imkhalid" // ✅ Required for JitPack
-                artifactId = "composefield" // ✅ Explicitly set `artifactId`
-                version = "1.0.16"
+//afterEvaluate {
+//    publishing {
+//        publications {
+//            create<MavenPublication>("jitpack") {
+//                groupId = "com.github.imkhalid" // ✅ Required for JitPack
+//                artifactId = "composefield" // ✅ Explicitly set `artifactId`
+//                version = "1.0.16"
+//
+//                // ✅ Use correct Android component
+//                if (components.findByName("release") != null) {
+//                    from(components["release"])
+//                } else {
+//                    throw GradleException("❌ ERROR: 'release' component not found. Check if the correct component is being published.")
+//                }
+//
+//                pom {
+//                    name.set("ComposeField")
+//                    description.set("A library for handling form fields in Jetpack Compose.")
+//                    url.set("https://github.com/imkhalid/composefield")
+//
+//                    licenses {
+//                        license {
+//                            name.set("Apache-2.0")
+//                            url.set("https://opensource.org/licenses/Apache-2.0")
+//                        }
+//                    }
+//
+//                    developers {
+//                        developer {
+//                            id.set("imkhalid")
+//                            name.set("Khalid")
+//                            email.set("khalidsaeed36@gmail.com")
+//                        }
+//                    }
+//
+//                    scm {
+//                        url.set("https://github.com/imkhalid/composefield")
+//                        connection.set("scm:git:git://github.com/imkhalid/composefield.git")
+//                        developerConnection.set("scm:git:ssh://github.com/imkhalid/composefield.git")
+//                    }
+//                }
+//            }
+//        }
+//    }
+//}
 
-                // ✅ Use correct Android component
-                if (components.findByName("release") != null) {
-                    from(components["release"])
-                } else {
-                    throw GradleException("❌ ERROR: 'release' component not found. Check if the correct component is being published.")
-                }
+publishing {
+    publications {
+        register<MavenPublication>("release") {
+            groupId = "com.github.imkhalid"  // Match your GitHub username
+            artifactId = "composefield"      // Your library name
+            version = "1.1.0"               // Must match Git tag
 
-                pom {
-                    name.set("ComposeField")
-                    description.set("A library for handling form fields in Jetpack Compose.")
-                    url.set("https://github.com/imkhalid/composefield")
-
-                    licenses {
-                        license {
-                            name.set("Apache-2.0")
-                            url.set("https://opensource.org/licenses/Apache-2.0")
-                        }
-                    }
-
-                    developers {
-                        developer {
-                            id.set("imkhalid")
-                            name.set("Khalid")
-                            email.set("khalidsaeed36@gmail.com")
-                        }
-                    }
-
-                    scm {
-                        url.set("https://github.com/imkhalid/composefield")
-                        connection.set("scm:git:git://github.com/imkhalid/composefield.git")
-                        developerConnection.set("scm:git:ssh://github.com/imkhalid/composefield.git")
-                    }
-                }
+            afterEvaluate {
+                from(components["release"])
+            }
+        }
+    }
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/imkhalid/composefield")
+            credentials {
+                username = System.getenv("GITHUB_USERNAME") ?: ""  // GitHub username
+                password = System.getenv("GITHUB_TOKEN") ?: ""     // Classic PAT with `write:packages`
             }
         }
     }
 }
-
 
 
 
