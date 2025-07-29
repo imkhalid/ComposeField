@@ -11,4 +11,4 @@ before_install:
 
 install:
   - chmod +x gradlew
-  - ./gradlew assemble --no-daemon --stacktrace
+  - ./gradlew clean assembleRelease publishToMavenLocal --no-daemon --stacktrace
