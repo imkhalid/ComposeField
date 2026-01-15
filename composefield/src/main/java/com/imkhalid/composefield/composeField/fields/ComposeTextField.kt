@@ -1,6 +1,10 @@
 package com.imkhalid.composefieldproject.composeField.fields
 
 import android.content.ClipboardManager
+import android.content.Context
+import android.view.View
+import android.view.ViewGroup
+import android.widget.PopupMenu
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -41,7 +45,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.Clipboard
 import androidx.compose.ui.platform.LocalClipboard
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalTextToolbar
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.NativeClipboard
 import androidx.compose.ui.platform.TextToolbar
 import androidx.compose.ui.platform.TextToolbarStatus
@@ -92,9 +98,8 @@ class ComposeTextField : ComposeField() {
         newValue: (Pair<Boolean, String>, String) -> Unit,
         modifier: Modifier = Modifier,
     ) {
-        val toolbar =
-            if (isSensitive(state.field.keyboardType))
-                EmptyTextToolbar
+        val isSensitive by remember { mutableStateOf(isSensitive(state.field.keyboardType)) }
+        val toolbar =if (isSensitive) EmptyTextToolbar(LocalContext.current)
             else LocalTextToolbar.current
 
         val colors = getColors(state.field.fieldStyle.fieldStyle)
@@ -447,10 +452,14 @@ class ComposeTextField : ComposeField() {
         }
     }
 
-    object EmptyTextToolbar : TextToolbar {
+    class EmptyTextToolbar(private val context: Context) : TextToolbar {
+        private var popupMenu: PopupMenu? = null
         override val status: TextToolbarStatus = TextToolbarStatus.Hidden
 
-        override fun hide() {}
+        override fun hide() {
+            popupMenu?.dismiss()
+            popupMenu = null
+        }
 
         override fun showMenu(
             rect: Rect,
@@ -458,7 +467,50 @@ class ComposeTextField : ComposeField() {
             onPasteRequested: (() -> Unit)?,
             onCutRequested: (() -> Unit)?,
             onSelectAllRequested: (() -> Unit)?,
-        ) {}
+        ) {
+            // Dismiss any existing menu
+            hide()
+
+            // Create anchor view for the popup
+            val anchor = View(context).apply {
+                layoutParams = ViewGroup.LayoutParams(1, 1)
+                x = rect.left.toFloat()
+                y = rect.top.toFloat()
+            }
+
+            popupMenu = PopupMenu(context, anchor).apply {
+                // Only add allowed actions
+                onSelectAllRequested?.let { selectAll ->
+                    menu.add("Select All").setOnMenuItemClickListener {
+                        selectAll()
+                        true
+                    }
+                }
+
+                onCutRequested?.let { cut ->
+                    menu.add("Cut").setOnMenuItemClickListener {
+                        cut()
+                        true
+                    }
+                }
+
+                onPasteRequested?.let { paste ->
+                    menu.add("Paste").setOnMenuItemClickListener {
+                        paste()
+                        true
+                    }
+                }
+
+                // COPY IS INTENTIONALLY OMITTED
+
+                setOnDismissListener {
+                    popupMenu = null
+                }
+
+                // Show the menu
+                show()
+            }
+        }
     }
 //    object EmptyClipBoard : Clipboard {
 //        override val nativeClipboard: NativeClipboard
@@ -482,7 +534,7 @@ class ComposeTextField : ComposeField() {
                 is ComposeKeyboardTypeAdv.MOBILE_NO,
                 is ComposeKeyboardTypeAdv.CURRENCY,
                 is ComposeKeyboardTypeAdv.NUMBER -> KeyboardType.Number
-                is ComposeKeyboardTypeAdv.EMAIL -> KeyboardType.Email
+                is ComposeKeyboardTypeAdv.EMAIL -> if (fieldState.keyboardType.isSensitive==1) KeyboardType.Text else KeyboardType.Email
                 is ComposeKeyboardTypeAdv.TEXT,
                 is ComposeKeyboardTypeAdv.SENSITIVE,
                 is ComposeKeyboardTypeAdv.DATE,
