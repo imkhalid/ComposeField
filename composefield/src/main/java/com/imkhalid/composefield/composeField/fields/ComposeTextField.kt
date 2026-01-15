@@ -1,5 +1,6 @@
 package com.imkhalid.composefieldproject.composeField.fields
 
+import android.content.ClipboardManager
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -37,7 +38,11 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.ClipEntry
+import androidx.compose.ui.platform.Clipboard
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalTextToolbar
+import androidx.compose.ui.platform.NativeClipboard
 import androidx.compose.ui.platform.TextToolbar
 import androidx.compose.ui.platform.TextToolbarStatus
 import androidx.compose.ui.text.SpanStyle
@@ -89,13 +94,13 @@ class ComposeTextField : ComposeField() {
     ) {
         val toolbar =
             if (isSensitive(state.field.keyboardType))
-                LocalTextToolbar provides EmptyTextToolbar
-            else LocalTextToolbar provides LocalTextToolbar.current
+                EmptyTextToolbar
+            else LocalTextToolbar.current
 
         val colors = getColors(state.field.fieldStyle.fieldStyle)
 
         Column(modifier = modifier.bringIntoViewRequester(localRequester)) {
-            CompositionLocalProvider(toolbar) {
+            CompositionLocalProvider(LocalTextToolbar provides toolbar) {
                 when (state.field.fieldStyle.fieldStyle) {
                     ComposeFieldTheme.FieldStyle.OUTLINE ->
                         OutlineField(
@@ -455,6 +460,19 @@ class ComposeTextField : ComposeField() {
             onSelectAllRequested: (() -> Unit)?,
         ) {}
     }
+//    object EmptyClipBoard : Clipboard {
+//        override val nativeClipboard: NativeClipboard
+//            get() =LocalClipboard()
+//
+//        override suspend fun getClipEntry(): ClipEntry? {
+//            return null
+//        }
+//
+//        override suspend fun setClipEntry(clipEntry: ClipEntry?) {
+//
+//        }
+//
+//    }
 
     private fun getKeyboardOptions(fieldState: ComposeFieldModule): KeyboardOptions {
         val type =
