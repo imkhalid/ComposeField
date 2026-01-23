@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicSecureTextField
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.InputTransformation
 import androidx.compose.foundation.text.input.TextObfuscationMode
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.OutlinedTextField
@@ -65,6 +66,7 @@ import com.imkhalid.composefield.composeField.Patterns
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldType
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardTypeAdv
+import com.imkhalid.composefield.composeField.mask.FieldMaskInputTransformation
 import com.imkhalid.composefield.composeField.model.ComposeFieldModule
 import com.imkhalid.composefield.composeField.model.ComposeFieldStyle
 import com.imkhalid.composefield.composeField.responsiveSize

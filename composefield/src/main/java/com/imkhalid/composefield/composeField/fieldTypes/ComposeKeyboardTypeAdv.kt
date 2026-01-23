@@ -28,13 +28,13 @@ import android.os.Parcelable
 
 sealed class ComposeKeyboardTypeAdv : Parcelable {
 
-    object CNIC : ComposeKeyboardTypeAdv() {
-        override fun writeToParcel(parcel: Parcel, flags: Int) {}
+    data class CNIC(val isSensitive:Int =0) : ComposeKeyboardTypeAdv() {
+        override fun writeToParcel(parcel: Parcel, flags: Int) {parcel.writeInt(isSensitive)}
         override fun describeContents() = 0
 
         @JvmField
         val CREATOR: Parcelable.Creator<CNIC> = object : Parcelable.Creator<CNIC> {
-            override fun createFromParcel(parcel: Parcel) = CNIC
+            override fun createFromParcel(parcel: Parcel) = CNIC(parcel.readInt())
             override fun newArray(size: Int): Array<CNIC?> = arrayOfNulls(size)
         }
     }
@@ -90,17 +90,21 @@ sealed class ComposeKeyboardTypeAdv : Parcelable {
         }
     }
 
-    data class TEXT(val capitalization: ComposeKeyboardCapitalOption = ComposeKeyboardCapitalOption.UnSpecified) : ComposeKeyboardTypeAdv() {
+    data class TEXT(
+        val capitalization: ComposeKeyboardCapitalOption = ComposeKeyboardCapitalOption.UnSpecified,
+        val isSensitive:Int =0
+    ) : ComposeKeyboardTypeAdv() {
 
         constructor(parcel: Parcel):this(capitalization = ComposeKeyboardCapitalOption.getOption(parcel.readInt()))
         override fun writeToParcel(parcel: Parcel, flags: Int) {
             parcel.writeInt(capitalization.value)
+            parcel.writeInt(isSensitive)
         }
         override fun describeContents() = 0
 
         @JvmField
         val CREATOR: Parcelable.Creator<TEXT> = object : Parcelable.Creator<TEXT> {
-            override fun createFromParcel(parcel: Parcel) = TEXT(parcel)
+            override fun createFromParcel(parcel: Parcel) = TEXT(ComposeKeyboardCapitalOption.getOption(parcel.readInt()),parcel.readInt())
             override fun newArray(size: Int): Array<TEXT?> = arrayOfNulls(size)
         }
     }

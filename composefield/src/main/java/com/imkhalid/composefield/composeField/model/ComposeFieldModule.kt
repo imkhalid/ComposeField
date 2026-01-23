@@ -238,7 +238,7 @@ fun String.keyboardType(
             } else
                 ComposeKeyboardTypeAdv.TEXT()
         }
-        "cnic" -> ComposeKeyboardTypeAdv.CNIC
+        "cnic" -> ComposeKeyboardTypeAdv.CNIC()
         "email" -> ComposeKeyboardTypeAdv.EMAIL()
         "mobile",
         "mobile_number" -> ComposeKeyboardTypeAdv.MOBILE_NO()
