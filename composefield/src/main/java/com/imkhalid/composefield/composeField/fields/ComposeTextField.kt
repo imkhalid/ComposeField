@@ -1,6 +1,5 @@
 package com.imkhalid.composefieldproject.composeField.fields
 
-import android.content.ClipboardManager
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -17,19 +16,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicSecureTextField
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.input.InputTransformation
-import androidx.compose.foundation.text.input.TextObfuscationMode
-import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.contextmenu.data.TextContextMenuKeys
+import androidx.compose.foundation.text.contextmenu.modifier.filterTextContextMenuComponents
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,15 +36,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.ClipEntry
-import androidx.compose.ui.platform.Clipboard
-import androidx.compose.ui.platform.LocalClipboard
-import androidx.compose.ui.platform.LocalTextToolbar
-import androidx.compose.ui.platform.NativeClipboard
-import androidx.compose.ui.platform.TextToolbar
-import androidx.compose.ui.platform.TextToolbarStatus
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.ImeAction
@@ -61,20 +49,18 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.imkhalid.composefield.composeField.ComposeFieldState
-import com.imkhalid.composefield.composeField.mask.FieldMaskTransformation
 import com.imkhalid.composefield.composeField.Patterns
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldType
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeFieldYesNo
 import com.imkhalid.composefield.composeField.fieldTypes.ComposeKeyboardTypeAdv
-import com.imkhalid.composefield.composeField.mask.FieldMaskInputTransformation
+import com.imkhalid.composefield.composeField.mask.FieldMaskTransformation
 import com.imkhalid.composefield.composeField.model.ComposeFieldModule
 import com.imkhalid.composefield.composeField.model.ComposeFieldStyle
 import com.imkhalid.composefield.composeField.responsiveSize
-import com.imkhalid.composefield.theme.ComposeFieldTheme
 import com.imkhalid.composefield.composeField.responsiveVPaddings
 import com.imkhalid.composefield.composeField.util.ErrorView
 import com.imkhalid.composefield.composeField.util.ShowToolTipField
-import java.time.format.TextStyle
+import com.imkhalid.composefield.theme.ComposeFieldTheme
 import java.util.regex.Pattern
 
 class ComposeTextField : ComposeField() {
@@ -336,134 +322,73 @@ class ComposeTextField : ComposeField() {
         val mask = getFieldMask(state.field)
         var passwordVisible by remember { mutableStateOf(false) }
         val fieldStyle = state.field.fieldStyle
-        val textState = rememberTextFieldState(state.text)
-        LaunchedEffect(textState.text) {
-            // Avoid recursive updates if the text is already the same.
-            if (textState.text.toString() != state.text) {
-                handleValueChange(textState.text.toString(), mask, state, newValue)
-            }
-        }
-        if (isSensitive(state.field.keyboardType))
-            BasicSecureTextField(
-                modifier = modifier,
-                state = textState,
-                enabled = state.field.isEditable.value,
-                keyboardOptions = getKeyboardOptions(state.field),
-                textStyle = fieldStyle.getTextStyle().copy(
-                    color = if (state.field.keyboardType is ComposeKeyboardTypeAdv.PASSWORD && state.field.pattern.isNotEmpty()){
-                        if (state.hasError.not() && state.text.isNotEmpty()){
-                            Color(0xff08C055)
-                        }else if (state.hasError){
-                            Color(0xffD11B1B)
-                        }else{
-                            fieldStyle.colors.textColor
-                        }
+        val keys = if (isSensitive(state.field.keyboardType))
+            arrayOf(TextContextMenuKeys.CopyKey,TextContextMenuKeys.CutKey,TextContextMenuKeys.SelectAllKey,
+                TextContextMenuKeys.PasteKey)
+        else emptyArray()
+
+        BasicTextField(
+            modifier = modifier
+                .filterTextContextMenuComponents(filter = {x->x.key !in keys}),
+            value = state.text,
+            onValueChange = { curVal ->
+                handleValueChange(curVal,mask,state,newValue)
+            },
+            enabled = state.field.isEditable.value,
+            keyboardOptions = getKeyboardOptions(state.field),
+            minLines = getMinLine(state.field.type),
+
+            maxLines = getMaxLine(state.field.type),
+            visualTransformation = getVisualTransformation(mask, state.field, passwordVisible),
+            textStyle = fieldStyle.getTextStyle().copy(
+                color = if (state.field.keyboardType is ComposeKeyboardTypeAdv.PASSWORD && state.field.pattern.isNotEmpty()){
+                    if (state.hasError.not() && state.text.isNotEmpty()){
+                        Color(0xff08C055)
+                    }else if (state.hasError){
+                        Color(0xffD11B1B)
                     }else{
                         fieldStyle.colors.textColor
-                    },
-                    textAlign = if (state.field.type == ComposeFieldType.TEXT_AREA)
-                        TextAlign.Start
-                    else
-                        TextAlign.End,
-                ),
-                decorator = { innerTextField ->
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        //handling hint  base on password,required and optional checks
-                        val label  = getLabel(state.field)
-
-                        Box(
-                            modifier = boxModifier(state.field),
-                            contentAlignment = boxAlignment(state.field)
-                        ) {
-                            if (state.text.isEmpty()) {
-                                GetPlaceHolder(
-                                    fieldStyle = fieldStyle,
-                                    label = label
-                                )
-                            }
-                            innerTextField()
-                        }
-
-                        TrailingIconBasic(
-                            state,
-                            passwordVisible,
-                            onClick = {
-                                passwordVisible = passwordVisible.not()
-                            }
-                        )
-
                     }
+                }else{
+                    fieldStyle.colors.textColor
                 },
-                textObfuscationCharacter = '●',
-                textObfuscationMode =
-                    if (state.field.keyboardType == ComposeKeyboardTypeAdv.PASSWORD &&  passwordVisible.not()) TextObfuscationMode.RevealLastTyped
-                    else TextObfuscationMode.Visible,
-            )
-        else
-            BasicTextField(
-                modifier = modifier,
-                value = state.text,
-                onValueChange = { curVal ->
-                    handleValueChange(curVal,mask,state,newValue)
-                },
-                enabled = state.field.isEditable.value,
-                keyboardOptions = getKeyboardOptions(state.field),
-                minLines = getMinLine(state.field.type),
+                textAlign = if (state.field.type == ComposeFieldType.TEXT_AREA)
+                    TextAlign.Start
+                else
+                    TextAlign.End,
+            ),
+            decorationBox = { innerTextField ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    //handling hint  base on password,required and optional checks
+                    val label  = getLabel(state.field)
 
-                maxLines = getMaxLine(state.field.type),
-                visualTransformation = getVisualTransformation(mask, state.field, passwordVisible),
-                textStyle = fieldStyle.getTextStyle().copy(
-                    color = if (state.field.keyboardType is ComposeKeyboardTypeAdv.PASSWORD && state.field.pattern.isNotEmpty()){
-                        if (state.hasError.not() && state.text.isNotEmpty()){
-                            Color(0xff08C055)
-                        }else if (state.hasError){
-                            Color(0xffD11B1B)
-                        }else{
-                            fieldStyle.colors.textColor
-                        }
-                    }else{
-                        fieldStyle.colors.textColor
-                    },
-                    textAlign = if (state.field.type == ComposeFieldType.TEXT_AREA)
-                        TextAlign.Start
-                    else
-                        TextAlign.End,
-                ),
-                decorationBox = { innerTextField ->
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
+                    Box(
+                        modifier = boxModifier(state.field),
+                        contentAlignment = boxAlignment(state.field)
                     ) {
-                        //handling hint  base on password,required and optional checks
-                        val label  = getLabel(state.field)
-
-                        Box(
-                            modifier = boxModifier(state.field),
-                            contentAlignment = boxAlignment(state.field)
-                        ) {
-                            if (state.text.isEmpty()) {
-                                GetPlaceHolder(
-                                    fieldStyle = fieldStyle,
-                                    label = label
-                                )
-                            }
-                            innerTextField()
+                        if (state.text.isEmpty()) {
+                            GetPlaceHolder(
+                                fieldStyle = fieldStyle,
+                                label = label
+                            )
                         }
-
-                        TrailingIconBasic(
-                            state,
-                            passwordVisible,
-                            onClick = {
-                                passwordVisible = passwordVisible.not()
-                            }
-                        )
-
+                        innerTextField()
                     }
+
+                    TrailingIconBasic(
+                        state,
+                        passwordVisible,
+                        onClick = {
+                            passwordVisible = passwordVisible.not()
+                        }
+                    )
+
                 }
-            )
+            }
+        )
     }
 
     @Composable
@@ -512,19 +437,6 @@ class ComposeTextField : ComposeField() {
         }
     }
 
-    object EmptyTextToolbar : TextToolbar {
-        override val status: TextToolbarStatus = TextToolbarStatus.Hidden
-
-        override fun hide() {}
-
-        override fun showMenu(
-            rect: Rect,
-            onCopyRequested: (() -> Unit)?,
-            onPasteRequested: (() -> Unit)?,
-            onCutRequested: (() -> Unit)?,
-            onSelectAllRequested: (() -> Unit)?,
-        ) {}
-    }
 //    object EmptyClipBoard : Clipboard {
 //        override val nativeClipboard: NativeClipboard
 //            get() =LocalClipboard()
@@ -724,7 +636,11 @@ class ComposeTextField : ComposeField() {
     }
 
     private fun isSensitive(keyboard: ComposeKeyboardTypeAdv): Boolean{
-        return keyboard is ComposeKeyboardTypeAdv.SENSITIVE || keyboard is ComposeKeyboardTypeAdv.PASSWORD || (keyboard is ComposeKeyboardTypeAdv.EMAIL && keyboard.isSensitive==1)
+        return keyboard is ComposeKeyboardTypeAdv.SENSITIVE ||
+                keyboard is ComposeKeyboardTypeAdv.PASSWORD ||
+                (keyboard is ComposeKeyboardTypeAdv.TEXT && keyboard.isSensitive==1) ||
+                (keyboard is ComposeKeyboardTypeAdv.CNIC && keyboard.isSensitive==1) ||
+                (keyboard is ComposeKeyboardTypeAdv.EMAIL && keyboard.isSensitive==1)
     }
 
     private fun isPastedText(oldText: String, newText: String): Boolean {
