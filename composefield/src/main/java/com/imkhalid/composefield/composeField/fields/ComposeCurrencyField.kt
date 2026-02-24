@@ -463,7 +463,7 @@ class ComposeCurrencyField : ComposeField() {
                     style = state.field.fieldStyle.getHelderTextStyle()
                 )
             ErrorView(
-                modifier =  Modifier.padding(start = 16.dp),
+                modifier = Modifier.align(Alignment.BottomEnd).padding(start = 16.dp),
                 state = state
             )
         }
