@@ -109,28 +109,34 @@ sealed class ComposeKeyboardTypeAdv : Parcelable {
         }
     }
 
-    object NUMBER : ComposeKeyboardTypeAdv() {
-        override fun writeToParcel(parcel: Parcel, flags: Int) {}
+    data class NUMBER(val maxLength:Int = Int.MAX_VALUE) : ComposeKeyboardTypeAdv() {
+        constructor(parcel: Parcel):this(parcel.readInt())
+        override fun writeToParcel(parcel: Parcel, flags: Int) {
+            parcel.writeInt(maxLength)
+        }
         override fun describeContents() = 0
 
         @JvmField
         val CREATOR: Parcelable.Creator<NUMBER> = object : Parcelable.Creator<NUMBER> {
-            override fun createFromParcel(parcel: Parcel) = NUMBER
+            override fun createFromParcel(parcel: Parcel) = NUMBER(parcel.readInt())
             override fun newArray(size: Int): Array<NUMBER?> = arrayOfNulls(size)
         }
     }
 
-    data object CURRENCY : ComposeKeyboardTypeAdv() {
-        var showEnglishWords: Boolean=false
-
+    data class CURRENCY(
+        val maxLength:Int = Int.MAX_VALUE,
+        val showEnglishWords: Boolean=false
+    ) : ComposeKeyboardTypeAdv() {
+        constructor(parcel: Parcel):this(parcel.readInt(),parcel.readByte() != 0.toByte())
         override fun writeToParcel(parcel: Parcel, flags: Int) {
+            parcel.writeInt(maxLength)
             parcel.writeByte(if(showEnglishWords) 1 else 0)
         }
         override fun describeContents() = 0
 
         @JvmField
         val CREATOR: Parcelable.Creator<CURRENCY> = object : Parcelable.Creator<CURRENCY> {
-            override fun createFromParcel(parcel: Parcel) = CURRENCY
+            override fun createFromParcel(parcel: Parcel) = CURRENCY(parcel.readInt(),parcel.readByte() != 0.toByte())
             override fun newArray(size: Int): Array<CURRENCY?> = arrayOfNulls(size)
         }
     }

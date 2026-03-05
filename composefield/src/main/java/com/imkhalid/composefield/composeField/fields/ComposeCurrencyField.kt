@@ -484,6 +484,8 @@ class ComposeCurrencyField : ComposeField() {
     ) {
         /*we will be using curVal for getValueWithMask and on final callback-> newValue
          * operations will be performed on value collected from getValueWithMask method*/
+        if (currVal.length>(state.field.keyboardType as ComposeKeyboardTypeAdv.CURRENCY).maxLength)
+            return
 
         val curVal = currVal.replace(",","")
         var bool = true

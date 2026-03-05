@@ -34,8 +34,8 @@ enum class ComposeKeyboardType {
             MOBILE_NO -> ComposeKeyboardTypeAdv.MOBILE_NO()
             EMAIL -> ComposeKeyboardTypeAdv.EMAIL()
             TEXT -> ComposeKeyboardTypeAdv.TEXT()
-            NUMBER -> ComposeKeyboardTypeAdv.NUMBER
-            CURRENCY -> ComposeKeyboardTypeAdv.CURRENCY
+            NUMBER -> ComposeKeyboardTypeAdv.NUMBER()
+            CURRENCY -> ComposeKeyboardTypeAdv.CURRENCY()
             PASSWORD -> ComposeKeyboardTypeAdv.PASSWORD
             SENSITIVE -> ComposeKeyboardTypeAdv.SENSITIVE
             NONE -> ComposeKeyboardTypeAdv.NONE

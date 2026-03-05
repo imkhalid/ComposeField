@@ -104,7 +104,7 @@ publishing {
         register<MavenPublication>("release") {
             groupId = "com.github.imkhalid"  // Match your GitHub username
             artifactId = "composefield"      // Your library name
-            version = "1.1.0"               // Must match Git tag
+             version = "1.2.1"               // Must match Git tag
 
             afterEvaluate {
                 from(components["release"])
@@ -136,7 +136,7 @@ dependencies {
 
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.9.1")
     implementation("androidx.activity:activity-compose:1.10.1")
-    api(platform("androidx.compose:compose-bom:2025.06.01"))
+    api(platform("androidx.compose:compose-bom:2026.01.01"))
     api("androidx.compose.ui:ui")
     api("androidx.compose.ui:ui-graphics")
     api("androidx.compose.ui:ui-tooling-preview")

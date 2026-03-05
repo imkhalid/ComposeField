@@ -61,9 +61,7 @@ data class ComposeFieldModule(
             childID = customField.child_id.toString(),
             type = customField.type.fieldType(),
             keyboardType = customField.inputType.keyboardType(
-                customField.type.fieldType(),
-                customField.field_name,
-                customField.field_hint
+                customField
             ),
             isEditable = (customField.is_readonly == 1).not().toString().CHOICE(),
             value = getInitialValue(customField, selected_value),
@@ -222,10 +220,11 @@ fun String.fieldType(): ComposeFieldType {
 }
 
 fun String.keyboardType(
-    type: ComposeFieldType,
-    fieldName: String,
-    hint: String?
+    customField: CustomFields,
 ): ComposeKeyboardTypeAdv {
+    val type=customField.type.fieldType()
+    val fieldName = customField.field_name
+    val hint = customField.field_hint
     return when (this.lowercase()) {
         "text" -> {
             if (type == ComposeFieldType.DATE_PICKER) {
@@ -242,7 +241,7 @@ fun String.keyboardType(
         "email" -> ComposeKeyboardTypeAdv.EMAIL()
         "mobile",
         "mobile_number" -> ComposeKeyboardTypeAdv.MOBILE_NO()
-        "number" -> ComposeKeyboardTypeAdv.NUMBER
+        "number" -> ComposeKeyboardTypeAdv.NUMBER(maxLength = customField.max_rule.length.takeIf { x->x>0}?:Int.MAX_VALUE)
         else -> ComposeKeyboardTypeAdv.NONE
     }
 }
