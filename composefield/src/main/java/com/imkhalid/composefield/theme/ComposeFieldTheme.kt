@@ -9,6 +9,11 @@ import com.imkhalid.composefield.composeField.Size
 import com.imkhalid.composefield.composeField.model.ComposeFieldStyle
 import com.imkhalid.composefield.composeField.model.ComposeFontRegistry
 
+data class MobileLimit(
+    val apply: Boolean=false,
+    val maxLimit:Int=-1,
+)
+
 object ComposeFieldTheme {
 
     var composeFieldStyle: ComposeFieldStyle = ComposeFieldStyle.defaultComposeFieldStyle()
@@ -29,6 +34,7 @@ object ComposeFieldTheme {
     var timePickerHint = "Choose Time"
     var containerColor = Color.LightGray
     var fontWeight = FontWeight.Normal
+    var mobileNoLimit= MobileLimit(false,-1)
 
     fun setFontFamily(fontFamily: FontFamily){
         ComposeFontRegistry.register("customFont",fontFamily)

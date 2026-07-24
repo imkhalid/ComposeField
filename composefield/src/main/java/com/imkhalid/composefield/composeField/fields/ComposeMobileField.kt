@@ -70,6 +70,7 @@ import com.imkhalid.composefield.composeField.util.ErrorView
 import com.imkhalid.composefield.composeField.util.ShowToolTipField
 import com.imkhalid.composefield.composeField.util.getPhoneNumber
 import com.imkhalid.composefield.theme.ComposeFieldTheme
+import com.imkhalid.composefield.theme.MobileLimit
 import com.imkhalid.composefieldproject.composeField.fields.ComposeField
 import com.imkhalid.composefieldproject.composeField.fields.GetPlaceHolder
 
@@ -384,12 +385,17 @@ class ComposeMobileField : ComposeField() {
         launcher: ManagedActivityResultLauncher<Unit, Uri?>?
     ) {
         var expanded by remember { mutableStateOf(false) }
+        val limit: MobileLimit by remember {
+            mutableStateOf(
+                ComposeFieldTheme.mobileNoLimit
+            )
+        }
         val toggleDropdown: () -> Unit = { expanded = !expanded }
         val fieldStyle = state.field.fieldStyle
         val prefix = phoneNumberUtil.prefix
         val userInput = state.text.ifEmpty { prefix }
         var textFieldValue  = TextFieldValue(
-                    text = userInput, selection = TextRange(userInput.length)
+                    text = userInput, selection = TextRange(userInput.length),
                 )
 
 
@@ -454,7 +460,9 @@ class ComposeMobileField : ComposeField() {
                             val bool = state.field.required != ComposeFieldYesNo.YES
                             newValue.invoke((bool to "Required Field"),prefix)
                             return@BasicTextField
-                        }
+                        }else if (limit.apply && (newVal.text.length-prefix.length-1)>=limit.maxLimit)
+                            return@BasicTextField
+
                         builtinValidations(newVal.text, phoneNumberUtil) { validated, newVal ->
                             val finalValue = newVal
                             textFieldValue = textFieldValue.copy(
