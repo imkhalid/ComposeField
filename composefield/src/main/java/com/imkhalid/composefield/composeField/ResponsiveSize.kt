@@ -1,5 +1,6 @@
 package com.imkhalid.composefield.composeField
 
+import android.content.res.Configuration
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.Dp
@@ -8,10 +9,17 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun screenSize(): Size {
     val configuration = LocalConfiguration.current
+    var  width = configuration.screenWidthDp.toFloat()
+    if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
+      width =  configuration.screenHeightDp.toFloat()
+
+    var  height = configuration.screenHeightDp.toFloat()
+    if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
+        height =  configuration.screenWidthDp.toFloat()
 
     return Size(
-        width = configuration.screenWidthDp.toFloat(),
-        height = configuration.screenHeightDp.toFloat()
+        width = width,
+        height = height
     )
 }
 
