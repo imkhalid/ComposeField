@@ -9,11 +9,11 @@ plugins {
 
 android {
     namespace = "com.imkhalid.composefield"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 36
         multiDexEnabled = true
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -50,61 +50,15 @@ android {
     }
 }
 
-group = "com.github.imkhalid" // ✅ Required for JitPack
-version = "1.0.16" // ✅ Must match Git tag
-
-//afterEvaluate {
-//    publishing {
-//        publications {
-//            create<MavenPublication>("jitpack") {
-//                groupId = "com.github.imkhalid" // ✅ Required for JitPack
-//                artifactId = "composefield" // ✅ Explicitly set `artifactId`
-//                version = "1.0.16"
-//
-//                // ✅ Use correct Android component
-//                if (components.findByName("release") != null) {
-//                    from(components["release"])
-//                } else {
-//                    throw GradleException("❌ ERROR: 'release' component not found. Check if the correct component is being published.")
-//                }
-//
-//                pom {
-//                    name.set("ComposeField")
-//                    description.set("A library for handling form fields in Jetpack Compose.")
-//                    url.set("https://github.com/imkhalid/composefield")
-//
-//                    licenses {
-//                        license {
-//                            name.set("Apache-2.0")
-//                            url.set("https://opensource.org/licenses/Apache-2.0")
-//                        }
-//                    }
-//
-//                    developers {
-//                        developer {
-//                            id.set("imkhalid")
-//                            name.set("Khalid")
-//                            email.set("khalidsaeed36@gmail.com")
-//                        }
-//                    }
-//
-//                    scm {
-//                        url.set("https://github.com/imkhalid/composefield")
-//                        connection.set("scm:git:git://github.com/imkhalid/composefield.git")
-//                        developerConnection.set("scm:git:ssh://github.com/imkhalid/composefield.git")
-//                    }
-//                }
-//            }
-//        }
-//    }
-//}
+group = "com.github.imkhalid"
+version = "1.2.3"
 
 publishing {
     publications {
         register<MavenPublication>("release") {
-            groupId = "com.github.imkhalid"  // Match your GitHub username
-            artifactId = "composefield"      // Your library name
-             version = "1.2.1"               // Must match Git tag
+            groupId = project.group.toString()
+            artifactId = "composefield"
+            version = project.version.toString()
 
             afterEvaluate {
                 from(components["release"])
@@ -136,15 +90,15 @@ dependencies {
 
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.9.1")
     implementation("androidx.activity:activity-compose:1.10.1")
-    api(platform("androidx.compose:compose-bom:2026.01.01"))
+    api(platform("androidx.compose:compose-bom:2026.06.01"))
     api("androidx.compose.ui:ui")
     api("androidx.compose.ui:ui-graphics")
     api("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material:material-icons-extended")
-    api("androidx.compose.material3:material3:1.3.2")
+    api("androidx.compose.material3:material3:1.4.0")
 //    api(project(":library"))
-    implementation("com.googlecode.libphonenumber:libphonenumber:9.0.9")
+    implementation("com.googlecode.libphonenumber:libphonenumber:9.0.35")
     implementation("androidx.hilt:hilt-navigation-compose:$hiltWork")
     implementation("org.jetbrains.kotlin:kotlin-stdlib:2.1.20")
-    debugImplementation("androidx.compose.ui:ui-tooling:1.8.3")
+    debugImplementation("androidx.compose.ui:ui-tooling:1.11.4")
 }
