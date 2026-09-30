@@ -6,7 +6,10 @@
             <action android:name="android.intent.action.PICK" />
             <data android:mimeType="vnd.android.cursor.dir/phone_v2" />
         </intent>
-        <provider android:authorities="com.android.contacts" />
+        <intent>
+            <action android:name="android.intent.action.PICK" />
+            <data android:mimeType="image/*" />
+        </intent>
     </queries>
 
     <application

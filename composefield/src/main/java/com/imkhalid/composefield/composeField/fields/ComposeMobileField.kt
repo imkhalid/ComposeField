@@ -693,15 +693,17 @@ class ComposeMobileField : ComposeField() {
 
         private fun contactsHandlerPackage(context: Context): String? {
             val pm = context.packageManager
-            val providerPackage =
-                pm.resolveContentProvider(ContactsContract.AUTHORITY, 0)?.packageName
-                    ?: return null
             val probe = Intent(
                 Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI
             )
+            // File explorers, galleries and DocumentsUI accept any ACTION_PICK, and
+            // also handle an image pick; a real contacts app does not.
+            val genericPickers = pm.queryIntentActivities(
+                Intent(Intent.ACTION_PICK).setType("image/*"), 0
+            ).map { it.activityInfo.packageName }.toSet()
             return pm.queryIntentActivities(probe, 0)
-                .firstOrNull { it.activityInfo.packageName == providerPackage }
-                ?.activityInfo?.packageName
+                .map { it.activityInfo.packageName }
+                .firstOrNull { it !in genericPickers && !it.contains("documentsui") }
         }
 
         override fun parseResult(resultCode: Int, intent: Intent?): Uri? {
