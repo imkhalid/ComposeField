@@ -675,7 +675,12 @@ class ComposeMobileField : ComposeField() {
 
     class PickContact : ActivityResultContract<Unit, Uri?>() {
         override fun createIntent(context: Context, input: Unit): Intent {
-            return Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI)
+            return Intent(Intent.ACTION_PICK).apply {
+                setDataAndType(
+                    ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                    ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE
+                )
+            }
         }
 
         override fun parseResult(resultCode: Int, intent: Intent?): Uri? {

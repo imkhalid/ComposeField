@@ -51,7 +51,7 @@ android {
 }
 
 group = "com.github.imkhalid"
-version = "1.2.6"
+version = "1.2.8"
 
 publishing {
     publications {
