@@ -675,12 +675,33 @@ class ComposeMobileField : ComposeField() {
 
     class PickContact : ActivityResultContract<Unit, Uri?>() {
         override fun createIntent(context: Context, input: Unit): Intent {
-            return Intent(Intent.ACTION_PICK).apply {
-                setDataAndType(
-                    ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                    ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE
-                )
+            return Intent(
+                Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI
+            ).apply {
+                contactsHandlerPackage(context)?.let { setPackage(it) }
             }
+        }
+
+        // Without a contacts app, ACTION_PICK falls through to file/gallery pickers.
+        override fun getSynchronousResult(
+            context: Context, input: Unit
+        ): SynchronousResult<Uri?>? {
+            if (contactsHandlerPackage(context) != null) return null
+            Toast.makeText(context, "No contacts app available", Toast.LENGTH_SHORT).show()
+            return SynchronousResult(null)
+        }
+
+        private fun contactsHandlerPackage(context: Context): String? {
+            val pm = context.packageManager
+            val providerPackage =
+                pm.resolveContentProvider(ContactsContract.AUTHORITY, 0)?.packageName
+                    ?: return null
+            val probe = Intent(
+                Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI
+            )
+            return pm.queryIntentActivities(probe, 0)
+                .firstOrNull { it.activityInfo.packageName == providerPackage }
+                ?.activityInfo?.packageName
         }
 
         override fun parseResult(resultCode: Int, intent: Intent?): Uri? {
